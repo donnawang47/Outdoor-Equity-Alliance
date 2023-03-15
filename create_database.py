@@ -23,7 +23,7 @@ def main():
 
                 cursor.execute(create_programs_table)
 
-                create_modules_table = """ CREATE TABLE IF NOT EXISTS modules (module_id INTEGER DEFAULT NULL, program_name INTEGER DEFAULT NULL module_name TEXT DEFAULT NULL, content_type TEXT DEFAULT NULL, content_link TEXT DEFAULT NULL, module_index INTEGER DEFAULT NULL)"""
+                create_modules_table = """ CREATE TABLE IF NOT EXISTS modules (module_id INTEGER DEFAULT NULL, program_name INTEGER DEFAULT NULL, module_name TEXT DEFAULT NULL, content_type TEXT DEFAULT NULL, content_link TEXT DEFAULT NULL, module_index INTEGER DEFAULT NULL)"""
 
                 cursor.execute(create_modules_table)
 

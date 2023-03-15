@@ -10,9 +10,7 @@ def insert(data):
         uri = True) as connection:
             with contextlib.closing(connection.cursor()) as cursor:
 
-                insert_link_statement = """ INSERT INTO modules (module_id INTEGER, program_name INTEGER,
-                    module_name TEXT, content_type TEXT, content_link
-                    BLOB, module_index INTEGER) VALUES (?, ?, ?, ?, ?, ?)  """
+                insert_link_statement = """ INSERT INTO modules (module_id INTEGER, program_name INTEGER, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER) VALUES (?, ?, ?, ?, ?, ?)  """
                 cursor.execute(insert_link_statement, data)
 
     except Exception as error:
@@ -20,9 +18,9 @@ def insert(data):
             sys.exit(1)
 
 def main():
-     #! must pass in data to be inserted in modules table.
+     #! must pass in data to be inserted into modules table.
      data = [1, 'Module 1', 'lesson 1.1', 'google doc', 'https://docs.google.com/document/d/1QObJ5USYw30AdCjBgP9LFBSu8MTCZZqiB8jriQlzhF8/edit?usp=sharing', 1]
-     
+
      insert(data)
 
 
