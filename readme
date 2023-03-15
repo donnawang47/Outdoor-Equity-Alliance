@@ -1,4 +1,7 @@
 
 
-sources used for database:
+Creating tables in database
 - https://www.sqlitetutorial.net/sqlite-python/creating-tables/
+
+To use prepared statements with INSERT
+- https://docs.python.org/3/library/sqlite3.html
