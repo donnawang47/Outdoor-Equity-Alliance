@@ -21,13 +21,13 @@ def main():
                 # assessments: 0 for incomplete, 1 for complete
                 # assessment id: a* (append number of 5 digits)
 
-                create_students_table = """ CREATE TABLE students (student_id INTEGER DEFAULT NULL, student_name TEXT DEFAULT NULL, student_email TEXT DEFAULT NULL, P1 TEXT DEFAULT NULL, A1 INTEGER DEFAULT 0)"""
+                create_students_table = """ CREATE TABLE students (student_id INTEGER, student_name TEXT DEFAULT NULL, student_email TEXT DEFAULT NULL, P1 TEXT DEFAULT NULL, A1 INTEGER DEFAULT 0);"""
 
                 cursor.execute(create_students_table)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
                 cursor.execute("DROP TABLE IF EXISTS programs")
 
-                create_programs_table = """ CREATE TABLE programs (program_id INTEGER DEFAULT NULL, program_name TEXT DEFAULT NULL, description TEXT DEFAULT NULL, initial_availability TEXT DEFAULT NULL)"""
+                create_programs_table = """ CREATE TABLE programs (program_id INTEGER, program_name TEXT DEFAULT NULL, description TEXT DEFAULT NULL, initial_availability TEXT DEFAULT NULL);"""
 
                 cursor.execute(create_programs_table)
 
@@ -35,7 +35,7 @@ def main():
 
                 cursor.execute("DROP TABLE IF EXISTS modules")
 
-                create_modules_table = """ CREATE TABLE modules (module_id INTEGER DEFAULT NULL, program_id INTEGER DEFAULT NULL, module_name TEXT DEFAULT NULL, content_type TEXT DEFAULT NULL, content_link TEXT DEFAULT NULL, module_index INTEGER DEFAULT NULL)"""
+                create_modules_table = """ CREATE TABLE modules (module_id INTEGER, program_id INTEGER DEFAULT NULL, module_name TEXT DEFAULT NULL, content_type TEXT DEFAULT NULL, content_link TEXT DEFAULT NULL, module_index INTEGER DEFAULT NULL);"""
 
                 cursor.execute(create_modules_table)
 
