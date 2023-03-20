@@ -9,6 +9,11 @@ To use prepared statements with INSERT
 - To use list with insert
 https://stackoverflow.com/questions/44485127/insert-python-list-into-postgresql-database
 
+-PostgreSQL lecture slides and handouts
+
+- deletion of rows
+https://www.commandprompt.com/education/how-to-delete-multiple-rows-from-a-table-in-postgresql/#:~:text=In%20PostgreSQL%2C%20the%20DELETE%20FROM,used%20in%20the%20DELETE%20statement.
+
 
 
 # Contributions:
@@ -17,3 +22,13 @@ Liz:
 - wrote insert_module
 - wrote insert_program
 - wrote insert_students
+- Coded update_assessment_status, update_program_status, delete_program,
+delete_module.
+- test for adding students into students table.
+- tests for update_assessment_status, update_program_status, delete_program,
+delete_module.
+
+
+
+UID:
+https://docs.python.org/3/library/uuid.html
