@@ -71,7 +71,7 @@ def insert_module(data):
 # helper method to insert new assessment into student table
 def insert_assessment_col(assessment_id):
     cursor.execute("ALTER TABLE students;")
-    stmt_str = "ADD" + str(assessment_id) +
+    stmt_str = "ADD" + str(assessment_id) + #! ADD COLUMN [name]
                 " INTEGER DEFAULT 0;"
     cursor.execute(stmt_str)
 

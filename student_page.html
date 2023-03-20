@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Student page </title>
+    </head>
+
+    <style>
+        h1 {
+            text-align: center;
+        }
+    </style>
+
+    <body>
+        <!-- header -->
+        <h1> Students </h1>
+
+        <hr>
+
+        <!-- list of students -->
+        <table cellspacing="1">
+            <!-- row 1, containing names of each column -->
+            <tr>
+                <th align = "left"> student id</th>
+                <th align = "left"> name</th>
+                <th align = "left"> email</th>
+            </tr>
+            <!-- clicking on student id will direct to page containing
+            information about enrollment status and assessments status
+            for that specific student -->
+
+            <!-- check if table not empty? -->
+            {% if table|length != 0: %}
+                <!-- rows of courses -->
+                <!-- each row has 5 columns -->
+                {% for id in student_ids: %}
+                <tr>
+                    <!-- col 1 contains student id's -->
+                    <td align= 'left'>
+                        <a href="
+                        {{'/studentdetails?studentid=%s' %id}} "
+                        >
+                        {{"{:>5}".format(id)}}
+                        </a>
+                    </td>
+                    <!-- col 2 is row["Dept"] -->
+                    <td align = 'left'>
+                        {{"{:>4} ".format(row["Dept"])}}
+                    </td>
+                    <!-- col 3 is row["CrsNum"] -->
+                    <td align = 'left'>
+                        {{"{:>6}".format(row["CrsNum"])}}
+                    </td>
+                    <!-- col 4 is row["Area"] -->
+                    <td align = 'left'>
+                        {{"{:>4}".format(row["Area"])}}
+                    </td>
+                    <!-- col 5 is row["Title"] -->
+                    <td align = 'left'>
+                        {{row["Title"]}}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+
+        </table>
+
+
+
+    </body>
+</html>
+

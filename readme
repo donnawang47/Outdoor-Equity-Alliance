@@ -7,4 +7,13 @@ To use prepared statements with INSERT
 - https://docs.python.org/3/library/sqlite3.html
 
 - To use list with insert
-https://stackoverflow.com/questions/44485127/insert-python-list-into-postgresql-database 
+https://stackoverflow.com/questions/44485127/insert-python-list-into-postgresql-database
+
+
+
+# Contributions:
+Liz:
+- created the schema of the database
+- wrote insert_module
+- wrote insert_program
+- wrote insert_students
