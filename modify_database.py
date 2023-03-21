@@ -3,6 +3,7 @@ import sys
 import os
 
 DATABASE_URL = os.getenv('DATABASE_URL')
+CONN = psycopg2.connect("dbname=oea user=postgres password=xxx")
 
 
 #TODO: get module_id, program_id, student_id efficeintly. Use max()
@@ -10,12 +11,14 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 def add_assessment_column(module_id):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
-                cursor.execute(""" ALTER TABLE students;""" )
+                cursor.execute(""" ALTER TABLE students""" )
                 # default of 0 = incomplete
-                statement = " ADD COLUMN A" + module_id + " INTEGER DEFAULT 0;"
+                statement = " ADD COLUMN A" + str(module_id) + \
+                            " INTEGER DEFAULT 0;"
                 cursor.execute(statement)
 
     except Exception as error:
@@ -25,12 +28,15 @@ def add_assessment_column(module_id):
 
 def insert_module(data):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
                 # can prob call max
                 statement = """ INSERT INTO modules (module_id, program_id, module_name, content_type, content_link, module_index) VALUES (%s, %s, %s, %s, %s, %s);  """
-                cursor.execute(statement, data)
+                param = [data['module_id'], data['program_id'], data['module_name'], data['content_type'], data['content_link'], data['module_index']]
+
+                cursor.execute(statement, param)
 
                 # modify students table
 
@@ -38,53 +44,41 @@ def insert_module(data):
                 # check if module is an assessment
                 # add new assessment column to students table
                 if data['content_type'] == "assessment":
-                    add_assessment_column(str(data['module_id']))
+                    statement = "ALTER TABLE students"
+                    # default of 0 = incomplete
+                    statement += " ADD " + data['module_id']
+                    statement += " INTEGER DEFAULT 0;"
+                    cursor.execute(statement)
+
+                    # add_assessment_column(str(data['module_id']))
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
             sys.exit(1)
 
-
-# helper method to insert new assessment into students table
-def insert_assessment_col(assessment_id):
-    cursor.execute("ALTER TABLE students;")
-    stmt_str = "ADD" + str(assessment_id) + #! ADD COLUMN [name]
-    " INTEGER DEFAULT 0;"
-    cursor.execute(stmt_str)
-
-# helper method to insert new program into student table
-def insert_program_col(program_id):
-    try:
-        with psycopg2.connect(DATABASE_URL) as connection:
-
-            with connection.cursor() as cursor:
-                cursor.execute("ALTER TABLE students;")
-                stmt_str = "ADD" + str(program_id) + " TEXT DEFAULT 'locked';"
-                cursor.execute(stmt_str)
-
-    except Exception as error:
-        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        sys.exit(1)
-
-
 def insert_program(data):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
 
             with connection.cursor() as cursor:
-
-                if(data['initial_availability'] != 'all' or 'none'):
+                if(data['initial_availability'] != 'all' and
+                    data['initial_availability'] != 'none'):
                     raise Exception('Input must be: all or none')
 
                 # modify program table
                 statement = """
                 INSERT INTO programs (program_id, program_name, description, initial_availability) VALUES (%s, %s, %s, %s);
                 """
-                cursor.execute(statement, data)
+                param = [data['program_id'], data['program_name'], data['description'], data['initial_availability']]
+                cursor.execute(statement, param)
 
                 # modify students table to include new program column
                 # with specified program_id as the name of the column
-                insert_program_col(data['program_id'])
+                stmt_str = "ALTER TABLE students "
+                stmt_str += "ADD " + data['program_id']
+                stmt_str += " TEXT DEFAULT 'locked';"
+                cursor.execute(stmt_str)
 
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
@@ -93,7 +87,8 @@ def insert_program(data):
 # insert information about a student into the students table
 def insert_student(data):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 statement = """ INSERT INTO students (student_id, student_name, student_email) VALUES (%s, %s, %s, %s);  """
                 cursor.execute(statement, data)
@@ -105,13 +100,15 @@ def insert_student(data):
 # returns student_id based on existing numebr of columns in students table
 def create_student_id():
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
                 statement = "SELECT COUNT(*) FROM students"
                 cursor.execute(statement)
                 data = cursor.fetchall()
                 id = 1 + data[0]
+                print("create student id:", id)
 
                 return id
 
@@ -123,13 +120,18 @@ def create_student_id():
 # use this function to create assessment_id as well
 def create_module_id():
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
                 module_id = 'M'
                 stmt_str = "SELECT COUNT(*) FROM modules"
                 cursor.execute(stmt_str)
-                module_id+= cursor.fetchall() #! you are adding a string to a tuple
+                count = cursor.fetchall()
+                # print("create module_id: ", count)
+
+                module_id+= str(count[0][0] + 1)
+                print("create module id:", module_id)
                 return module_id
 
     except Exception as error:
@@ -138,13 +140,17 @@ def create_module_id():
 
 def create_program_id():
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
                 program_id = 'P'
                 stmt_str = "SELECT COUNT(*) FROM programs"
                 cursor.execute(stmt_str)
-                program_id+= cursor.fetchall()
+                count = cursor.fetchall()
+                # print("program id", count[0][0])
+                program_id+= str(count[0][0] + 1)
+                # print("create program id:", program_id)
                 return program_id
 
     except Exception as error:
@@ -156,7 +162,8 @@ def create_program_id():
     # program = updated once the student completes program or with admin permission
 def update_assessment_status(student_id, assessment_id, status ):
      try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
@@ -178,7 +185,8 @@ def update_assessment_status(student_id, assessment_id, status ):
 
 def update_program_status(student_id, program_id, status):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
@@ -200,7 +208,8 @@ def update_program_status(student_id, program_id, status):
 
 def delete_program(program_id):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                  # remove program from students table
                  statement = " ALTER TABLE students DROP COLUMN "
@@ -225,7 +234,8 @@ def delete_program(program_id):
 
 def delete_module(module_id):
     try:
-        with psycopg2.connect(DATABASE_URL) as connection:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 # fetch content type with module_id
                 statement = "SELECT content_type FROM modules WHERE "
@@ -257,41 +267,77 @@ def main():
     #? what are the different types of contents?
 
     # create new program: Tree Ambassador 101
+    print("main: create program id")
     program1_id = create_program_id()
-    program_data = [program_id, "Tree Ambassador 101", "Description", "all"]
-    insert_program(program_data)
+    print("main:", program1_id)
+    program1_data = {"program_id": program1_id,
+                    "program_name": "Tree Ambassador 101",
+                    "description": "Description",
+                    "initial_availability": "all"
+                    }
+    # program1_data = [program1_id, "Tree Ambassador 101", "Description", "all"]
+    insert_program(program1_data)
+    print("main: insert program1")
 
     # insert module 1 of tree ambassador 101
     module1_id = create_module_id()
+    print("main: ", module1_id)
     module1_name = 'START HERE Module 1 Instructions'
     module1_content_type = "text"
     module1_content_link = 'https://docs.google.com/document/d/1PP-GiTqVcvJYpqVUxQ_bXSsru6H200l39RovL0AhYgw/edit?usp=sharing'
     module1_index = 1 # need a function to get index
     #! will get index from input text form from the admin; another function
     #! should switch orders of indexes.
+    module1_data = {
+        'module_id' : module1_id,
+        'program_id': program1_id,
+        'module_name': module1_name,
+        'content_type': module1_content_type,
+        'content_link': module1_content_link,
+        'module_index': module1_index
+    }
 
-    module1_data = [module1_id, program_id, module1_name, module1_content_type, module1_content_link, module1_index]
+    # module1_data = [module1_id, program_id, module1_name, module1_content_type, module1_content_link, module1_index]
 
     insert_module(module1_data)
+    print("main: insert module1")
 
 
     # insert module 2 of tree ambassador 101
     module2_id = create_module_id()
-    module2_name = 'Module 2 Learning Exercise'
+    module2_name = 'Module 1 Learning Exercise' # module 1 not a typo
     module2_content_type = "assessment"
     module2_content_link = 'https://docs.google.com/forms/d/e/1FAIpQLScGFPXzgFiIaIc5R7NQW_OvINY7y7xc4UHHhIIkt-4AJ-TZoQ/viewform'
     module2_index = 2 # need a function to get index
 
-    module2_data = [module2_id, program_id, module2_name, module2_content_type, module2_content_link, module2_index]
+    # module2_data = [module2_id, program1_id, module2_name, module2_content_type, module2_content_link, module2_index]
+
+    module2_data = {
+        'module_id' : module2_id,
+        'program_id': program1_id,
+        'module_name': module2_name,
+        'content_type': module2_content_type,
+        'content_link': module2_content_link,
+        'module_index': module2_index
+    }
+
 
     insert_module(module2_data)
+    print("main: insert module2")
 
     # ------------creating test programs -------------------- #
 
     # create locked program
-    program_id = create_program_id()
-    program_data = [program_id, "LOCKED PROGRAM", "Description", "NONE"]
-    insert_program(program_data)
+    program2_id = create_program_id()
+    program2_data = {
+        "program_id": program2_id,
+        "program_name": "LOCKED PROGRAM",
+        "description": "Description",
+        "initial_availability": "none"
+    }
+    # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
+    insert_program(program2_data)
+    print("main: program2 inserted")
 
     #--------------test adding students -------------------------- #
 

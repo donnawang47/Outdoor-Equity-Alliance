@@ -10,7 +10,10 @@ def main():
     try:
         database_url = os.getenv('DATABASE_URL')
 
-        with psycopg2.connect(database_url) as connection:
+        conn = psycopg2.connect("dbname=oea user=postgres password=xxx")
+
+        with conn as connection:
+        # with psycopg2.connect(database_url) as connection:
 
             with connection.cursor() as cursor:
 
@@ -29,7 +32,7 @@ def main():
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
                 cursor.execute("DROP TABLE IF EXISTS programs")
 
-                create_programs_table = """ CREATE TABLE programs (program_id INTEGER, program_name TEXT DEFAULT NULL, description TEXT DEFAULT NULL, initial_availability TEXT DEFAULT NULL);"""
+                create_programs_table = """ CREATE TABLE programs (program_id TEXT, program_name TEXT, description TEXT DEFAULT NULL, initial_availability TEXT DEFAULT 'none');"""
 
                 cursor.execute(create_programs_table)
 
@@ -37,7 +40,7 @@ def main():
 
                 cursor.execute("DROP TABLE IF EXISTS modules")
 
-                create_modules_table = """ CREATE TABLE modules (module_id INTEGER, program_id INTEGER DEFAULT NULL, module_name TEXT DEFAULT NULL, content_type TEXT DEFAULT NULL, content_link TEXT DEFAULT NULL, module_index INTEGER DEFAULT 1);"""
+                create_modules_table = """ CREATE TABLE modules (module_id TEXT, program_id TEXT, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER);"""
 
                 cursor.execute(create_modules_table)
 
