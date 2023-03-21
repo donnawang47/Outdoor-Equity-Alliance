@@ -22,7 +22,7 @@ Liz:
 - wrote insert_module
 - wrote insert_program
 - wrote insert_students
-- Coded update_assessment_status, update_program_status, delete_program,
+- wrote update_assessment_status, update_program_status, delete_program,
 delete_module.
 - test for adding students into students table.
 - tests for update_assessment_status, update_program_status, delete_program,
