@@ -7,24 +7,7 @@ CONN = psycopg2.connect("dbname=oea user=postgres password=xxx")
 
 
 #TODO: get module_id, program_id, student_id efficeintly. Use max()
-#TODO: postgress function?
-
-def add_assessment_column(module_id):
-    try:
-        with CONN as connection:
-        # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-
-                cursor.execute(""" ALTER TABLE students""" )
-                # default of 0 = incomplete
-                statement = " ADD COLUMN A" + str(module_id) + \
-                            " INTEGER DEFAULT 0;"
-                cursor.execute(statement)
-
-    except Exception as error:
-            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-            sys.exit(1)
-
+#TODO: postgres function?
 
 def insert_module(data):
     try:
@@ -50,7 +33,6 @@ def insert_module(data):
                     statement += " INTEGER DEFAULT 0;"
                     cursor.execute(statement)
 
-                    # add_assessment_column(str(data['module_id']))
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
@@ -62,9 +44,9 @@ def insert_program(data):
         # with psycopg2.connect(DATABASE_URL) as connection:
 
             with connection.cursor() as cursor:
-                if(data['program_availability'] != 'all' and
+                if (data['program_availability'] != 'all' and
                     data['program_availability'] != 'none'):
-                    raise Exception('Input must be: all or none')
+                    raise Exception('Program availability must be: all or none')
 
                 # modify program table
                 statement = """
@@ -75,29 +57,59 @@ def insert_program(data):
 
                 # modify students table to include new program column
                 # with specified program_id as the name of the column
+                pgm_status = 'locked'
+                if data['program_availability'] == 'all':
+                    pgm_status= 'available'
+
                 stmt_str = "ALTER TABLE students "
                 stmt_str += "ADD " + data['program_id']
-                stmt_str += " TEXT DEFAULT 'locked';"
-                cursor.execute(stmt_str)
+                stmt_str += " TEXT DEFAULT '%s';"
+                cursor.execute(stmt_str, [pgm_status])
 
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         sys.exit(1)
 
 # insert information about a student into the students table
-def insert_student(data):
+def insert_student(data): #data is 4-string-tuple
     try:
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                statement = """ INSERT INTO students (student_id, student_name, student_email) VALUES (%s, %s, %s, %s);  """
-                cursor.execute(statement, data)
+                statement = """ INSERT INTO students (student_id, student_name, student_email) VALUES (%s, %s, %s);  """
+                param = [data['student_id'], data['student_name'], data['student_email']]
+                cursor.execute(statement, param)
 
+                #defaultvalues
+                # if program is available
+                list_stmt = """
+                    SELECT *
+                    FROM information_schema.columns
+                    WHERE table_schema = 'schema'
+                    AND table_name   = 'students'
+                        ;""" #table_schema name unsure rn
+                cursor.execute(list_stmt)
+
+                columns = cursor.fetchall()
+                for column in columns: #dc
+                    #module default
+                    store_val = 'incomplete'
+                    #program default
+                    if 'P' in column:
+                        stmt_avail = """SELECT program_availability FROM programs WHERE program_id=%s"""
+                        cursor.execute(stmt_avail, [column])
+
+                        availability = cursor.fetchall()
+                        if availability == "all": #dc if needs indexing
+                            store_val = 'available'
+                        else:
+                            store_val = 'locked'
+                    cursor.execute("INSERT INTO students (%s) VALUES (%s);", [column, store_val]) #slow? may need to think of more efficient way
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
             sys.exit(1)
 
-# returns student_id based on existing numebr of columns in students table
+# returns student_id based on existing number of columns in students table
 def create_student_id():
     try:
         with CONN as connection:
@@ -107,10 +119,11 @@ def create_student_id():
                 statement = "SELECT COUNT(*) FROM students"
                 cursor.execute(statement)
                 data = cursor.fetchall()
-                id = 1 + data[0]
-                print("create student id:", id)
 
-                return id
+                student_id = str(1 + data[0][0])
+                print("create student id:", student_id)
+
+                return student_id
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
@@ -124,13 +137,12 @@ def create_module_id():
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
-                module_id = 'M'
                 stmt_str = "SELECT COUNT(*) FROM modules"
                 cursor.execute(stmt_str)
                 count = cursor.fetchall()
                 # print("create module_id: ", count)
 
-                module_id+= str(count[0][0] + 1)
+                module_id = 'M' + str(count[0][0] + 1)
                 print("create module id:", module_id)
                 return module_id
 
@@ -144,12 +156,11 @@ def create_program_id():
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
-                program_id = 'P'
                 stmt_str = "SELECT COUNT(*) FROM programs"
                 cursor.execute(stmt_str)
                 count = cursor.fetchall()
                 # print("program id", count[0][0])
-                program_id+= str(count[0][0] + 1)
+                program_id = 'P' + str(count[0][0] + 1)
                 # print("create program id:", program_id)
                 return program_id
 
@@ -160,21 +171,16 @@ def create_program_id():
 #! to do: update programs and asessments status for student
     # assessment = updated once the student completes quiz
     # program = updated once the student completes program or with admin permission
-def update_assessment_status(student_id, assessment_id, status ):
+def update_assessment_status(student_id, assessment_id, status):
      try:
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
-                statement = " UPDATE students SET "
-                statement += str(assessment_id)
-                statement += " = "
-                statement += str(status)
-                statement += " WHERE student_id = "
-                statement += str(student_id)
+                statement = " UPDATE students SET %s = %s WHERE student_id = %s;"
 
-                cursor.execute(statement, [student_id, assessment_id, status])
+                cursor.execute(statement, [assessment_id, status, student_id])
 
                 cursor.execute('COMMIT')
                 print("Transaction committed")
@@ -190,14 +196,9 @@ def update_program_status(student_id, program_id, status):
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
-                statement = " UPDATE students SET "
-                statement += str(program_id)
-                statement += " = "
-                statement += str(status)
-                statement += " WHERE student_id = "
-                statement += str(student_id)
+                statement = " UPDATE students SET %s = %s WHERE student_id = %s;"
 
-                cursor.execute(statement, [student_id, program_id, status])
+                cursor.execute(statement, [program_id, status, student_id])
 
                 cursor.execute('COMMIT')
                 print("Transaction committed")
@@ -397,16 +398,16 @@ def main():
     # ----------- test update_program_status ----------------------#
 
     # update status for Liz to 1 (complete)
-    update_program_status(student1_id, program_id, 'locked')
+    update_program_status(student1_id, program1_id, 'locked')
 
     # change status back to incomplete for Liz
-    update_program_status(student1_id, program_id, 'enrolled')
+    update_program_status(student1_id, program1_id, 'enrolled')
 
     # update status for Annie
-    update_program_status(student2_id, program_id, 'locked')
+    update_program_status(student2_id, program1_id, 'locked')
 
     # update status for Donna
-    update_program_status(student3_id, program_id, 'locked')
+    update_program_status(student3_id, program1_id, 'locked')
 
     #------------- test delete_program-----------------------------#
 

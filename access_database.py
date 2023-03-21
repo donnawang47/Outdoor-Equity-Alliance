@@ -7,8 +7,54 @@ CONN = psycopg2.connect("dbname=oea user=postgres password=xxx")
 
 # get list of programs for a student
 # should be divided into three categories
-# def get_student_programs():
+# EXTREME WIPPPP!!
+def get_student_programs(student_id):
+    try:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+            with connection.cursor() as cursor:
+                programs = get_all_programs()
 
+                params = []
+                program_list_str = '' #account for first program_id, shouldnt have comma in front
+                for program in programs:
+                     params.append(program['program_id'])
+                     #make program_list_str
+                     program_list_str += ','+program['program_id']
+
+                stmt_str = "SELECT %s FROM students WHERE "
+                stmt_str += "students.student_id LIKE %s"
+
+                cursor.execute(stmt_str, [program_list_str, student_id])
+                table = cursor.fetchall()
+                # for row in table:
+                #     print(row)
+
+                data = {}
+
+                available = []
+                locked = []
+                enrolled = []
+                index = 0
+
+                row = table[0]
+                for program in programs: #program_id specifically
+                    if(row[index] == 'available'):
+                         available.append[program]
+                    elif row[index] == 'locked':
+                         locked.append[program]
+                    elif row[index] == 'enrolled':
+                         enrolled.append[program]
+                    index += 1
+
+                data['available'] = available
+                data['locked'] = locked
+                data ['enrolled'] = enrolled
+                return data
+
+    except Exception as error:
+            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+            sys.exit(1)
 
 # get complete list of programs
 # divided into three(?) categories
@@ -81,7 +127,32 @@ def get_program_modules(program_id):
 
 # get complete list of students
 # with some information??
-# def get_all_students():
+def get_all_students():
+    try:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+            with connection.cursor() as cursor:
+                stmt_str = "SELECT * FROM students "
+
+                cursor.execute(stmt_str)
+                table = cursor.fetchall()
+
+                # list of dictionaries of programs
+                data = []
+                for row in table:
+                    data_row = {}
+                    data_row['student_id'] = row[0]
+                    data_row['student_name'] = row[1]
+                    data_row['student_email'] = row[2]
+                    #check if the column name method works
+                    data.append(data_row)
+
+                return data
+
+    except Exception as error:
+            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+            sys.exit(1)
+
 
 
 # for testing
