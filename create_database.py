@@ -32,7 +32,7 @@ def main():
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
                 cursor.execute("DROP TABLE IF EXISTS programs")
 
-                create_programs_table = """ CREATE TABLE programs (program_id TEXT, program_name TEXT, description TEXT DEFAULT NULL, initial_availability TEXT DEFAULT 'none');"""
+                create_programs_table = """ CREATE TABLE programs (program_id TEXT, program_name TEXT, description TEXT DEFAULT NULL, program_availability TEXT DEFAULT 'none');"""
 
                 cursor.execute(create_programs_table)
 

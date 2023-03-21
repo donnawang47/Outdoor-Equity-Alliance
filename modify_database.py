@@ -339,6 +339,29 @@ def main():
     insert_program(program2_data)
     print("main: program2 inserted")
 
+    # create random module in program2
+    module3_id = create_module_id()
+    module3_name = 'test module' # module 1 not a typo
+    module3_content_type = "content type"
+    module3_content_link = 'content link'
+    module3_index = 1 # need a function to get index
+
+    # module2_data = [module2_id, program1_id, module2_name, module2_content_type, module2_content_link, module2_index]
+
+    module3_data = {
+        'module_id' : module3_id,
+        'program_id': program2_id,
+        'module_name': module3_name,
+        'content_type': module3_content_type,
+        'content_link': module3_content_link,
+        'module_index': module3_index
+    }
+
+
+    insert_module(module3_data)
+    print("main: insert module2")
+
+
     #--------------test adding students -------------------------- #
 
     # add student1 Liz
