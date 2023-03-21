@@ -62,15 +62,15 @@ def insert_program(data):
         # with psycopg2.connect(DATABASE_URL) as connection:
 
             with connection.cursor() as cursor:
-                if(data['initial_availability'] != 'all' and
-                    data['initial_availability'] != 'none'):
+                if(data['program_availability'] != 'all' and
+                    data['program_availability'] != 'none'):
                     raise Exception('Input must be: all or none')
 
                 # modify program table
                 statement = """
-                INSERT INTO programs (program_id, program_name, description, initial_availability) VALUES (%s, %s, %s, %s);
+                INSERT INTO programs (program_id, program_name, description, program_availability) VALUES (%s, %s, %s, %s);
                 """
-                param = [data['program_id'], data['program_name'], data['description'], data['initial_availability']]
+                param = [data['program_id'], data['program_name'], data['description'], data['program_availability']]
                 cursor.execute(statement, param)
 
                 # modify students table to include new program column
@@ -273,7 +273,7 @@ def main():
     program1_data = {"program_id": program1_id,
                     "program_name": "Tree Ambassador 101",
                     "description": "Description",
-                    "initial_availability": "all"
+                    "program_availability": "all"
                     }
     # program1_data = [program1_id, "Tree Ambassador 101", "Description", "all"]
     insert_program(program1_data)
@@ -333,7 +333,7 @@ def main():
         "program_id": program2_id,
         "program_name": "LOCKED PROGRAM",
         "description": "Description",
-        "initial_availability": "none"
+        "program_availability": "none"
     }
     # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
     insert_program(program2_data)
