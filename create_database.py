@@ -10,7 +10,7 @@ def main():
     try:
         database_url = os.getenv('DATABASE_URL')
 
-        conn = psycopg2.connect("dbname=oea user=postgres password=xxx")
+        conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
         with conn as connection:
         # with psycopg2.connect(database_url) as connection:
