@@ -24,7 +24,7 @@ def main():
                 # assessments: 0 for incomplete, 1 for complete #idea: Donna, I changed this because it is more intuitive to award 1 for completion!
                 # assessment id: a* (append number of 5 digits)
 
-                create_students_table = """ CREATE TABLE students (student_id INTEGER, student_name TEXT DEFAULT NULL, student_email TEXT DEFAULT NULL);"""
+                create_students_table = """ CREATE TABLE students (student_id INTEGER GENERATED ALWAYS AS IDENTITY, student_name TEXT DEFAULT NULL, student_email TEXT DEFAULT NULL);"""
                 #! do not add P1 and A1 columns because that should be done by admin.
 
 
