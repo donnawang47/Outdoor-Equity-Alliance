@@ -216,7 +216,7 @@ def update_assessment_status(student_id, assessment_id, status):
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
-                stmt_str = "UPDATE students SET P1"
+                stmt_str = "UPDATE students SET "
                 stmt_str += assessment_id
                 stmt_str += "=%s WHERE student_id=%s;"
 
