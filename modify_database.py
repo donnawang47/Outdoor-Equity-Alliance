@@ -68,9 +68,12 @@ def insert_program(data):
                 stmt_str += " TEXT DEFAULT %s;"
                 cursor.execute(stmt_str, [pgm_status])
 
+                return(True)
+
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         sys.exit(1)
+        return (False)
 
         # insert information about a student into the students table
 def insert_student(data): #data is 4-string-tuple

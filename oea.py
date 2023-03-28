@@ -43,6 +43,19 @@ def admin_programs():
 
 @app.route('/create_program', methods=['POST'])
 def admin_create_program():
+    # pgm_params = {}
+    # # create program_id
+    # pgm_params["program_id"] = modify_database.create_program_id()
+    # pgm_params["program_name"] = flask.request.form['pgm_name']
+    # pgm_params["description"] = flask.request.form['pgm_descrip']
+    # pgm_params["program_availability"] = flask.request.form['pgm_avail']
+
+    # success = modify_database.insert_program(pgm_params)
+    # if success:
+    #     print("new program inserted")
+
+    # # modules_params
+
     html_code = flask.render_template('admin_create_program.html')
     response = flask.make_response(html_code)
     return response

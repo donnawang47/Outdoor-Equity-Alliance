@@ -10,19 +10,38 @@
 
         <h2> Create New Program</h2>
 
-        <form action = " /create_program" method = "post">
-            <!-- program title -->
+        <form action = "/oea.py" method = "post">
+            <!-- program name -->
+            Program Name: <input type = "text" name = "pgm_name"> <br>
 
-            <!-- module title -->
+            Program Description: <input type = "text" name = "pgm_descrip"> <br>
+
+            <!-- module name -->
+            <!--
+            Module Name: <input type = "text" name = "module_name"> <br>
+            -->
+
             <!-- module link -->
+            <!--
+            Module Link: <input type = "text" name = "module_link"> <br>
+            -->
+
             <!-- module type-->
+            <!-- should use check boxes -->
+            <!--
+            Module Type: <input type = "text" name = "module_type"> <br>
+            -->
+
             <!-- module sequence? -->
 
             <!-- add another module -->
 
             <!-- indicate availability of program -->
+            <!-- should use check boxes -->
+            Program Availability: <input type = "text" name = "pgm_avail"> <br>
 
             <!-- submit form -->
+            <input type="submit" value="Submit">
 
         </form>
 
