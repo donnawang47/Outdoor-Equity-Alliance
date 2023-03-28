@@ -28,7 +28,11 @@ delete_module.
 - tests for update_assessment_status, update_program_status, delete_program,
 delete_module.
 
-
+Week 3/20
+Liz:
+- included code for status of enrolled.
+- ran tests up to updates and debugged so that functions work
+- wrote get_student_id
 
 UID:
 https://docs.python.org/3/library/uuid.html
