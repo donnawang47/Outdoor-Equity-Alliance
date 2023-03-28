@@ -63,7 +63,7 @@ def insert_program(data):
 
                 stmt_str = "ALTER TABLE students "
                 stmt_str += "ADD " + data['program_id']
-                stmt_str += " TEXT DEFAULT '%s';"
+                stmt_str += " TEXT DEFAULT %s;"
                 cursor.execute(stmt_str, [pgm_status])
 
     except Exception as error:

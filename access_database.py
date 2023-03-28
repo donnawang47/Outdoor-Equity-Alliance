@@ -78,11 +78,12 @@ def get_all_programs():
                     data_row['program_availability'] = row[3]
                     data.append(data_row)
 
-                return data
+                return (True, data)
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
             sys.exit(1)
+            return (False, err_msg)
 
 # given a program_id, get all modules within that program
 def get_program_modules(program_id):
@@ -119,11 +120,12 @@ def get_program_modules(program_id):
                     modules.append(modules_row)
 
                 data['modules'] = modules
-                return data
+                return (True, data)
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
             sys.exit(1)
+            return (False, err_msg)
 
 # get complete list of students
 # with some information??
@@ -147,11 +149,12 @@ def get_all_students():
                     #check if the column name method works
                     data.append(data_row)
 
-                return data
+                return (True, data)
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
             sys.exit(1)
+            return (False, err_msg)
 
 
 
