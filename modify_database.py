@@ -213,9 +213,11 @@ def update_assessment_status(student_id, assessment_id, status):
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
-                statement = "UPDATE students SET %s = %s WHERE student_id = %s"
+                stmt_str = "UPDATE students SET P1"
+                stmt_str += assessment_id
+                stmt_str += "=%s WHERE student_id=%s;"
 
-                cursor.execute(statement, [assessment_id, status, student_id])
+                cursor.execute(statement, [status, student_id])
 
                 cursor.execute('COMMIT')
                 print("Transaction committed")
@@ -231,9 +233,12 @@ def update_program_status(student_id, program_id, status):
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
-                statement = "UPDATE students SET %s = %s WHERE student_id = %s"
+                #
+                stmt_str = "UPDATE students SET "
+                stmt_str += program_id
+                stmt_str += "= %s WHERE student_id = %s"
 
-                cursor.execute(statement, [program_id, status, student_id])
+                cursor.execute(stmt_str, [status, student_id])
 
                 cursor.execute('COMMIT')
                 print("Transaction committed")
@@ -431,6 +436,8 @@ def main():
     # # ----------- test update_assessment_status -------------------#
     # update status for Liz to 1 (complete)
     Liz_id = get_student_id('lg6248@princeton.edu')
+    print(Liz_id)
+    print(program1_id)
     # update_assessment_status(Liz_id, module2_id, 1)
 
     # # change status back to incomplete for Liz
