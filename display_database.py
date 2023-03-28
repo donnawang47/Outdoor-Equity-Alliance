@@ -18,7 +18,7 @@ def main():
     #     sys.exit(1)
 
     try:
-        conn = psycopg2.connect("dbname=oea user=postgres password=xxx")
+        conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
         with conn as connection:
 

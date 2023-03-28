@@ -304,7 +304,7 @@ def delete_module(module_id):
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         sys.exit(1)
 
-
+# write functionality to deal with duplicate entries!
 def main():
      #! must pass in data to be inserted into modules table from interface interaction.
 
@@ -377,7 +377,7 @@ def main():
     program2_id = create_program_id()
     program2_data = {
         "program_id": program2_id,
-        "program_name": "LOCKED PROGRAM",
+        "program_name": "Test - LOCKED PROGRAM",
         "description": "Description",
         "program_availability": "none"
     }

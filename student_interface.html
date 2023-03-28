@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Outdoor Equity Alliance: Student Interface</title>
+    </head>
+
+    <body>
+        <h1> Outdoor Equity Alliance: Student Interface </h1>
+
+        <h2>Student 2's Portal</h2>
+
+        <hr>
+
+        <h3>Enrolled Programs</h3>
+        {% for pgm in programs['Enrolled']: %}
+            {{pgm}}<br>
+        {% endfor %}
+
+        <h3>Available Programs</h3>
+        {% for pgm in programs['Available']: %}
+            {{pgm}}<br>
+        {% endfor %}
+
+        <h3>Locked Programs</h3>
+        {% for pgm in programs['Locked']: %}
+            {{pgm}}<br>
+        {% endfor %}
+
+
+    </body>
+</html>

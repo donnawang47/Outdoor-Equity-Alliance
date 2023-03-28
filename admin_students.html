@@ -20,10 +20,18 @@
         <table cellspacing="1">
             <!-- row 1, containing names of each column -->
             <tr>
-                <th align = "left"> student id</th>
-                <th align = "left"> name</th>
-                <th align = "left"> email</th>
+                <th align = "left"> StudentId</th>
+                <th align = "left"> Name</th>
+                <th align = "left"> Email</th>
             </tr>
+
+            {% for student in students: %}
+            <tr>
+                <td align = "left"> {{student['student_id']}}</td>
+                <td align = "left"> {{student['student_name']}}</td>
+                <td align = "left"> {{student['student_email']}}</td>
+            </tr>
+            {% endfor %}
             <!-- clicking on student id will direct to page containing
             information about enrollment status and assessments status
             for that specific student -->

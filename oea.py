@@ -25,8 +25,9 @@ def admin_interface():
 
 # admin
 @app.route('/students', methods=['GET'])
-def student_interface():
-    html_code = flask.render_template('admin_students.html')
+def admin_students():
+    status, students = access_database.get_all_students()
+    html_code = flask.render_template('admin_students.html', students=students)
     response = flask.make_response(html_code)
     return response
 
@@ -34,11 +35,14 @@ def student_interface():
 def admin_programs():
     # programslist is a tuple
     # programslist[0] indicates whether data was retrieved successfully
-    programslist = access_database.get_all_programs()
-    if programslist[0] is True:
+    status, programslist = access_database.get_all_programs()
+    if status is True:
         print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',
-                    programslist = programslist[1])
+                    programslist = programslist)
+    else:
+        print("Error: " + programslist)
+        html_code=""
     response = flask.make_response(html_code)
     return response
 
@@ -59,6 +63,16 @@ def admin_create_program():
         # modules_params
 
     html_code = flask.render_template('admin_create_program.html')
+    response = flask.make_response(html_code)
+    return response
+
+@app.route('/student_interface', methods=['GET'])
+def student_interface():
+    student_programs = access_database.get_student_programs(2)
+    if True:
+        print("Student Interface: displaying programs list")
+        html_code = flask.render_template('student_interface.html',
+                    programs = student_programs)
     response = flask.make_response(html_code)
     return response
 

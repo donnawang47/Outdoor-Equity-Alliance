@@ -12,21 +12,16 @@
     <!-- display list of existing programs -->
 
     <table>
-        <!-- check if programslist not empty? -->
-        {% if programslist|length != 0: %}
             <!-- rows of programslist -->
             <!-- each row only displays program name -->
-            {% for program in programslist: %}
+        {% for program in programslist: %}
             <tr>
                 <!-- col 1 is row["ClsId"] -->
                 <td align= 'left'>
-
                     {{program["program_name"]}}
-
                 </td>
             </tr>
-            {% endfor %}
-        {% endif %}
+        {% endfor %}
 
     </table>
 
