@@ -220,7 +220,7 @@ def update_assessment_status(student_id, assessment_id, status):
                 stmt_str += assessment_id
                 stmt_str += "=%s WHERE student_id=%s;"
 
-                cursor.execute(statement, [status, student_id])
+                cursor.execute(stmt_str, [status, student_id])
 
                 cursor.execute('COMMIT')
                 print("Transaction committed")

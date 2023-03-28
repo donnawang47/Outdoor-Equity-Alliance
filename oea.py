@@ -41,7 +41,7 @@ def admin_programs():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/create_program', methods=['POST'])
+@app.route('/create_program', methods=['GET','POST'])
 def admin_create_program():
     # pgm_params = {}
     # # create program_id
