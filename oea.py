@@ -1,6 +1,7 @@
 import flask
 import access_database
 import modify_database
+import display_database
 
 app = flask.Flask(__name__, template_folder=".")
 
@@ -54,7 +55,7 @@ def admin_create_program():
         success = modify_database.insert_program(pgm_params)
         if success:
             print("new program inserted")
-
+            display_database.main()
         # modules_params
 
     html_code = flask.render_template('admin_create_program.html')

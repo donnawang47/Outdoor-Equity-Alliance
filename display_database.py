@@ -13,12 +13,11 @@ import psycopg2
 
 def main():
 
-    if len(sys.argv) != 1:
-        print('Usage: python display.py', file=sys.stderr)
-        sys.exit(1)
+    # if len(sys.argv) != 1:
+    #     print('Usage: python display.py', file=sys.stderr)
+    #     sys.exit(1)
 
     try:
-        database_url = os.getenv('DATABASE_URL')
         conn = psycopg2.connect("dbname=oea user=postgres password=xxx")
 
         with conn as connection:
