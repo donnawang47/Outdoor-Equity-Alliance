@@ -17,14 +17,14 @@ def index():
 
 # admin interface main page
 # menu for programs page and students page
-@app.route('/admin_interface', methods=['GET'])
+@app.route('/admin', methods=['GET'])
 def admin_interface():
     html_code = flask.render_template('admin_interface.html')
     response = flask.make_response(html_code)
     return response
 
 # admin
-@app.route('/students', methods=['GET'])
+@app.route('/admin/students', methods=['GET'])
 def admin_students():
     status, students = access_database.get_all_students()
     html_code = flask.render_template('admin_students.html', students=students)
@@ -46,7 +46,7 @@ def admin_programs():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/create_program', methods=['GET','POST'])
+@app.route('/admin/programs/create_program', methods=['GET','POST'])
 def admin_create_program():
     if flask.request.method == 'POST':
         pgm_params = {}
@@ -66,7 +66,7 @@ def admin_create_program():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/student_interface', methods=['GET'])
+@app.route('/student', methods=['GET'])
 def student_interface():
     student_programs = access_database.get_student_programs(2)
     if True:
