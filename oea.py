@@ -31,7 +31,7 @@ def admin_students():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/programs', methods=['GET'])
+@app.route('/admin/programs', methods=['GET'])
 def admin_programs():
     # programslist is a tuple
     # programslist[0] indicates whether data was retrieved successfully

@@ -81,7 +81,7 @@ def insert_student(data): #data is 4-string-tuple
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                statement = """ INSERT INTO students (student_name, student_email) VALUES (%s, %s);  """
+                statement = """ INSERT INTO users (user_status, user_name, user_email) VALUES ('student', %s, %s);  """
                 param = [data['student_name'], data['student_email']]
                 cursor.execute(statement, param)
 
