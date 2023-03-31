@@ -26,13 +26,17 @@ def insert_module(data):
                 # assuming data is a dictionary
                 # check if module is an assessment
                 # add new assessment column to students table
+
                 if data['content_type'] == "assessment":
-                    statement = "ALTER TABLE students"
-                    # default of 0 = incomplete
+                    statement = "ALTER TABLE users"
+                    # default of null (bc of admin)
                     statement += " ADD COLUMN " + data['module_id']
-                    statement += " INTEGER DEFAULT 0;"
+                    statement += " INTEGER DEFAULT NULL;"
                     cursor.execute(statement)
 
+                    # default of 0 = incomplete
+                    stmt_str = "UPDATE users SET " + data['module_id']
+                    stmt_str += " = 0 WHERE user_status = student"
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
