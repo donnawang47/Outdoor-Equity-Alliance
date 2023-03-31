@@ -27,9 +27,9 @@ def main():
             with connection.cursor() as cursor:
 
                 print('-------------------------------------------')
-                print('students')
+                print('users')
                 print('-------------------------------------------')
-                cursor.execute("SELECT * FROM students")
+                cursor.execute("SELECT * FROM users")
                 table = cursor.fetchall()
                 for row in table:
                     print(row)

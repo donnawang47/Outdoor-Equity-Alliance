@@ -16,19 +16,20 @@ def main():
         # with psycopg2.connect(database_url) as connection:
 
             with connection.cursor() as cursor:
-
                 cursor.execute("DROP TABLE IF EXISTS students")
+
+                cursor.execute("DROP TABLE IF EXISTS users")
 
                 # programs: enrolled, available, locked
                 # program id: P* (append number of 5 digits)
                 # assessments: 0 for incomplete, 1 for complete #idea: Donna, I changed this because it is more intuitive to award 1 for completion!
                 # assessment id: a* (append number of 5 digits)
 
-                create_students_table = """ CREATE TABLE students (student_id INTEGER GENERATED ALWAYS AS IDENTITY, student_name TEXT DEFAULT NULL, student_email TEXT DEFAULT NULL);"""
+                create_users_table = """ CREATE TABLE users (user_id INTEGER GENERATED ALWAYS AS IDENTITY, user_name TEXT DEFAULT NULL, user_email TEXT DEFAULT NULL, user_status TEXT);"""
                 #! do not add P1 and A1 columns because that should be done by admin.
 
 
-                cursor.execute(create_students_table)
+                cursor.execute(create_users_table)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
                 cursor.execute("DROP TABLE IF EXISTS programs")
 
