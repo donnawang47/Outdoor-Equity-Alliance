@@ -59,7 +59,7 @@ def insert_program(data):
                 param = [data['program_id'], data['program_name'], data['description'], data['program_availability']]
                 cursor.execute(statement, param)
 
-                # modify students table to include new program column
+                # modify users table to include new program column
                 # with specified program_id as the name of the column
                 pgm_status = 'locked'
                 if data['program_availability'] == 'all':
@@ -67,10 +67,22 @@ def insert_program(data):
                 elif data['program_availability'] == 'enroll':
                      pgm_status = 'enrolled'
 
-                stmt_str = "ALTER TABLE students "
+                # default null bc of admin
+                stmt_str = "ALTER TABLE users "
                 stmt_str += "ADD " + data['program_id']
-                stmt_str += " TEXT DEFAULT %s;"
+                stmt_str += " TEXT DEFAULT NULL;"
+                cursor.execute(stmt_str)
+                # now update for students
+                stmt_str = "UPDATE users SET " + data['program_id']
+                stmt_str += " = %s WHERE user_status = 'student';"
                 cursor.execute(stmt_str, [pgm_status])
+
+                print("data modified")
+
+                # stmt_str = "ALTER TABLE users "
+                # stmt_str += "ADD " + data['program_id']
+                # stmt_str += " TEXT DEFAULT %s;"
+                # cursor.execute(stmt_str, [pgm_status])
 
                 return(True)
 
