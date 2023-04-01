@@ -64,11 +64,12 @@ def admin_create_program():
         # iterate this multiple times if multiple modules?
         # modules_params
         md_params = {}
-        pgm_params["program_id"] = modify_database.create_module_id()
+        md_params["module_id"] = modify_database.create_module_id()
+        md_params["program_id"] = pgm_params["program_id"]
         md_params["module_name"] = flask.request.form['module_name']
-        md_params["module_link"] = flask.request.form['module_link']
-        md_params["module_type"] = flask.request.form['module_type']
-        md_params["module_seq"] = flask.request.form['module_seq']
+        md_params["content_link"] = flask.request.form['module_link']
+        md_params["content_type"] = flask.request.form['module_type']
+        md_params["module_index"] = flask.request.form['module_seq']
 
         success = modify_database.insert_module(md_params)
         if success:
