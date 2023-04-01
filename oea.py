@@ -80,6 +80,7 @@ def admin_create_program():
     response = flask.make_response(html_code)
     return response
 
+
 @app.route('/student', methods=['GET'])
 def student_interface():
     student_programs = access_database.get_student_programs(2)
