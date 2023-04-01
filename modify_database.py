@@ -36,7 +36,8 @@ def insert_module(data):
 
                     # default of 0 = incomplete
                     stmt_str = "UPDATE users SET " + data['module_id']
-                    stmt_str += " = 0 WHERE user_status = student"
+                    stmt_str += " = 0 WHERE user_status = 'student'"
+                    cursor.execute(stmt_str)
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
@@ -209,7 +210,7 @@ def get_student_id(student_email):
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
-                stmt_str = "SELECT student_id FROM students WHERE student_email= %s"
+                stmt_str = "SELECT user_id FROM users WHERE user_status = 'student' AND user_email= %s"
                 cursor.execute(stmt_str, [student_email])
                 data = cursor.fetchall()
                 # print("program id", count[0][0])
@@ -232,9 +233,9 @@ def update_assessment_status(student_id, assessment_id, status):
             with connection.cursor() as cursor:
                 cursor.execute('BEGIN')
 
-                stmt_str = "UPDATE students SET "
+                stmt_str = "UPDATE users SET "
                 stmt_str += assessment_id
-                stmt_str += "=%s WHERE student_id=%s;"
+                stmt_str += "=%s WHERE user_status = 'student' AND user_id=%s;"
 
                 cursor.execute(stmt_str, [status, student_id])
 
@@ -253,9 +254,9 @@ def update_program_status(student_id, program_id, status):
                 cursor.execute('BEGIN')
 
                 #
-                stmt_str = "UPDATE students SET "
+                stmt_str = "UPDATE users SET "
                 stmt_str += program_id
-                stmt_str += "= %s WHERE student_id = %s"
+                stmt_str += "= %s WHERE user_status = 'student' AND user_id = %s"
 
                 cursor.execute(stmt_str, [status, student_id])
 

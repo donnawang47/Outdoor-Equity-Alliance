@@ -57,8 +57,13 @@ def test_insert_pgm1():
     print("updated programs table:")
     display_database.display_programs_table()
 
+    print("-----------------")
 
-def test_insert_pgm1modules():
+    print("inserting modules")
+
+    print("current data tables: ")
+    display_database.main()
+
     # insert module 1 of tree ambassador 101
     module1_id = modify_database.create_module_id()
     print("module1 id: ", module1_id)
@@ -106,7 +111,10 @@ def test_insert_pgm1modules():
     modify_database.insert_module(module2_data)
     print("main: insert module2")
 
-def insert_pgm2():
+    print("updated data table:")
+    display_database.main()
+
+def test_insert_pgm2():
 
     # create locked program
     program2_id = modify_database.create_program_id()
@@ -120,7 +128,6 @@ def insert_pgm2():
     modify_database.insert_program(program2_data)
     print("main: program2 inserted")
 
-def insert_pgm2modules():
     # create random module in program2
     module3_id = modify_database.create_module_id()
     module3_name = 'test module' # module 1 not a typo
@@ -143,6 +150,34 @@ def insert_pgm2modules():
     modify_database.insert_module(module3_data)
     print("main: insert module3")
 
+    print("updated data table:")
+    display_database.main()
+
+def test_update_assess_status():
+    print("current users table:")
+    display_database.display_users_table()
+
+    Liz_id = modify_database.get_student_id('lg6248@princeton.edu')
+    print(Liz_id)
+    #print(program1_id)
+    modify_database.update_assessment_status(Liz_id, 'M2', 1)
+
+    print("updated users table:")
+    display_database.display_users_table()
+
+def test_update_pgm_status():
+    print("current data tables:")
+    display_database.main()
+
+    Liz_id = modify_database.get_student_id('lg6248@princeton.edu')
+    print(Liz_id)
+    #print(program1_id)
+    modify_database.update_program_status(Liz_id, 'P1', 'locked')
+
+    print("updated data tables:")
+    display_database.main()
+
+
 def main():
     # DATABASE_URL = os.getenv('DATABASE_URL')
     # print(DATABASE_URL)
@@ -150,13 +185,27 @@ def main():
 
     # #--------------test adding students -------------------------- #
 
-    # print("main: test adding students")
-    # test_insert_students()
+    print("main: test adding students")
+    test_insert_students()
 
 
-    # # ------------creating test programs -------------------- #
+    # # ------------creating test program 1 and modules ------------ #
     print("main: test insert pgm1")
     test_insert_pgm1()
+
+
+    # # -------creating test locked program 2 and modules ---------- #
+    # print("main: test insert locked program")
+    # test_insert_pgm2()
+
+    # ---------- test update pgm status ------
+
+
+    print("main: test update pgm status")
+    test_update_pgm_status()
+
+
+
 
 
 
