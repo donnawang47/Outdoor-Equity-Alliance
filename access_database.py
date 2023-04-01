@@ -83,25 +83,25 @@ def get_student_info(student_id):
         with CONN as connection:
             with connection.cursor() as cursor:
                 list_stmt = """
-                    SELECT column_name FROM information_schema.columns where table_name = 'students' ORDER BY ordinal_position;"""
+                    SELECT column_name FROM information_schema.columns where table_name = 'users' ORDER BY ordinal_position;"""
                 cursor.execute(list_stmt)
 
                 columns = cursor.fetchall()
                 #print(columns)
                 # stored in format [('student_id',), ('student_name',), ('student_email',), ('p1',)... etc
-                      
-                stmt_str = "SELECT * FROM students WHERE student_id=%s;"
+
+                stmt_str = "SELECT * FROM users WHERE user_status = 'student' AND user_id=%s;"
                 cursor.execute(stmt_str, [student_id])
                 data = cursor.fetchall()
                 #data[0] because should only be one row of data
-                
+
                 student_data = {}
                 for index, column in enumerate(columns):
                      student_data[column[0]] = data[0][index]
 
                 return student_data
-                      
-                       
+
+
     except Exception as ex:
         print(sys.argv[0] + ': ' + str(ex), file=sys.stderr)
         sys.exit(1)
@@ -113,7 +113,7 @@ def get_all_students():
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                stmt_str = "SELECT * FROM students;"
+                stmt_str = "SELECT * FROM users;"
 
                 cursor.execute(stmt_str)
                 table = cursor.fetchall()

@@ -42,7 +42,7 @@ def admin_programs():
                     programslist = programslist)
     else:
         print("Error: " + programslist)
-        html_code=""
+        #html_code=""
     response = flask.make_response(html_code)
     return response
 
@@ -59,8 +59,21 @@ def admin_create_program():
         success = modify_database.insert_program(pgm_params)
         if success:
             print("new program inserted")
-            display_database.main()
+            # display_database.main()
+
+        # iterate this multiple times if multiple modules?
         # modules_params
+        md_params = {}
+        pgm_params["program_id"] = modify_database.create_module_id()
+        md_params["module_name"] = flask.request.form['module_name']
+        md_params["module_link"] = flask.request.form['module_link']
+        md_params["module_type"] = flask.request.form['module_type']
+        md_params["module_seq"] = flask.request.form['module_seq']
+
+        success = modify_database.insert_module(md_params)
+        if success:
+            print("new module inserted")
+            display_database.main()
 
     html_code = flask.render_template('admin_create_program.html')
     response = flask.make_response(html_code)
