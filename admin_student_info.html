@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Outdoor Equity Alliance: Admin Interface</title>
+    </head>
+
+    <body>
+        <h1>Student Information</h1>
+        <h2>Student ID: {{StudentId}}</h2>
+
+        <h3>Enrolled Programs</h3>
+        {% for pgm in programs['Enrolled']: %}
+            {{pgm}}<br>
+        {% endfor %}
+
+        <h3>Available Programs</h3>
+        {% for pgm in programs['Available']: %}
+            {{pgm}}<br>
+        {% endfor %}
+
+        <h3>Locked Programs</h3>
+        {% for pgm in programs['Locked']: %}
+            {{pgm}}<br>
+        {% endfor %}
+
+
+    </body>
+
+</html>

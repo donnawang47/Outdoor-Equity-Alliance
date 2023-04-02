@@ -31,6 +31,20 @@ def admin_students():
     response = flask.make_response(html_code)
     return response
 
+@app.route('/admin/students/info', methods=['GET'])
+def admin_student_info():
+    studentid = 2 # need to get actual student id
+
+    student_programs = access_database.get_student_programs(studentid)
+    if True:
+        print("Student Interface: displaying programs list")
+        html_code = flask.render_template('admin_student_info.html',
+                    studentid = studentid,
+                    programs = student_programs)
+    response = flask.make_response(html_code)
+    return response
+
+
 @app.route('/admin/programs', methods=['GET'])
 def admin_programs():
     # programslist is a tuple
