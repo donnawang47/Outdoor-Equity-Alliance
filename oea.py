@@ -31,19 +31,47 @@ def admin_students():
     response = flask.make_response(html_code)
     return response
 
+@app.route('/admin/students/studentdetails', methods=['GET'])
+def admin_studentdetails():
+    studentid = flask.request.args.get('studentid')
+    print("studentid", studentid)
+
+    student_programs = access_database.get_student_programs(studentid)
+    print("oea: get student programs done")
+    # can only get student progress on enrolled programs?
+    # need to change to enrolled
+    enrolled_pgms = student_programs['Enrolled'] # program ids
+    print(enrolled_pgms)
+    enrolled_pgms_status = {} # pgm_id : status
+    for pgm_id in enrolled_pgms:
+        pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
+        print("pgm_status" + pgm_status)
+        enrolled_pgms_status[pgm_id] = pgm_status
+
+
+    print("oea.py, enrolled_pgms_status:", enrolled_pgms_status)
+
+    print("Student Interface: displaying programs list")
+    html_code = flask.render_template('admin_studentdetails.html',
+                studentid = studentid,
+                programs = student_programs,
+                enrolled_pgms_status = enrolled_pgms_status)
+    response = flask.make_response(html_code)
+    return response
+
+
 @app.route('/admin/programs', methods=['GET'])
 def admin_programs():
     # programslist is a tuple
     # programslist[0] indicates whether data was retrieved successfully
-    status, programslist = access_database.get_all_programs()
-    # print('programslist', programslist)
+    status, programslist = access_database.get_programslist()
     if status is True:
         print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',
                     programslist = programslist)
     else:
         print("Error: " + programslist)
-        html_code=""
+        #html_code=""
     response = flask.make_response(html_code)
 
     return response
@@ -61,12 +89,27 @@ def admin_create_program():
         success = modify_database.insert_program(pgm_params)
         if success:
             print("new program inserted")
-            display_database.main()
+            # display_database.main()
+
+        # iterate this multiple times if multiple modules?
         # modules_params
+        md_params = {}
+        md_params["module_id"] = modify_database.create_module_id()
+        md_params["program_id"] = pgm_params["program_id"]
+        md_params["module_name"] = flask.request.form['module_name']
+        md_params["content_link"] = flask.request.form['module_link']
+        md_params["content_type"] = flask.request.form['module_type']
+        md_params["module_index"] = flask.request.form['module_seq']
+
+        success = modify_database.insert_module(md_params)
+        if success:
+            print("new module inserted")
+            display_database.main()
 
     html_code = flask.render_template('admin_create_program.html')
     response = flask.make_response(html_code)
     return response
+
 
 @app.route('/student', methods=['GET'])
 def student_interface():

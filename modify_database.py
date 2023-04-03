@@ -392,7 +392,7 @@ def change_program_name(program_id, new_program_name):
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                
+
                 cursor.execute('BEGIN')
                 statement = "UPDATE programs SET program_name= "
                 statement += "%s WHERE program_id = %s"
