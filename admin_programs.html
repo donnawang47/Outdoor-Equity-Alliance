@@ -16,7 +16,7 @@
         <hr>
 
         <!-- display list of existing programs -->
-        <form action="/admin/edit/program/name" method = 'POST'>
+        <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
             <table>
                 <!-- row 1, containing names of each column -->
                 <tr>
@@ -53,7 +53,7 @@
 
                             <!-- <form method='GET'> -->
 
-                            <a href="{{'/admin/programs/edit/name?program_id=%s' %program['program_id']}}" class="btn btn-secondary" role="button"> Edit
+                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit
                                 <!-- <input type="submit" value="Edit"></input> -->
                             </a>
 
@@ -65,7 +65,7 @@
                 {% endif %}
 
             </table>
-        </form>
+        <!-- </form> -->
 
         <hr>
 

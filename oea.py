@@ -135,16 +135,23 @@ def edit_program_name():
 
         data = modify_database.change_program_name(id, new_program_name)
 
-        if data[0]: # if successful
-            print("Changed program name to: ", new_program_name)
-            html_code = flask.render_template('admin_programs.html',
-                                            program_id = id)
-        else:
+        if data[0]: # if successfully changed program name
+            status, programslist = access_database.get_programslist()
+            if status:
+                print('Display program list with updated program name')
+                html_code = flask.render_template('admin_programs.html',
+                            programslist = programslist)
+        elif not data[0] or not status:
             html_code = flask.render_template('error.html',
                                 err_msg = data[1])
 
-    html_code = flask.render_template('admin_edit_program.html',
-                                    program_id = id)
+# display initial access to "edit program page" for specific program
+    else:
+        program_name = flask.request.args.get('program_name')
+        html_code = flask.render_template('admin_edit_program.html',
+                                    program_id = id,
+                                    program_name=program_name)
+
     response = flask.make_response(html_code)
     return response
 
