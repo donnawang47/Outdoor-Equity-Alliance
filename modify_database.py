@@ -401,7 +401,7 @@ def change_program_name(program_id, new_program_name):
 
                 cursor.execute('COMMIT')
                 print('Progran name successfully updated!')
-                return (True, "success!")
+                return (True, "success!") 
 
     except Exception as error:
         err_msg = "A server error occurred. "
