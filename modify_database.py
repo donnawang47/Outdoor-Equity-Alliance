@@ -181,7 +181,7 @@ def create_module_id():
                 count = cursor.fetchall()
                 # print("create module_id: ", count)
 
-                module_id = 'M' + str(count[0][0] + 1)
+                module_id = 'm' + str(count[0][0] + 1)
                 print("create module id:", module_id)
                 return module_id
 
@@ -199,7 +199,7 @@ def create_program_id():
                 cursor.execute(stmt_str)
                 count = cursor.fetchall()
                 # print("program id", count[0][0])
-                program_id = 'P' + str(count[0][0] + 1)
+                program_id = 'p' + str(count[0][0] + 1)
                 # print("create program id:", program_id)
                 return program_id
 

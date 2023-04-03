@@ -10,8 +10,9 @@
         <h2>Student ID: {{studentid}}</h2>
 
         <h3>Enrolled Programs</h3>
-        {% for pgm in programs['Enrolled']: %}
-            {{pgm}}<br>
+
+        {% for pgm in enrolled_pgms_status: %}
+            {{pgm}} status: {{enrolled_pgms_status[pgm]}}<br>
         {% endfor %}
 
         <h3>Available Programs</h3>

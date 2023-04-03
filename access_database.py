@@ -42,12 +42,15 @@ def get_program_modules(program_id):
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
+                print("in get pgm modules", program_id)
                 stmt_str = "SELECT * FROM programs, modules WHERE "
                 stmt_str += "programs.program_id=modules.program_id "
                 stmt_str += "AND modules.program_id LIKE %s;"
 
                 cursor.execute(stmt_str, [program_id])
+                print(stmt_str)
                 table = cursor.fetchall()
+                print("table:", table)
                 # for row in table:
                 #     print(row)
 
@@ -71,6 +74,7 @@ def get_program_modules(program_id):
                     modules.append(modules_row)
 
                 data['modules'] = modules
+                print(modules)
                 return (True, data)
 
     except Exception as error:
@@ -87,7 +91,7 @@ def get_student_info(student_id):
                 cursor.execute(list_stmt)
 
                 columns = cursor.fetchall()
-                #print(columns)
+                print(columns)
                 # stored in format [('student_id',), ('student_name',), ('student_email',), ('p1',)... etc
 
                 stmt_str = "SELECT * FROM users WHERE user_status = 'student' AND user_id=%s;"
@@ -95,7 +99,7 @@ def get_student_info(student_id):
                 data = cursor.fetchall()
                 #data[0] because should only be one row of data
 
-                print(data)
+                print("get_student_info:", data)
 
                 student_data = {}
                 for index, column in enumerate(columns):
@@ -167,6 +171,7 @@ def get_student_programs(student_id):
     #         sys.exit(1)
 
     student_info = get_student_info(student_id)
+    print(student_info)
 
     data = {}
 
@@ -175,6 +180,7 @@ def get_student_programs(student_id):
     enrolled = []
 
     for key in student_info: #program_id specifically
+        print("key", key)
         if 'p' in key: #is a program
             p_status = student_info[key]
             if p_status == 'available' :
@@ -189,6 +195,7 @@ def get_student_programs(student_id):
     data ['Enrolled'] = enrolled
     return data
 
+# helper function
 # returns number of student_id's completed assessments
 def get_student_module_completion(student_id, assessment_ids):
     try:
@@ -218,10 +225,11 @@ def get_student_module_completion(student_id, assessment_ids):
 # returns a fractional string indicating studentid progress of programid
 def get_student_program_progress(studentid, programid):
     # get all moduleids for desired program
+    print("in get std pgm prog")
     success, module_info = get_program_modules(programid)
+    print("get_student_pgm_prog get pgm modules done")
     modules = module_info['modules']
     # only want modules w/ assessment type
-
     if success:
         assessment_ids = []
         for module in modules:
@@ -237,7 +245,6 @@ def get_student_program_progress(studentid, programid):
             progress = str(completed_modules) + "/" + str(pgm_size)
             print("student progress", progress)
             return progress
-
 
 # for testing
 def main():
@@ -277,14 +284,15 @@ def main():
     # print("---------STUDENTS-------------------------")
     # get_all_students()
     # print("Student 2 Programs")
-    # get_student_info(2)
+    get_student_info(2)
     # std_pg = get_student_programs(2)
     # print(std_pg)
 
-    program_id = 'P1'
+    # # testing get student progress
+    program_id = 'p1'
     status, modules = get_program_modules(program_id)
     print(modules['modules'])
-    get_student_program_progress(2, 'P1')
+    get_student_program_progress(2, program_id)
 
 
 if __name__ == '__main__':

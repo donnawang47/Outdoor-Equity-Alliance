@@ -37,11 +37,25 @@ def admin_studentdetails():
     print("studentid", studentid)
 
     student_programs = access_database.get_student_programs(studentid)
-    if True:
-        print("Student Interface: displaying programs list")
-        html_code = flask.render_template('admin_student_info.html',
-                    studentid = studentid,
-                    programs = student_programs)
+    print("oea: get student programs done")
+    # can only get student progress on enrolled programs?
+    # need to change to enrolled
+    enrolled_pgms = student_programs['Enrolled'] # program ids
+    print(enrolled_pgms)
+    enrolled_pgms_status = {} # pgm_id : status
+    for pgm_id in enrolled_pgms:
+        pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
+        print("pgm_status" + pgm_status)
+        enrolled_pgms_status[pgm_id] = pgm_status
+
+
+    print("oea.py, enrolled_pgms_status:", enrolled_pgms_status)
+
+    print("Student Interface: displaying programs list")
+    html_code = flask.render_template('admin_studentdetails.html',
+                studentid = studentid,
+                programs = student_programs,
+                enrolled_pgms_status = enrolled_pgms_status)
     response = flask.make_response(html_code)
     return response
 
