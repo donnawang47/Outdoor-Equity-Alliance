@@ -9,7 +9,7 @@ CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
 # get complete list of programs
 # divided into three(?) categories
-def get_all_programs():
+def get_programslist():
     try:
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
@@ -94,6 +94,8 @@ def get_student_info(student_id):
                 cursor.execute(stmt_str, [student_id])
                 data = cursor.fetchall()
                 #data[0] because should only be one row of data
+
+                print(data)
 
                 student_data = {}
                 for index, column in enumerate(columns):
@@ -187,47 +189,103 @@ def get_student_programs(student_id):
     data ['Enrolled'] = enrolled
     return data
 
+# returns number of student_id's completed assessments
+def get_student_module_completion(student_id, assessment_ids):
+    try:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+            with connection.cursor() as cursor:
+                #print(module_ids[0])
+                stmt_str = "SELECT SUM( users." + assessment_ids[0]
+                for i in range(1,len(assessment_ids)):
+                    #print(module_ids[1])
+                    stmt_str+= " + users." + assessment_ids[i]
+                stmt_str += " ) FROM users WHERE user_id = %s"
+                print(stmt_str)
+                cursor.execute(stmt_str, [student_id])
+                data = cursor.fetchall()
+
+                print("num of completed assess:" , data[0][0])
+
+                return (True, data[0][0])
+
+    except Exception as error:
+            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+            sys.exit(1)
+            return (False, err_msg)
+
+
+# returns a fractional string indicating studentid progress of programid
+def get_student_program_progress(studentid, programid):
+    # get all moduleids for desired program
+    success, module_info = get_program_modules(programid)
+    modules = module_info['modules']
+    # only want modules w/ assessment type
+
+    if success:
+        assessment_ids = []
+        for module in modules:
+            print("id:", module['module_id'], "; type:", module['content_type'] )
+            if module['content_type'] == 'assessment':
+                assessment_ids.append(module['module_id'])
+            # module_id = module['module_id']
+            # get student completion of module_id
+        print("for loop done:", assessment_ids)
+        success, completed_modules = get_student_module_completion(studentid, assessment_ids)
+        if success:
+            pgm_size = len(assessment_ids)
+            progress = str(completed_modules) + "/" + str(pgm_size)
+            print("student progress", progress)
+            return progress
+
+
 # for testing
 def main():
-    status, programs = get_all_programs()
-    # print(programs)
-    print("Display programs list for admin: ")
-    print("------------------------------------------------------")
-    for program in programs:
-        print("Program name:", program['program_name'])
-        print("Program description:", program['description'])
-        print("Program availability:", program['program_availability'])
-        print("------------------------------------------------------")
+    # status, programs = get_all_programs()
+    # # print(programs)
+    # print("Display programs list for admin: ")
+    # print("------------------------------------------------------")
+    # for program in programs:
+    #     print("Program name:", program['program_name'])
+    #     print("Program description:", program['description'])
+    #     print("Program availability:", program['program_availability'])
+    #     print("------------------------------------------------------")
 
-    print("Display modules for Tree Ambassador 101")
-    # how are we going to get id
+    # print("Display modules for Tree Ambassador 101")
+    # # how are we going to get id
+    # program_id = 'P1'
+    # status, modules = get_program_modules(program_id)
+
+    # print("Program name:", modules['program_name'])
+    # print("Program description:", modules['description'])
+    # print("Program availability:", modules['program_availability'])
+    # for module in modules['modules']:
+    #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
+    # print("------------------------------------------------------")
+
+    # print("Display modules for Test - LOCKED PROGRAM")
+    # # how are we going to get id
+    # program_id = 'P2'
+    # status, modules = get_program_modules(program_id)
+    # print("Program name:", modules['program_name'])
+    # print("Program description:", modules['description'])
+    # print("Program availability:", modules['program_availability'])
+    # for module in modules['modules']:
+    #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
+    # print("------------------------------------------------------")
+
+    # print("---------STUDENTS-------------------------")
+    # get_all_students()
+    # print("Student 2 Programs")
+    # get_student_info(2)
+    # std_pg = get_student_programs(2)
+    # print(std_pg)
+
     program_id = 'P1'
     status, modules = get_program_modules(program_id)
+    print(modules['modules'])
+    get_student_program_progress(2, 'P1')
 
-    print("Program name:", modules['program_name'])
-    print("Program description:", modules['description'])
-    print("Program availability:", modules['program_availability'])
-    for module in modules['modules']:
-        print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
-    print("------------------------------------------------------")
-
-    print("Display modules for Test - LOCKED PROGRAM")
-    # how are we going to get id
-    program_id = 'P2'
-    status, modules = get_program_modules(program_id)
-    print("Program name:", modules['program_name'])
-    print("Program description:", modules['description'])
-    print("Program availability:", modules['program_availability'])
-    for module in modules['modules']:
-        print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
-    print("------------------------------------------------------")
-
-    print("---------STUDENTS-------------------------")
-    get_all_students()
-    print("Student 2 Programs")
-    get_student_info(2)
-    std_pg = get_student_programs(2)
-    print(std_pg)
 
 if __name__ == '__main__':
     main()

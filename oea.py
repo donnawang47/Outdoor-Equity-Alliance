@@ -50,7 +50,7 @@ def admin_studentdetails():
 def admin_programs():
     # programslist is a tuple
     # programslist[0] indicates whether data was retrieved successfully
-    status, programslist = access_database.get_all_programs()
+    status, programslist = access_database.get_programslist()
     if status is True:
         print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',

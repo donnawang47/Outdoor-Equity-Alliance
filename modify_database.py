@@ -29,15 +29,15 @@ def insert_module(data):
 
                 if data['content_type'] == "assessment":
                     statement = "ALTER TABLE users"
-                    # default of null (bc of admin)
+                    # default of 0 = incomplete
                     statement += " ADD COLUMN " + data['module_id']
-                    statement += " INTEGER DEFAULT NULL;"
+                    statement += " INTEGER DEFAULT 0;"
                     cursor.execute(statement)
 
                     # default of 0 = incomplete
-                    stmt_str = "UPDATE users SET " + data['module_id']
-                    stmt_str += " = 0 WHERE user_status = 'student'"
-                    cursor.execute(stmt_str)
+                    # stmt_str = "UPDATE users SET " + data['module_id']
+                    # stmt_str += " = 0 WHERE user_status = 'student'"
+                    # cursor.execute(stmt_str)
 
     except Exception as error:
             print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
@@ -68,15 +68,18 @@ def insert_program(data):
                 elif data['program_availability'] == 'enroll':
                      pgm_status = 'enrolled'
 
-                # default null bc of admin
+
                 stmt_str = "ALTER TABLE users "
                 stmt_str += "ADD " + data['program_id']
-                stmt_str += " TEXT DEFAULT NULL;"
-                cursor.execute(stmt_str)
-                # now update for students
-                stmt_str = "UPDATE users SET " + data['program_id']
-                stmt_str += " = %s WHERE user_status = 'student';"
+                stmt_str += " TEXT DEFAULT %s;"
                 cursor.execute(stmt_str, [pgm_status])
+
+                # dont think this is necessary anymore
+                # # now update for admin to be null
+                # stmt_str = "UPDATE users SET " + data['program_id']
+                # stmt_str += " = NULL WHERE user_status = 'admin';"
+                # cursor.execute(stmt_str)
+                # print("insert pgm:", stmt_str)
 
                 print("data modified")
 
@@ -388,6 +391,31 @@ def main():
     insert_module(module2_data)
     print("main: insert module2")
 
+
+    # adding second assessment module
+    module4_id = create_module_id()
+    print('module4 id: ', module4_id)
+    module4_name = 'p1 assessment2' # module 1 not a typo
+    module4_content_type = "assessment"
+    module4_content_link = 'module4 link'
+    module4_index = 2 # need a function to get index
+
+    # module2_data = [module2_id, program1_id, module2_name, module2_content_type, module2_content_link, module2_index]
+
+    module4_data = {
+        'module_id' : module4_id,
+        'program_id': program1_id,
+        'module_name': module4_name,
+        'content_type': module4_content_type,
+        'content_link': module4_content_link,
+        'module_index': module4_index
+    }
+
+
+    insert_module(module4_data)
+    print("main: insert module4")
+
+
     # # ------------creating test programs -------------------- #
 
     # create locked program
@@ -455,9 +483,9 @@ def main():
 
     # # ----------- test update_assessment_status -------------------#
     # update status for Liz to 1 (complete)
-    Liz_id = get_student_id('lg6248@princeton.edu')
-    print(Liz_id)
-    print(program1_id)
+    # Liz_id = get_student_id('lg6248@princeton.edu')
+    # print(Liz_id)
+    # print(program1_id)
     # update_assessment_status(Liz_id, module2_id, 1)
 
     # # change status back to incomplete for Liz
@@ -465,16 +493,17 @@ def main():
 
     # # update status for Annie
     Annie_id = get_student_id('an2334@princeton.edu')
-    # # update_assessment_status(Annie_id, module2_id, 1)
+    update_assessment_status(Annie_id, module2_id, 1)
+    update_assessment_status(Annie_id, module4_id, 1)
 
     # # # update status for Donna
-    Donna_id = get_student_id('dw5609@princeton.edu')
+    #Donna_id = get_student_id('dw5609@princeton.edu')
     # update_assessment_status(Donna_id, module2_id, 1)
 
     # ----------- test update_program_status ----------------------#
 
     # update status for Liz to 1 (complete)
-    update_program_status(Liz_id, program1_id, 'locked')
+    #update_program_status(Liz_id, program1_id, 'locked')
 
     # # change status back to incomplete for Liz
     # update_program_status(Liz_id, program1_id, 'enrolled')
