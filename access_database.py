@@ -32,9 +32,10 @@ def get_all_programs():
                 return (True, data)
 
     except Exception as error:
-            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-            sys.exit(1)
-            return (False, err_msg)
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
 
 # given a program_id, get all modules within that program
 def get_program_modules(program_id):
@@ -74,9 +75,10 @@ def get_program_modules(program_id):
                 return (True, data)
 
     except Exception as error:
-            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-            sys.exit(1)
-            return (False, err_msg)
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
 
 def get_student_info(student_id):
     try:
@@ -89,22 +91,24 @@ def get_student_info(student_id):
                 columns = cursor.fetchall()
                 #print(columns)
                 # stored in format [('student_id',), ('student_name',), ('student_email',), ('p1',)... etc
-                      
+
                 stmt_str = "SELECT * FROM students WHERE student_id=%s;"
                 cursor.execute(stmt_str, [student_id])
                 data = cursor.fetchall()
                 #data[0] because should only be one row of data
-                
+
                 student_data = {}
                 for index, column in enumerate(columns):
                      student_data[column[0]] = data[0][index]
 
                 return student_data
-                      
-                       
-    except Exception as ex:
-        print(sys.argv[0] + ': ' + str(ex), file=sys.stderr)
-        sys.exit(1)
+
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
 
 # get complete list of students
 # with some information??
@@ -113,7 +117,7 @@ def get_all_students():
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                stmt_str = "SELECT * FROM students;"
+                stmt_str = "SELECT * FROM users WHERE user_status=student;"
 
                 cursor.execute(stmt_str)
                 table = cursor.fetchall()
@@ -125,15 +129,17 @@ def get_all_students():
                     data_row['student_id'] = row[0]
                     data_row['student_name'] = row[1]
                     data_row['student_email'] = row[2]
+                    data_row['student_status'] = row[3]
                     #check if the column name method works
                     data.append(data_row)
 
                 return (True, data)
 
     except Exception as error:
-            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-            sys.exit(1)
-            return (False, err_msg)
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
 
 # get list of programs for a student
 # should be divided into three categories
@@ -161,8 +167,10 @@ def get_student_programs(student_id):
     #             # #     print(row)
 
     # except Exception as error:
-    #         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-    #         sys.exit(1)
+    #     err_msg = "A server error occurred. "
+    #     err_msg += "Please contact the system administrator."
+    #     print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+    #     return (False, err_msg)
 
     student_info = get_student_info(student_id)
 
@@ -194,40 +202,41 @@ def main():
     print("Display programs list for admin: ")
     print("------------------------------------------------------")
     for program in programs:
+        print("Program ID: ", program['program_id'])
         print("Program name:", program['program_name'])
         print("Program description:", program['description'])
         print("Program availability:", program['program_availability'])
         print("------------------------------------------------------")
 
-    print("Display modules for Tree Ambassador 101")
-    # how are we going to get id
-    program_id = 'P1'
-    status, modules = get_program_modules(program_id)
+    # print("Display modules for Tree Ambassador 101")
+    # # how are we going to get id
+    # program_id = 'P1'
+    # status, modules = get_program_modules(program_id)
 
-    print("Program name:", modules['program_name'])
-    print("Program description:", modules['description'])
-    print("Program availability:", modules['program_availability'])
-    for module in modules['modules']:
-        print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
-    print("------------------------------------------------------")
+    # print("Program name:", modules['program_name'])
+    # print("Program description:", modules['description'])
+    # print("Program availability:", modules['program_availability'])
+    # for module in modules['modules']:
+    #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
+    # print("------------------------------------------------------")
 
-    print("Display modules for Test - LOCKED PROGRAM")
-    # how are we going to get id
-    program_id = 'P2'
-    status, modules = get_program_modules(program_id)
-    print("Program name:", modules['program_name'])
-    print("Program description:", modules['description'])
-    print("Program availability:", modules['program_availability'])
-    for module in modules['modules']:
-        print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
-    print("------------------------------------------------------")
+    # print("Display modules for Test - LOCKED PROGRAM")
+    # # how are we going to get id
+    # program_id = 'P2'
+    # status, modules = get_program_modules(program_id)
+    # print("Program name:", modules['program_name'])
+    # print("Program description:", modules['description'])
+    # print("Program availability:", modules['program_availability'])
+    # for module in modules['modules']:
+    #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
+    # print("------------------------------------------------------")
 
-    print("---------STUDENTS-------------------------")
-    get_all_students()
-    print("Student 2 Programs")
-    get_student_info(2)
-    std_pg = get_student_programs(2)
-    print(std_pg)
+    # print("---------STUDENTS-------------------------")
+    # get_all_students()
+    # print("Student 2 Programs")
+    # get_student_info(2)
+    # std_pg = get_student_programs(2)
+    # print(std_pg)
 
 if __name__ == '__main__':
     main()

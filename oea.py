@@ -26,7 +26,7 @@ def admin_interface():
 # admin
 @app.route('/admin/students', methods=['GET'])
 def admin_students():
-    status, students = access_database.get_all_students()
+    students = access_database.get_all_students()
     html_code = flask.render_template('admin_students.html', students=students)
     response = flask.make_response(html_code)
     return response
@@ -36,6 +36,7 @@ def admin_programs():
     # programslist is a tuple
     # programslist[0] indicates whether data was retrieved successfully
     status, programslist = access_database.get_all_programs()
+    # print('programslist', programslist)
     if status is True:
         print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',
@@ -44,6 +45,7 @@ def admin_programs():
         print("Error: " + programslist)
         html_code=""
     response = flask.make_response(html_code)
+
     return response
 
 @app.route('/admin/programs/create_program', methods=['GET','POST'])
@@ -76,4 +78,56 @@ def student_interface():
     response = flask.make_response(html_code)
     return response
 
+
+@app.route('/admin/programs/edit/name', methods=['GET', 'POST'])
+def edit_program_name():
+
+    id = flask.request.args.get('program_id')
+    print('program id: ', id)
+
+    if flask.request.method == 'POST' and id is not None:
+        # get new name from text input field
+        new_program_name = flask.request.form['new_program_name']
+        print('Got new program name! :', new_program_name)
+
+        data = modify_database.change_program_name(id, new_program_name)
+
+        if data[0]: # if successful
+            print("Changed program name to: ", new_program_name)
+            html_code = flask.render_template('admin_programs.html',
+                                            program_id = id)
+        else:
+            html_code = flask.render_template('error.html',
+                                err_msg = data[1])
+
+    html_code = flask.render_template('admin_edit_program.html',
+                                    program_id = id)
+    response = flask.make_response(html_code)
+    return response
+
+
+# @app.route('/edit_module_link', methods=['POST'])
+# def edit_module_link(new_module_link):
+#     new_module_link = flask.request.args.get('new_module_link')
+#     module_name = flask.request.args.get('module_name')
+#     result = modify_database.change_program_name(new_module_link, module_name)
+
+#     if result:
+#         print("Changed module link to: ", new_module_link)
+#     else:
+#         print("A server error occurred. Please contact the system administrator.")
+
+
+# @app.route('/edit_module_name', methods=['POST'])
+# def edit_module_name():
+#     new_module_name = flask.request.args.get('new_module_name')
+#     module_name = flask.request.args.get('module_name')
+#     result = modify_database.change_module_name(new_module_name, module_name)
+
+#     if result:
+#         print("Changed program name to: ", new_module_name)
+#         html_code = flask.render_template('admin_edit_module.html',
+#                                         program_name = new_module_name)
+#         response = flask.make_response(html_code)
+#         return response
 

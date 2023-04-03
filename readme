@@ -14,6 +14,14 @@ https://stackoverflow.com/questions/44485127/insert-python-list-into-postgresql-
 - deletion of rows
 https://www.commandprompt.com/education/how-to-delete-multiple-rows-from-a-table-in-postgresql/#:~:text=In%20PostgreSQL%2C%20the%20DELETE%20FROM,used%20in%20the%20DELETE%20statement.
 
+- to delete tables from current schema
+Use following two lines:
+1- drop schema public cascade;
+2- create schema public;
+https://stackoverflow.com/questions/3327312/how-can-i-drop-all-the-tables-in-a-postgresql-database
+
+- POST vs GET
+https://stackoverflow.com/questions/11556958/sending-data-from-html-form-to-a-python-script-in-flask
 
 
 # Contributions:
