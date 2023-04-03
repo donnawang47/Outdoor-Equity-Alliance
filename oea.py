@@ -31,9 +31,10 @@ def admin_students():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/students/info', methods=['GET'])
-def admin_student_info():
-    studentid = 2 # need to get actual student id
+@app.route('/admin/students/studentdetails', methods=['GET'])
+def admin_studentdetails():
+    studentid = flask.request.args.get('studentid')
+    print("studentid", studentid)
 
     student_programs = access_database.get_student_programs(studentid)
     if True:
