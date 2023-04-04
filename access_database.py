@@ -43,18 +43,17 @@ def get_program_modules(program_id):
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                print("in get pgm modules", program_id)
+                # print("in get pgm modules", program_id)
                 stmt_str = "SELECT * FROM programs, modules WHERE "
                 stmt_str += "programs.program_id=modules.program_id "
                 stmt_str += "AND modules.program_id LIKE %s;"
 
                 cursor.execute(stmt_str, [program_id])
-                print(stmt_str)
+
                 table = cursor.fetchall()
-                print("table:", table)
+                # print("table:", table)
                 # for row in table:
                 #     print(row)
-
 
                 data = {}
                 data['program_id'] = table[0][0]
@@ -75,7 +74,7 @@ def get_program_modules(program_id):
                     modules.append(modules_row)
 
                 data['modules'] = modules
-                print(modules)
+                # print(modules)
                 return (True, data)
 
     except Exception as error:
@@ -256,27 +255,27 @@ def get_student_program_progress(studentid, programid):
 
 # for testing
 def main():
-    status, programs = get_all_programs()
-    # print(programs)
-    print("Display programs list for admin: ")
-    print("------------------------------------------------------")
-    for program in programs:
-        print("Program ID: ", program['program_id'])
-        print("Program name:", program['program_name'])
-        print("Program description:", program['description'])
-        print("Program availability:", program['program_availability'])
-        print("------------------------------------------------------")
+    # status, programs = get_all_programs()
+    # # print(programs)
+    # print("Display programs list for admin: ")
+    # print("------------------------------------------------------")
+    # for program in programs:
+    #     print("Program ID: ", program['program_id'])
+    #     print("Program name:", program['program_name'])
+    #     print("Program description:", program['description'])
+    #     print("Program availability:", program['program_availability'])
+    #     print("------------------------------------------------------")
 
-    # print("Display modules for Tree Ambassador 101")
-    # # how are we going to get id
-    # program_id = 'P1'
-    # status, modules = get_program_modules(program_id)
+    print("Display modules for Tree Ambassador 101")
+    # how are we going to get id
+    program_id = 'P1'
+    status, modules = get_program_modules(program_id)
 
     # print("Program name:", modules['program_name'])
     # print("Program description:", modules['description'])
     # print("Program availability:", modules['program_availability'])
-    # for module in modules['modules']:
-    #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
+    for module in modules['modules']:
+        print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
     # print("------------------------------------------------------")
 
     # print("Display modules for Test - LOCKED PROGRAM")

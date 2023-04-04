@@ -110,6 +110,35 @@ def admin_create_program():
     response = flask.make_response(html_code)
     return response
 
+@app.route("/admin/programs/create_module", methods=['GET', 'POST'])
+def admin_create_module():
+    program_id = flask.request.args.get('program_id')
+    if flask.request.method == 'POST':
+        # modules_params
+        md_params = {}
+        md_params["module_id"] = modify_database.create_module_id()
+        md_params["program_id"] = program_id
+        md_params["module_name"] = flask.request.form['module_name']
+        md_params["content_link"] = flask.request.form['content_link']
+        md_params["content_type"] = flask.request.form['content_type']
+        md_params["module_index"] = flask.request.form['index']
+
+        success = modify_database.insert_module(md_params)
+        if success:
+            print("new module inserted")
+            display_database.main()
+        else:
+            html_code = flask.render_template('error.html', )
+    else:
+        program_name = flask.request.args.get('program_name')
+        html_code = flask.render_template('admin_create_module.html', program_name)
+
+    response = flask.make_response(html_code)
+    return response
+
+    html_code = flask.render_template('admin_create_program.html')
+    response = flask.make_response(html_code)
+    return response
 
 @app.route('/student', methods=['GET'])
 def student_interface():
@@ -121,7 +150,7 @@ def student_interface():
     response = flask.make_response(html_code)
     return response
 
-
+#TODO: ASK why we can reference html_code outside of scope?
 @app.route('/admin/programs/edit/name', methods=['GET', 'POST'])
 def edit_program_name():
 
@@ -133,17 +162,17 @@ def edit_program_name():
         new_program_name = flask.request.form['new_program_name']
         print('Got new program name! :', new_program_name)
 
-        data = modify_database.change_program_name(id, new_program_name)
+        success, message = modify_database.change_program_name(id, new_program_name)
 
-        if data[0]: # if successfully changed program name
+        if success: # if successfully changed program name
             status, programslist = access_database.get_programslist()
             if status:
                 print('Display program list with updated program name')
                 html_code = flask.render_template('admin_programs.html',
                             programslist = programslist)
-        elif not data[0] or not status:
+        elif not success or not status:
             html_code = flask.render_template('error.html',
-                                err_msg = data[1])
+                                err_msg = message)
 
 # display initial access to "edit program page" for specific program
     else:
@@ -154,6 +183,63 @@ def edit_program_name():
 
     response = flask.make_response(html_code)
     return response
+
+# DISPLAY LIST OF MODULES FOR SPECIFIC PROGRAM
+@app.route('/admin/modules', methods=['GET'])
+def get_modules_of_program():
+    program_id = flask.request.args.get('program_id')
+    program_name = flask.request.args.get('program_name')
+
+    status, data = access_database.get_program_modules(program_id)
+    moduleslist = data['modules']
+    print('modules list: ', moduleslist)
+
+    if status:
+        print("Got modules list for program")
+        html_code = flask.render_template('admin_modules.html',
+                                          program_name = program_name, program_id = program_id,
+                                          moduleslist = moduleslist)
+    else:
+        html_code = flask.render_template('error.html', err_msg = moduleslist)
+
+    response = flask.make_response(html_code)
+    return response
+
+# DISPLAY EDITING PAGE FOR SPECIFIC MODULE AFTER CLICKING EDIT BUTTON
+@app.route('/admin/modules/edit/name', methods=['GET', 'POST'])
+def edit_module_name():
+    # from URL of admin_program_edit_module.html
+    module_id = flask.request.args.get('module_id')
+    program_id = flask.request.args.get('program_id')
+    program_name = flask.request.args.get('program_name')
+
+    if flask.request.method == 'POST':
+        new_module_name = flask.request.form['new_module_name']
+
+        success, message = modify_database.change_module_name(module_id, new_module_name )
+
+        if success: # if successfully changed program name
+            status, moduleslist = access_database.get_program_modules(program_id)
+            if status:
+                print('Changed module name to: ', new_module_name)
+                html_code = flask.render_template('admin_modules.html',
+                            moduleslist = moduleslist,
+                            program_name = program_name,
+                            program_id=program_id)
+        elif not success or not status:
+            html_code = flask.render_template('error.html',
+                                err_msg = message)
+
+# display initial access to "edit program page" for specific program
+    else:
+        module_name = flask.request.args.get('module_name')
+        print( 'MODULE NAME: ', module_name)
+        html_code = flask.render_template('admin_edit_module.html',
+                                    module_name=module_name)
+
+    response = flask.make_response(html_code)
+    return response
+
 
 
 # @app.route('/edit_module_link', methods=['POST'])
@@ -166,18 +252,3 @@ def edit_program_name():
 #         print("Changed module link to: ", new_module_link)
 #     else:
 #         print("A server error occurred. Please contact the system administrator.")
-
-
-# @app.route('/edit_module_name', methods=['POST'])
-# def edit_module_name():
-#     new_module_name = flask.request.args.get('new_module_name')
-#     module_name = flask.request.args.get('module_name')
-#     result = modify_database.change_module_name(new_module_name, module_name)
-
-#     if result:
-#         print("Changed program name to: ", new_module_name)
-#         html_code = flask.render_template('admin_edit_module.html',
-#                                         program_name = new_module_name)
-#         response = flask.make_response(html_code)
-#         return response
-

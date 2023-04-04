@@ -11,7 +11,7 @@
 
     <body>
         <h1> Outdoor Equity Alliance: Admin Interface </h1>
-        <h2> Programs </h2>
+        <h2> Modules for {{program_name}} </h2>
 
         <hr>
 
@@ -22,34 +22,33 @@
                 <tr>
                     <th align = "left">ID</th>
                     <th align = "left">Name</th>
-                    <th align = "left">Description</th>
-                    <th align = "left">Availability</th>
+                    <th align = "left">Content Type</th>
+                    <th align = "left">Link</th>
+                    <th align = "left">module_index</th>
                 </tr>
 
                         <!-- rows of programslist -->
                         <!-- each row only displays program name -->
-                {% if programslist|length != 0: %}
-                    {% for program in programslist: %}
+                {% if moduleslist|length != 0: %}
+                    {% for module in moduleslist: %}
                         <tr>
                             <!-- col 1 is row["ClsId"] -->
                             <!-- <form action="/admin/edit/program/name" method="POST"> -->
                             <td align= 'left'>
-                            {{program['program_id']}}
+                            {{module['module_id']}}
                             </td>
                             <!-- </form> -->
                             <td align = 'left'>
-                                <a href="
-                                {{'/admin/modules?program_id=%s&program_name=%s' %(program['program_id'],
-                                program['program_name'])}} "
-                                >
-                                {{program['program_name']}}
-                                </a>
+                                {{module['module_name']}}
                             </td>
                             <td align = 'left'>
-                                {{program['description']}}
+                                {{module['content_type']}}
                             </td>
                             <td align = 'left'>
-                                {{program['program_availability']}}
+                                {{module['content_link']}}
+                            </td>
+                            <td align = 'left'>
+                                {{module['module_index']}}
                             </td>
                             <td align="right">
 
@@ -58,7 +57,8 @@
 
                             <!-- <form method='GET'> -->
 
-                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit
+                 <!-- pass program id to url of admin_edit_modules.html-->
+                            <a href="{{'/admin/modules/edit/name?module_id=%s&module_name=%s&program_id=%s&program_name=%s' %(module['module_id'], module['module_name'], program_id, program_name)}}" class="btn btn-secondary" role="button"> Edit
                                 <!-- <input type="submit" value="Edit"></input> -->
                             </a>
 
@@ -73,8 +73,8 @@
         <!-- </form> -->
 
         <hr>
-
-        <a href="/admin/programs/create_program">Create New Program</a>
+<!-- #TODO! -->
+        <a href="/admin/programs/create_module">Create New Module</a>
 
     </body>
 </html>

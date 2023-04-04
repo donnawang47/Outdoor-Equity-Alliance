@@ -27,12 +27,14 @@ def insert_module(data):
                     statement = "ALTER TABLE users"
                     # default of null (bc of admin)
                     statement += " ADD COLUMN " + data['module_id']
-                    statement += " INTEGER DEFAULT NULL;"
+                    statement += " INTEGER DEFAULT 0;"
                     cursor.execute(statement)
 
                     # default of 0 = incomplete
                     stmt_str = "UPDATE users SET " + data['module_id']
                     stmt_str += " = 0 WHERE user_status = student"
+
+                    cursor.execute(stmt_str)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -257,6 +259,7 @@ def get_program_id(program_name):
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
 
+#! might have to delete later (not needed?)
 def get_module_id(module_name):
     try:
         with CONN as connection:
@@ -400,8 +403,8 @@ def change_program_name(program_id, new_program_name):
                 cursor.execute(statement, [new_program_name, program_id])
 
                 cursor.execute('COMMIT')
-                print('Progran name successfully updated!')
-                return (True, "success!") 
+                print('Program name successfully updated!')
+                return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -409,29 +412,27 @@ def change_program_name(program_id, new_program_name):
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, error)
 
-def change_module_name(new_module_name, old_module_name):
+def change_module_name(module_id, new_module_name):
     try:
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                id = get_module_id(old_module_name)
+
                 cursor.execute('BEGIN')
                 statement = "UPDATE modules SET module_name="
-                statement += new_module_name
-                statement += " WHERE module_id="
-                statement += id
+                statement += "%s WHERE module_id= %s"
 
-                cursor.execute(statement)
+                cursor.execute(statement, [new_module_name, module_id])
 
                 cursor.execute('COMMIT')
-                print('Progran name successfully updated!')
-                return True
+                print('Module name successfully updated!')
+                return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return False
+        return (False, error)
 
 def edit_module_link(new_module_link, module_name):
     try:
@@ -590,10 +591,19 @@ def main():
     # insert_student(student_data)
 
     # ----------- test changing program name ------------------------#
-    print('changing course 105 to course #2')
+    # print('changing name of a program: ')
 
-    change_program_name('P2', 'Course #2')
-    print('Changed program name successfully!')
+    # change_program_name('P2', 'Course #2')
+    # print('Changed program name successfully!')
+
+
+    # ------- test changing module name ----------------------------#
+    print('Changing name of a module: ')
+
+    change_module_name('M2', 'COS 333')
+
+    print('Finished changing module name!')
+
 
     # # ----------- test update_assessment_status -------------------#
     # update status for Liz to 1 (complete)

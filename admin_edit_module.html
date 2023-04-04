@@ -21,35 +21,35 @@ Editing modules
     </head>
 
     <body>
-        <h1> Edit Module: {{params['module_name']}} </h1>
+        <h1> Edit Module: {{module_name}} </h1>
 
         <hr>
 
         <h3> Edit Name of Module </h3>
-        <form action="/edit_module_name" method="post"></form>
-        <table>
-            <tr>
-                <td align= "right"> New Module Name: </td>
-                <td align="right"> <input type="text"
-                    name="new module name"
-                    value = "{{params['new_module_name']}}"></td>
-                <td align="left">
-                    <input type="submit" value="Save">
-                </td>
-            </tr>
-        </table>
-    </form>
+        <form action="{{'/admin/modules/edit/name?module_id=%s&program_id=%s&program_name=%s' %(module_id, program_id, program_name)}}" method="POST">
+            <table>
+                <tr>
+                    <td align= "right"> New Module Name: </td>
+                    <td align="right"> <input type="text"
+                        name="new_module_name"></td>
+                    <td align="left">
+                        <input type="submit" value="Save">
+                    </td>
+                </tr>
+            </table>
+        </form>
+
     <hr>
 
         <h3> Edit link of module: </h3>
         <!-- change link to modules -->
-        <form action="/edit_module_link" method="post"></form>
+        <form action="{{'/admin/modules/edit/name?module_id=%s&program_id=%s&program_name=%s' %(module_id, program_id, program_name)}}"  method="POST"></form>
         <table>
             <tr>
                 <td align= "right"> New Module Link: </td>
                 <td align="right"> <input type="text"
                     name="new module link"
-                    value = "{{params['new_module_link']}}"></td>
+                    value = "{{new_module_link}}"></td>
                 <td align="left">
                     <input type="submit" value="Save">
                 </td>

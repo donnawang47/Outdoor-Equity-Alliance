@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Outdoor Equity Alliance: Admin Interface </title>
+    </head>
+
+    <body>
+        <h1> Outdoor Equity Alliance: Admin Interface </h1>
+
+        <h2> Insert New Module into Program {{program_name}}</h2>
+
+        <hr>
+
+        <h3> Module Information </h3>
+
+        <form action = "/admin/programs/create_module" method = "POST">
+            <table>
+                <tr>
+                    <td align= "right"> Module Name : </td>
+                    <td align="left">
+                        <input type = "text"
+                        name = "module_name"> <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td align= "right"> Content-type : </td>
+                    <td align="left">
+                        <input type = "text"
+                        name = "content_type"> <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td align= "right"> Content-link : </td>
+                    <td align="left">
+                        <input type = "text"
+                        name = "content_link"> <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td align= "right"> Index : </td>
+                    <td align="left">
+                        <input type = "text"
+                        name = "index"> <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td align = "right"></td>
+                    <td align = "left"><input type="submit"
+                        value="Submit"> </td>
+                </tr>
+            </table>
+        </form>
+
+    </body>
+</html>
