@@ -5,6 +5,8 @@ import os
 # DATABASE_URL = os.getenv('DATABASE_URL')
 CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
+## CHECK CASE: CANNOT HAVE DUPLICATE MODULE INDICES IF FOR SAME PROGRAM, OR INDEX DOESNT DEPEND ON USER
+
 def insert_module(data):
     try:
         with CONN as connection:
@@ -486,7 +488,7 @@ def main():
     module1_name = 'M1 Instructions'
     module1_content_type = "text"
     module1_content_link = 'https://docs.google.com/document/d/1PP-GiTqVcvJYpqVUxQ_bXSsru6H200l39RovL0AhYgw/edit?usp=sharing'
-    module1_index = 1 #idea: need a function to get index
+    module1_index = 0 #idea: need a function to get index
     #! will get index from input text form from the admin; another function
     #! should switch orders of indexes.
     module1_data = {
@@ -509,7 +511,7 @@ def main():
     module2_name = 'Module 1 Learning Exercise' # module 1 not a typo
     module2_content_type = "assessment"
     module2_content_link = 'https://docs.google.com/forms/d/e/1FAIpQLScGFPXzgFiIaIc5R7NQW_OvINY7y7xc4UHHhIIkt-4AJ-TZoQ/viewform'
-    module2_index = 2 # need a function to get index
+    module2_index = 1 # need a function to get index
 
 
     module2_data = {
@@ -567,7 +569,7 @@ def main():
     module3_name = 'test module' # module 1 not a typo
     module3_content_type = "content type"
     module3_content_link = 'content link'
-    module3_index = 1 # need a function to get index
+    module3_index = 0 # need a function to get index
 
 
     module3_data = {

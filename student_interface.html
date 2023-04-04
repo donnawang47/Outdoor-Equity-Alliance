@@ -6,25 +6,25 @@
     </head>
 
     <body>
-        <h1> Outdoor Equity Alliance: </h1>
+        <h1> Outdoor Equity Alliance</h1>
 
-        <h2>Welcome: {{}}</h2>
+        <h2>Welcome: </h2>
 
         <hr>
 
         <h3>Enrolled Programs</h3>
         {% for pgm in programs['Enrolled']: %}
-            {{pgm}}<br>
+            <a href="{{"/student/program?programid=" + pgm}}">{{pgm}}</a><br>
         {% endfor %}
 
         <h3>Available Programs</h3>
         {% for pgm in programs['Available']: %}
-            {{pgm}}<br>
+            <a href="{{"/student/program?programid=" + pgm}}">{{pgm}}</a><br>
         {% endfor %}
 
         <h3>Locked Programs</h3>
         {% for pgm in programs['Locked']: %}
-            {{pgm}}<br>
+            <a href="{{"/student/program?programid=" + pgm}}">{{pgm}}</a><br>
         {% endfor %}
 
 

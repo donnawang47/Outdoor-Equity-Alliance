@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Outdoor Equity Alliance: Student Interface</title>
+    </head>
+
+    <body>
+        <h1> Outdoor Equity Alliance: </h1>
+
+        <h2><a href="{{"/student/program?programid=" + program['program_id']}}">Program {{program['program_name']}}</a></h2>
+
+        <hr>
+
+        <h2> Module Information (module id {{module['module_id']}})</h2>
+        <strong>Name:</strong> {{module['module_name']}}<br>
+        <strong>Type:</strong> {{module['content_type']}}<br>
+        <strong>Link: </strong> {{module['content_link']}}<br>
+        
+        <iframe src="{{module['content_link']}}" width="1000" height="800"></iframe>
+
+        <br>
+
+        <!--set conditions for no prev/no next based on index-->
+        {% if module['module_index']-1 >= 0 %}
+            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']-1]['module_id']}}">Previous {{program['modules'][module['module_index']-1]['module_id']}}</a>
+        {% endif %}
+        
+        {% if module['module_index']+1 < program['modules']|length %}
+            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']+1]['module_id']}}">Next {{program['modules'][module['module_index']+1]['module_id']}}</a>
+        {% endif %}
+
+        <!--need a return to program-->
+
+    </body>
+</html>
