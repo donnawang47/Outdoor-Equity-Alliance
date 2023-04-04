@@ -123,7 +123,7 @@ def get_all_students():
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                stmt_str = "SELECT * FROM users WHERE user_status=student;"
+                stmt_str = "SELECT * FROM users WHERE user_status='student';"
 
                 cursor.execute(stmt_str)
                 table = cursor.fetchall()
@@ -256,16 +256,16 @@ def get_student_program_progress(studentid, programid):
 
 # for testing
 def main():
-    status, programs = get_all_programs()
-    # print(programs)
-    print("Display programs list for admin: ")
-    print("------------------------------------------------------")
-    for program in programs:
-        print("Program ID: ", program['program_id'])
-        print("Program name:", program['program_name'])
-        print("Program description:", program['description'])
-        print("Program availability:", program['program_availability'])
-        print("------------------------------------------------------")
+    # status, programs = get_all_programs()
+    # # print(programs)
+    # print("Display programs list for admin: ")
+    # print("------------------------------------------------------")
+    # for program in programs:
+    #     print("Program ID: ", program['program_id'])
+    #     print("Program name:", program['program_name'])
+    #     print("Program description:", program['description'])
+    #     print("Program availability:", program['program_availability'])
+    #     print("------------------------------------------------------")
 
     # print("Display modules for Tree Ambassador 101")
     # # how are we going to get id
@@ -291,11 +291,15 @@ def main():
     # print("------------------------------------------------------")
 
     # print("---------STUDENTS-------------------------")
-    # get_all_students()
-    # print("Student 2 Programs")
-    # get_student_info(2)
+    get_student_info(2)
     # std_pg = get_student_programs(2)
     # print(std_pg)
+
+    # # testing get student progress
+    program_id = 'p1'
+    status, modules = get_program_modules(program_id)
+    print(modules['modules'])
+    get_student_program_progress(2, program_id)
 
 if __name__ == '__main__':
     main()

@@ -26,7 +26,8 @@ def admin_interface():
 # admin
 @app.route('/admin/students', methods=['GET'])
 def admin_students():
-    students = access_database.get_all_students()
+    status, students = access_database.get_all_students()
+
     html_code = flask.render_template('admin_students.html', students=students)
     response = flask.make_response(html_code)
     return response

@@ -16,6 +16,7 @@ def main():
         # with psycopg2.connect(database_url) as connection:
 
             with connection.cursor() as cursor:
+                cursor.execute("DROP TABLE IF EXISTS students")
 
                 cursor.execute("DROP TABLE IF EXISTS users")
 

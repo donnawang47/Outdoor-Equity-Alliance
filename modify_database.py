@@ -25,14 +25,15 @@ def insert_module(data):
 
                 if data['content_type'] == "assessment":
                     statement = "ALTER TABLE users"
-                    # default of null (bc of admin)
+                    # default of 0 = incomplete
                     statement += " ADD COLUMN " + data['module_id']
-                    statement += " INTEGER DEFAULT NULL;"
+                    statement += " INTEGER DEFAULT 0;"
                     cursor.execute(statement)
 
                     # default of 0 = incomplete
-                    stmt_str = "UPDATE users SET " + data['module_id']
-                    stmt_str += " = 0 WHERE user_status = student"
+                    # stmt_str = "UPDATE users SET " + data['module_id']
+                    # stmt_str += " = 0 WHERE user_status = 'student'"
+                    # cursor.execute(stmt_str)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -186,7 +187,7 @@ def create_module_id():
                 count = cursor.fetchall()
                 # print("create module_id: ", count)
 
-                module_id = 'M' + str(count[0][0] + 1)
+                module_id = 'm' + str(count[0][0] + 1)
                 print("create module id:", module_id)
                 return module_id
 
@@ -206,7 +207,7 @@ def create_program_id():
                 cursor.execute(stmt_str)
                 count = cursor.fetchall()
                 # print("program id", count[0][0])
-                program_id = 'P' + str(count[0][0] + 1)
+                program_id = 'p' + str(count[0][0] + 1)
                 # print("create program id:", program_id)
                 return program_id
 
@@ -315,7 +316,7 @@ def update_program_status(student_id, program_id, status):
                 #
                 stmt_str = "UPDATE users SET "
                 stmt_str += program_id
-                stmt_str += "= %s WHERE student_id = %s"
+                stmt_str += "= %s WHERE user_id = %s"
 
                 cursor.execute(stmt_str, [status, student_id])
 
@@ -401,7 +402,7 @@ def change_program_name(program_id, new_program_name):
 
                 cursor.execute('COMMIT')
                 print('Progran name successfully updated!')
-                return (True, "success!") 
+                return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -461,139 +462,159 @@ def edit_module_link(new_module_link, module_name):
 
 # write functionality to deal with duplicate entries!
 def main():
-     #! must pass in data to be inserted into modules table from interface interaction.
+    #  ! must pass in data to be inserted into modules table from interface interaction.
 
-    #? what are the different types of contents?
+    # ? what are the different types of contents?
 
     # # create new program: Tree Ambassador 101
-    # print("program id: create program id")
-    # program1_id = create_program_id()
-    # print("program1 id:", program1_id)
-    # program1_data = {"program_id": program1_id,
-    #                 "program_name": "Tree Ambassador 101",
-    #                 "description": "Description",
-    #                 "program_availability": "all"
-    #                 }
-    # print('data: ', program1_data)
-    # # program1_data = [program1_id, "Tree Ambassador 101", "Description", "all"]
-    # insert_program(program1_data)
-    # print("main: insert program1")
+    print("program id: create program id")
+    program1_id = create_program_id()
+    print("program1 id:", program1_id)
+    program1_data = {"program_id": program1_id,
+                    "program_name": "Tree Ambassador 101",
+                    "description": "Description",
+                    "program_availability": "all"
+                    }
+    print('data: ', program1_data)
+    # program1_data = [program1_id, "Tree Ambassador 101", "Description", "all"]
+    insert_program(program1_data)
+    print("main: insert program1")
 
     # # insert module 1 of tree ambassador 101
-    # module1_id = create_module_id()
-    # print("module1 id: ", module1_id)
-    # module1_name = 'M1 Instructions'
-    # module1_content_type = "text"
-    # module1_content_link = 'https://docs.google.com/document/d/1PP-GiTqVcvJYpqVUxQ_bXSsru6H200l39RovL0AhYgw/edit?usp=sharing'
-    # module1_index = 1 #idea: need a function to get index
-    # #! will get index from input text form from the admin; another function
-    # #! should switch orders of indexes.
-    # module1_data = {
-    #     'module_id' : module1_id,
-    #     'program_id': program1_id,
-    #     'module_name': module1_name,
-    #     'content_type': module1_content_type,
-    #     'content_link': module1_content_link,
-    #     'module_index': module1_index
-    # }
-
-    # # module1_data = [module1_id, program_id, module1_name, module1_content_type, module1_content_link, module1_index]
-
-    # insert_module(module1_data)
-    # print("main: insert module1")
+    module1_id = create_module_id()
+    print("module1 id: ", module1_id)
+    module1_name = 'M1 Instructions'
+    module1_content_type = "text"
+    module1_content_link = 'https://docs.google.com/document/d/1PP-GiTqVcvJYpqVUxQ_bXSsru6H200l39RovL0AhYgw/edit?usp=sharing'
+    module1_index = 1 #idea: need a function to get index
+    #! will get index from input text form from the admin; another function
+    #! should switch orders of indexes.
+    module1_data = {
+        'module_id' : module1_id,
+        'program_id': program1_id,
+        'module_name': module1_name,
+        'content_type': module1_content_type,
+        'content_link': module1_content_link,
+        'module_index': module1_index
+    }
 
 
-    # # insert module 2 of tree ambassador 101
-    # module2_id = create_module_id()
-    # print('module2 id: ', module2_id)
-    # module2_name = 'Module 1 Learning Exercise' # module 1 not a typo
-    # module2_content_type = "assessment"
-    # module2_content_link = 'https://docs.google.com/forms/d/e/1FAIpQLScGFPXzgFiIaIc5R7NQW_OvINY7y7xc4UHHhIIkt-4AJ-TZoQ/viewform'
-    # module2_index = 2 # need a function to get index
-
-    # # module2_data = [module2_id, program1_id, module2_name, module2_content_type, module2_content_link, module2_index]
-
-    # module2_data = {
-    #     'module_id' : module2_id,
-    #     'program_id': program1_id,
-    #     'module_name': module2_name,
-    #     'content_type': module2_content_type,
-    #     'content_link': module2_content_link,
-    #     'module_index': module2_index
-    # }
+    insert_module(module1_data)
+    print("main: insert module1")
 
 
-    # insert_module(module2_data)
-    # print("main: insert module2")
+    # insert module 2 of tree ambassador 101
+    module2_id = create_module_id()
+    print('module2 id: ', module2_id)
+    module2_name = 'Module 1 Learning Exercise' # module 1 not a typo
+    module2_content_type = "assessment"
+    module2_content_link = 'https://docs.google.com/forms/d/e/1FAIpQLScGFPXzgFiIaIc5R7NQW_OvINY7y7xc4UHHhIIkt-4AJ-TZoQ/viewform'
+    module2_index = 2 # need a function to get index
+
+
+    module2_data = {
+        'module_id' : module2_id,
+        'program_id': program1_id,
+        'module_name': module2_name,
+        'content_type': module2_content_type,
+        'content_link': module2_content_link,
+        'module_index': module2_index
+    }
+
+
+    insert_module(module2_data)
+    print("main: insert module2")
+
+    # adding second assessment module
+    module4_id = create_module_id()
+    print('module4 id: ', module4_id)
+    module4_name = 'p1 assessment2' # module 1 not a typo
+    module4_content_type = "assessment"
+    module4_content_link = 'module4 link'
+    module4_index = 2 # need a function to get index
+
+    # module2_data = [module2_id, program1_id, module2_name, module2_content_type, module2_content_link, module2_index]
+
+    module4_data = {
+        'module_id' : module4_id,
+        'program_id': program1_id,
+        'module_name': module4_name,
+        'content_type': module4_content_type,
+        'content_link': module4_content_link,
+        'module_index': module4_index
+    }
+
+
+    insert_module(module4_data)
+    print("main: insert module4")
 
     # # # ------------creating test programs -------------------- #
 
     # # create locked program
-    # program2_id = create_program_id()
-    # program2_data = {
-    #     "program_id": program2_id,
-    #     "program_name": "Course 105",
-    #     "description": "Description",
-    #     "program_availability": "none"
-    # }
-    # # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
-    # insert_program(program2_data)
-    # print("main: program2 inserted")
+    program2_id = create_program_id()
+    program2_data = {
+        "program_id": program2_id,
+        "program_name": "Course 105",
+        "description": "Description",
+        "program_availability": "none"
+    }
+    # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
+    insert_program(program2_data)
+    print("main: program2 inserted")
 
     # # create random module in program2
-    # module3_id = create_module_id()
-    # module3_name = 'test module' # module 1 not a typo
-    # module3_content_type = "content type"
-    # module3_content_link = 'content link'
-    # module3_index = 1 # need a function to get index
-
-    # # module2_data = [module2_id, program1_id, module2_name, module2_content_type, module2_content_link, module2_index]
-
-    # module3_data = {
-    #     'module_id' : module3_id,
-    #     'program_id': program2_id,
-    #     'module_name': module3_name,
-    #     'content_type': module3_content_type,
-    #     'content_link': module3_content_link,
-    #     'module_index': module3_index
-    # }
+    module3_id = create_module_id()
+    module3_name = 'test module' # module 1 not a typo
+    module3_content_type = "content type"
+    module3_content_link = 'content link'
+    module3_index = 1 # need a function to get index
 
 
-    # insert_module(module3_data)
-    # print("main: insert module3")
+    module3_data = {
+        'module_id' : module3_id,
+        'program_id': program2_id,
+        'module_name': module3_name,
+        'content_type': module3_content_type,
+        'content_link': module3_content_link,
+        'module_index': module3_index
+    }
+
+
+    insert_module(module3_data)
+    print("main: insert module3")
 
 
     # # #--------------test adding students -------------------------- #
 
-    # # add Liz as student
-    # print('add student1 Liz')
-    # student_data = {
-    #      'student_name': 'Liz Garcia',
-    #      'student_email': 'lg6248@princeton.edu'
-    # }
-    # insert_student(student_data)
+    # add Liz as student
+    print('add student1 Liz')
+    student_data = {
+         'student_name': 'Liz Garcia',
+         'student_email': 'lg6248@princeton.edu'
+    }
+    insert_student(student_data)
 
-    # # add Annie as student
-    # print('add student2 Annie')
-    # student_data = {
-    #      'student_name': 'Annie Liu',
-    #      'student_email': 'an2334@princeton.edu'
-    # }
-    # insert_student(student_data)
+    # add Annie as student
+    print('add student2 Annie')
+    student_data = {
+         'student_name': 'Annie Liu',
+         'student_email': 'an2334@princeton.edu'
+    }
+    insert_student(student_data)
 
-    # # add Donna as student
-    # print('add student3 Donna')
-    # student_data = {
-    #      'student_name': 'Donna Wang',
-    #      'student_email': 'dw5609@princeton.edu'
-    # }
-    # insert_student(student_data)
+    # add Donna as student
+    print('add student3 Donna')
+    student_data = {
+         'student_name': 'Donna Wang',
+         'student_email': 'dw5609@princeton.edu'
+    }
+    insert_student(student_data)
 
     # ----------- test changing program name ------------------------#
-    print('changing course 105 to course #2')
+    # print('changing course 105 to course #2')
 
-    change_program_name('P2', 'Course #2')
-    print('Changed program name successfully!')
+    # change_program_name('P2', 'Course #2')
+    # print('Changed program name successfully!')
 
     # # ----------- test update_assessment_status -------------------#
     # update status for Liz to 1 (complete)
