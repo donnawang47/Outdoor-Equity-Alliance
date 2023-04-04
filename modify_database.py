@@ -418,6 +418,8 @@ def change_module_name(module_id, new_module_name):
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
 
+                print('module_id for changing name: ', module_id)
+                print('new name for module: ', new_module_name)
                 cursor.execute('BEGIN')
                 statement = "UPDATE modules SET module_name="
                 statement += "%s WHERE module_id= %s"

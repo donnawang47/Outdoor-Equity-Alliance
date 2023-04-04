@@ -208,18 +208,28 @@ def get_modules_of_program():
 # DISPLAY EDITING PAGE FOR SPECIFIC MODULE AFTER CLICKING EDIT BUTTON
 @app.route('/admin/modules/edit/name', methods=['GET', 'POST'])
 def edit_module_name():
-    # from URL of admin_program_edit_module.html
+    # from URL of admin_module_edit_module.html
     module_id = flask.request.args.get('module_id')
+    if module_id == "":
+        print("module_id is none")
+    print('GET get MODULE_ID', module_id)
     program_id = flask.request.args.get('program_id')
+    print('program_id = ', program_id)
     program_name = flask.request.args.get('program_name')
+    print('program_name: ', program_name)
 
-    if flask.request.method == 'POST':
+    if flask.request.method == 'POST' and program_id != "" and module_id != "" and program_name != "":
         new_module_name = flask.request.form['new_module_name']
+        print('post get new module name: ', new_module_name)
 
         success, message = modify_database.change_module_name(module_id, new_module_name )
 
-        if success: # if successfully changed program name
-            status, moduleslist = access_database.get_program_modules(program_id)
+        if success: # if successfully changed module name
+            print('PROGRAM ID FOR MOD = ', program_id)
+            status, data = access_database.get_program_modules(program_id)
+            print('DATA = ', data)
+            moduleslist = data['modules']
+            print('TEST A modulelist = ', moduleslist)
             if status:
                 print('Changed module name to: ', new_module_name)
                 html_code = flask.render_template('admin_modules.html',
@@ -234,8 +244,7 @@ def edit_module_name():
     else:
         module_name = flask.request.args.get('module_name')
         print( 'MODULE NAME: ', module_name)
-        html_code = flask.render_template('admin_edit_module.html',
-                                    module_name=module_name)
+        html_code = flask.render_template('admin_edit_module.html', module_name=module_name, module_id = module_id,program_id = program_id, program_name = program_name)
 
     response = flask.make_response(html_code)
     return response
