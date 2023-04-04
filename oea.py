@@ -26,7 +26,8 @@ def admin_interface():
 # admin
 @app.route('/admin/students', methods=['GET'])
 def admin_students():
-    students = access_database.get_all_students()
+    status, students = access_database.get_all_students()
+
     html_code = flask.render_template('admin_students.html', students=students)
     response = flask.make_response(html_code)
     return response
@@ -36,7 +37,7 @@ def admin_studentdetails():
     studentid = flask.request.args.get('studentid')
     print("studentid", studentid)
 
-    student_programs = access_database.get_student_programs(studentid)
+    status, student_programs = access_database.get_student_programs(studentid)
     print("oea: get student programs done")
     # can only get student progress on enrolled programs?
     # need to change to enrolled
@@ -140,6 +141,7 @@ def admin_create_module():
     response = flask.make_response(html_code)
     return response
 
+<<<<<<< HEAD
 @app.route('/student', methods=['GET'])
 def student_interface():
     student_programs = access_database.get_student_programs(2)
@@ -151,6 +153,8 @@ def student_interface():
     return response
 
 #TODO: ASK why we can reference html_code outside of scope?
+=======
+>>>>>>> a476e6525e21081752a677dc43fdf216251e06b4
 @app.route('/admin/programs/edit/name', methods=['GET', 'POST'])
 def edit_program_name():
 
@@ -261,3 +265,64 @@ def edit_module_name():
 #         print("Changed module link to: ", new_module_link)
 #     else:
 #         print("A server error occurred. Please contact the system administrator.")
+<<<<<<< HEAD
+=======
+
+
+# @app.route('/edit_module_name', methods=['POST'])
+# def edit_module_name():
+#     new_module_name = flask.request.args.get('new_module_name')
+#     module_name = flask.request.args.get('module_name')
+#     result = modify_database.change_module_name(new_module_name, module_name)
+
+#     if result:
+#         print("Changed program name to: ", new_module_name)
+#         html_code = flask.render_template('admin_edit_module.html',
+#                                         program_name = new_module_name)
+#         response = flask.make_response(html_code)
+#         return response
+
+
+@app.route('/student', methods=['GET'])
+def student_interface():
+    status, student_programs = access_database.get_student_programs(2)
+    if status:
+        print("Student Interface: displaying programs list")
+        html_code = flask.render_template('student_interface.html',
+                    programs = student_programs)
+    else:
+        html_code = flask.render_template('error.html', err_msg=student_programs)
+    response = flask.make_response(html_code)
+    return response
+
+@app.route('/student/program', methods=['GET'])
+def student_program():
+    programid = flask.request.args.get('programid')
+    print(programid)
+    status, programdata = access_database.get_program_modules(programid)
+    if status:
+        print("Student Interface: displaying program info " + programid + " for ")
+        html_code = flask.render_template('student_program.html',
+                    program = programdata)
+    else:
+        html_code = flask.render_template('error.html', err_msg=programdata)
+    response = flask.make_response(html_code)
+    return response
+
+
+@app.route('/student/program/module', methods=['GET'])
+def student_program_module():
+    moduleid = flask.request.args.get('moduleid')
+    print(moduleid)
+    status, moduledata = access_database.get_module(moduleid)
+    status, programdata = access_database.get_program_modules(moduledata['program_id'])
+    if status:
+        print("Student Interface: displaying module info " + moduleid + " for ")
+        html_code = flask.render_template('student_program_module.html',
+                    module = moduledata, program=programdata)
+    else:
+        html_code = flask.render_template('error.html', err_msg=moduledata)
+    response = flask.make_response(html_code)
+    return response
+
+>>>>>>> a476e6525e21081752a677dc43fdf216251e06b4

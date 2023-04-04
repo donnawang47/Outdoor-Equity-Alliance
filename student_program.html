@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Outdoor Equity Alliance: Student Interface</title>
+    </head>
+
+    <body>
+        <h1> Outdoor Equity Alliance: </h1>
+
+        <h2><a href="\student">Main</a> </h2>
+
+        <hr>
+
+        <h2> Program Information (program id {{program['program_id']}})</h2>
+        <strong>Name:</strong> {{program['program_name']}}<br>
+        <strong>Description:</strong> {{program['description']}}<br>
+
+        <h4> <a href = "{{"/student/program/module?moduleid=" + program['modules'][0]['module_id']}}">View</a> </h4>
+
+        <hr>
+        <!--sort via module index plz-->
+        <h3>List of Modules</h3>
+        {% for module in program['modules']: %}
+            <strong>Module {{module['module_index']}}:</strong> {{module['module_name']}}<br>
+        {% endfor %}
+
+
+
+    </body>
+</html>

@@ -73,8 +73,43 @@ def get_program_modules(program_id):
                     modules_row['module_index'] = row[9]
                     modules.append(modules_row)
 
+                #sort modules via index
+                modules = sorted(modules, key=lambda x:x['module_index'])
                 data['modules'] = modules
                 # print(modules)
+                return (True, data)
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
+    
+def get_module(module_id):
+    #module_id TEXT, program_id TEXT, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER
+    try:
+        with CONN as connection:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+            with connection.cursor() as cursor:
+                print("in get pgm modules for", module_id)
+                stmt_str = "SELECT * FROM modules WHERE "
+                stmt_str += "modules.module_id LIKE %s;"
+
+                cursor.execute(stmt_str, [module_id])
+                print(stmt_str)
+                table = cursor.fetchall()
+                print("table:", table)
+                # for row in table:
+                #     print(row)
+
+
+                data = {}
+                data['module_id'] = table[0][0]
+                data['program_id'] = table[0][1]
+                data['module_name'] = table[0][2]
+                data['content_type'] = table[0][3]
+                data['content_link'] = table[0][4]
+                data['module_index'] = table[0][5]
                 return (True, data)
 
     except Exception as error:
@@ -106,7 +141,7 @@ def get_student_info(student_id):
                 for index, column in enumerate(columns):
                      student_data[column[0]] = data[0][index]
 
-                return student_data
+                return (True, student_data)
 
 
     except Exception as error:
@@ -122,7 +157,7 @@ def get_all_students():
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                stmt_str = "SELECT * FROM users WHERE user_status=student;"
+                stmt_str = "SELECT * FROM users WHERE user_status='student';"
 
                 cursor.execute(stmt_str)
                 table = cursor.fetchall()
@@ -177,7 +212,7 @@ def get_student_programs(student_id):
     #     print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
     #     return (False, err_msg)
 
-    student_info = get_student_info(student_id)
+    status, student_info = get_student_info(student_id)
     print(student_info)
 
     data = {}
@@ -200,7 +235,7 @@ def get_student_programs(student_id):
     data['Available'] = available
     data['Locked'] = locked
     data ['Enrolled'] = enrolled
-    return data
+    return status, data
 
 # helper function
 # returns number of student_id's completed assessments
@@ -290,11 +325,16 @@ def main():
     # print("------------------------------------------------------")
 
     # print("---------STUDENTS-------------------------")
-    # get_all_students()
-    # print("Student 2 Programs")
-    # get_student_info(2)
+    get_student_info(2)
     # std_pg = get_student_programs(2)
     # print(std_pg)
+
+    # # testing get student progress
+    program_id = 'p1'
+    status, modules = get_program_modules(program_id)
+    print(modules['modules'])
+    get_student_program_progress(2, program_id)
+    get_module("m1")
 
 if __name__ == '__main__':
     main()
