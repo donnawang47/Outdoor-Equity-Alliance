@@ -137,24 +137,7 @@ def admin_create_module():
     response = flask.make_response(html_code)
     return response
 
-    html_code = flask.render_template('admin_create_program.html')
-    response = flask.make_response(html_code)
-    return response
-
-<<<<<<< HEAD
-@app.route('/student', methods=['GET'])
-def student_interface():
-    student_programs = access_database.get_student_programs(2)
-    if True:
-        print("Student Interface: displaying programs list")
-        html_code = flask.render_template('student_interface.html',
-                    programs = student_programs)
-    response = flask.make_response(html_code)
-    return response
-
 #TODO: ASK why we can reference html_code outside of scope?
-=======
->>>>>>> a476e6525e21081752a677dc43fdf216251e06b4
 @app.route('/admin/programs/edit/name', methods=['GET', 'POST'])
 def edit_program_name():
 
@@ -265,8 +248,6 @@ def edit_module_name():
 #         print("Changed module link to: ", new_module_link)
 #     else:
 #         print("A server error occurred. Please contact the system administrator.")
-<<<<<<< HEAD
-=======
 
 
 # @app.route('/edit_module_name', methods=['POST'])
@@ -325,4 +306,3 @@ def student_program_module():
     response = flask.make_response(html_code)
     return response
 
->>>>>>> a476e6525e21081752a677dc43fdf216251e06b4
