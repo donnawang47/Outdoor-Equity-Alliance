@@ -20,12 +20,68 @@
             {{pgm}}<br>
         {% endfor %}
 
+        <!-- to unlock program for studentid -->
         <h3>Locked Programs</h3>
         {% for pgm in programs['Locked']: %}
-            {{pgm}}<br>
+            {{pgm}}
+            <span id = "unlockPgmSpan">
+                <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button>
+            </span>
+            <br>
         {% endfor %}
 
 
-    </body>
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+        <script>
+            'use strict';
+
+            function editStatus(pgm, studentid){
+                console.log("edit button pressed");
+                console.log("pgm:" + pgm);
+                let html_str = ' Unlock <input type = "checkbox" id = "' + pgm + '"> \
+                <button type = "button" id = "saveBtn" onclick = "saveStatus( \'' + pgm + '\', \'' + studentid + '\')" >save</button> ';
+                console.log(html_str);
+                $('#unlockPgmSpan').html(html_str);
+            }
+            let request = null;
+            function saveStatus(pgm_id, studentid){
+                console.log("saving status")
+                // modify database -- change status of pgm to unlocked
+                let pgm_status = 'locked';
+                let id = "\'#" + pgm_id + "\'";
+                // console.log($(id).val());
+                if ($('#' + pgm_id).is(":checked")) {
+                    pgm_status = 'available';
+                    console.log("unlock checked");
+                }
+                pgm_status = encodeURIComponent(pgm_status)
+                console.log(pgm_status);
+                console.log("pgm_id:" + pgm_id);
+                console.log("studentid:" + studentid);
+                let encode_studentid = encodeURIComponent(studentid);
+                let encode_pgm_id = encodeURIComponent(pgm_id);
+
+                let url = '/admin/students/studentdetails/updatePgmStatus?studentid=' + encode_studentid + '&pgm_id=' + encode_pgm_id + '&pgm_status=' + pgm_status;
+                console.log(url);
+
+                request = $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: changedStatus
+                });
+
+                // change html again
+            }
+            function changedStatus(response) {
+                $('#unlockPgmSpan').html(response);
+            }
+
+            // function setup() {
+
+            // }
+
+
+        </script>
+    </body>
 </html>

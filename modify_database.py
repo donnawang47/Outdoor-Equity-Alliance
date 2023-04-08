@@ -297,6 +297,7 @@ def update_assessment_status(student_id, assessment_id, status):
 
                 cursor.execute('COMMIT')
                 print("Transaction committed")
+                return (True, "assessment status changed")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -304,6 +305,8 @@ def update_assessment_status(student_id, assessment_id, status):
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
 
+
+# status: locked, available, enrolled
 def update_program_status(student_id, program_id, status):
     try:
         with CONN as connection:
@@ -317,9 +320,10 @@ def update_program_status(student_id, program_id, status):
                 stmt_str += "= %s WHERE user_id = %s"
 
                 cursor.execute(stmt_str, [status, student_id])
-
+$
                 cursor.execute('COMMIT')
                 print("Transaction committed")
+                return (True, "program status changed")
 
     except Exception as error:
         err_msg = "A server error occurred. "

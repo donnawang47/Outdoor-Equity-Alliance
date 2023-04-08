@@ -60,6 +60,23 @@ def admin_studentdetails():
     response = flask.make_response(html_code)
     return response
 
+# doesnt produce new page
+@app.route('/admin/students/studentdetails/updatePgmStatus', methods=['GET'])
+def admin_updatePgmStatus():
+    print("updating program status")
+    studentid = flask.request.args.get('studentid')
+    print("studentid", studentid)
+    pgm_id = flask.request.args.get('pgm_id')
+    print("pgm_id", pgm_id)
+    pgm_status = flask.request.args.get('pgm_status')
+
+    status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
+    print("oea:", msg)
+    html_code = flask.render_template('admin_edit_pgm_status_btn.html',
+                studentid = studentid,
+                pgm = pgm_id,)
+    response = flask.make_response(html_code)
+    return response
 
 @app.route('/admin/programs', methods=['GET'])
 def admin_programs():
@@ -161,7 +178,7 @@ def edit_program_name():
             html_code = flask.render_template('error.html',
                                 err_msg = message)
 
-# display initial access to "edit program page" for specific program
+    # display initial access to "edit program page" for specific program
     else:
         program_name = flask.request.args.get('program_name')
         html_code = flask.render_template('admin_edit_program.html',
@@ -227,7 +244,7 @@ def edit_module_name():
             html_code = flask.render_template('error.html',
                                 err_msg = message)
 
-# display initial access to "edit program page" for specific program
+    # display initial access to "edit program page" for specific program
     else:
         module_name = flask.request.args.get('module_name')
         print( 'MODULE NAME: ', module_name)
