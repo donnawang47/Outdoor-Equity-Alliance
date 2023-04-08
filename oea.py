@@ -215,14 +215,12 @@ def edit_module_name():
             print('PROGRAM ID FOR MOD = ', program_id)
             status, data = access_database.get_program_modules(program_id)
             print('DATA = ', data)
-            moduleslist = data['modules']
-            print('TEST A modulelist = ', moduleslist)
+            modules_list = data['modules']
+            print('TEST A modulelist = ', modules_list)
             if status:
                 print('Changed module name to: ', new_module_name)
-                html_code = flask.render_template('admin_modules.html',
-                            moduleslist = moduleslist,
-                            program_name = program_name,
-                            program_id=program_id)
+                html_code = flask.render_template('admin_modules.html', moduleslist = modules_list, module_id = module_id,
+                                            program_name = program_name, program_id=program_id)
         elif not success or not status:
             html_code = flask.render_template('error.html',
                                 err_msg = message)
@@ -231,38 +229,39 @@ def edit_module_name():
     else:
         module_name = flask.request.args.get('module_name')
         print( 'MODULE NAME: ', module_name)
-        html_code = flask.render_template('admin_edit_module.html', module_name=module_name, module_id = module_id,program_id = program_id, program_name = program_name)
+        html_code = flask.render_template('admin_edit_module.html', module_name=module_name, module_id = module_id, program_id = program_id, program_name = program_name)
 
     response = flask.make_response(html_code)
     return response
 
+@app.route('/admin/modules/edit/link', methods=['POST'])
+def edit_module_link():
+    print('entering editing link function...')
+    module_id = flask.request.args.get('module_id')
+    print('module id = ', module_id)
+    program_id  = flask.request.args.get('program_id')
+    print('program_id = ', program_id)
+    program_name = flask.request.args.get('program_name')
+    print('program_name = ', program_name)
+    new_module_link = flask.request.form['new_module_link']
+    print('new_module_link = ', new_module_link)
 
+    success, message = modify_database.edit_module_link(new_module_link, module_id)
 
-# @app.route('/edit_module_link', methods=['POST'])
-# def edit_module_link(new_module_link):
-#     new_module_link = flask.request.args.get('new_module_link')
-#     module_name = flask.request.args.get('module_name')
-#     result = modify_database.change_program_name(new_module_link, module_name)
+    if success:
+        print("Modifying module link to: ", new_module_link)
+        status, data = access_database.get_program_modules(program_id)
+        modules_list = data['modules']
+        if status:
+            print('Changed module link to: ', new_module_link)
+            html_code = flask.render_template('admin_modules.html', moduleslist = modules_list, module_id = module_id,
+                                        program_name = program_name, program_id=program_id)
+    elif not success or not status:
+        html_code = flask.render_template('error.html',
+                            err_msg = message)
 
-#     if result:
-#         print("Changed module link to: ", new_module_link)
-#     else:
-#         print("A server error occurred. Please contact the system administrator.")
-
-
-# @app.route('/edit_module_name', methods=['POST'])
-# def edit_module_name():
-#     new_module_name = flask.request.args.get('new_module_name')
-#     module_name = flask.request.args.get('module_name')
-#     result = modify_database.change_module_name(new_module_name, module_name)
-
-#     if result:
-#         print("Changed program name to: ", new_module_name)
-#         html_code = flask.render_template('admin_edit_module.html',
-#                                         program_name = new_module_name)
-#         response = flask.make_response(html_code)
-#         return response
-
+    response = flask.make_response(html_code)
+    return response
 
 @app.route('/student', methods=['GET'])
 def student_interface():

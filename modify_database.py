@@ -432,29 +432,26 @@ def change_module_name(module_id, new_module_name):
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, error)
 
-def edit_module_link(new_module_link, module_name):
+def edit_module_link(new_module_link, id):
     try:
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                id = get_module_id(module_name)
                 cursor.execute('BEGIN')
-                statement = "UPDATE modules SET content_link="
-                statement += new_module_link
-                statement += " WHERE module_id="
-                statement += id
+                statement = "UPDATE modules SET content_link= %s"
+                statement += " WHERE module_id= %s"
 
-                cursor.execute(statement)
+                cursor.execute(statement, [new_module_link, id])
 
                 cursor.execute('COMMIT')
                 print('Progran name successfully updated!')
-                return True
+                return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return False
+        return (False, error)
 
 
 
