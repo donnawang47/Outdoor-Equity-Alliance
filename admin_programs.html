@@ -54,15 +54,10 @@
                             <td align="right">
 
                             <!-- send arguments to the editing page -->
-                            <!-- send arguments to the editing page -->
 
-                            <!-- <form method='GET'> -->
+                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
 
-                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit
-                                <!-- <input type="submit" value="Edit"></input> -->
-                            </a>
-
-                            <!-- </form> -->
+                            <a href="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" class="btn btn-secondary" role="dialog"> Delete</a>
 
                             </td>
                         </tr>
@@ -74,7 +69,7 @@
 
         <hr>
 
-        <a href="/admin/programs/create_program">Create New Program</a>
+        <a href="/admin/programs/create_program"> Create New Program</a>
 
     </body>
 </html>
