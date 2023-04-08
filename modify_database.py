@@ -68,7 +68,7 @@ def insert_program(data):
                 stmt_str += " TEXT DEFAULT %s;"
                 cursor.execute(stmt_str, [pgm_status])
 
-                return(True)
+                return(True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -347,6 +347,7 @@ def delete_program(program_id):
                  statement = "DELETE FROM modules WHERE program_id =  "
                  statement += str(program_id)
                  cursor.execute(statement)
+                 return (True, "deleted program successfully")
 
     except Exception as error:
         err_msg = "A server error occurred. "

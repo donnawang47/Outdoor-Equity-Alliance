@@ -55,11 +55,9 @@
 
                             <!-- send arguments to the editing page -->
 
-                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit
+                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
 
-                            </a>
-
-
+                            <a href="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" class="btn btn-secondary" role="dialog"> Delete</a>
 
                             </td>
                         </tr>
@@ -71,7 +69,7 @@
 
         <hr>
 
-        <a href="/admin/programs/create_program">Create New Program</a>
+        <a href="/admin/programs/create_program"> Create New Program</a>
 
     </body>
 </html>

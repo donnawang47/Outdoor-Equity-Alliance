@@ -84,7 +84,7 @@ def get_program_modules(program_id):
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
-    
+
 def get_module(module_id):
     #module_id TEXT, program_id TEXT, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER
     try:

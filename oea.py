@@ -73,8 +73,8 @@ def admin_programs():
     else:
         print("Error: " + programslist)
         #html_code=""
-    response = flask.make_response(html_code)
 
+    response = flask.make_response(html_code)
     return response
 
 @app.route('/admin/programs/create_program', methods=['GET','POST'])
@@ -87,27 +87,39 @@ def admin_create_program():
         pgm_params["description"] = flask.request.form['pgm_descrip']
         pgm_params["program_availability"] = flask.request.form['pgm_avail']
 
-        success = modify_database.insert_program(pgm_params)
+        success, message = modify_database.insert_program(pgm_params)
+        status, programslist = access_database.get_programslist()
+
         if success:
             print("new program inserted")
+            html_code = flask.render_template('admin_programs.html',
+                                        programslist = programslist)
+        elif not success:
+            html_code = flask.render_template('error.html',
+                                err_msg = "A server error occurred while inserting program.")
+        elif not status:
+            html_code = flask.render_template('error.html',
+                                    err_msg = "A server error occurred while getting programs list.")
+    else:
+        html_code = flask.render_template('admin_create_program.html')
             # display_database.main()
 
-        # iterate this multiple times if multiple modules?
-        # modules_params
-        md_params = {}
-        md_params["module_id"] = modify_database.create_module_id()
-        md_params["program_id"] = pgm_params["program_id"]
-        md_params["module_name"] = flask.request.form['module_name']
-        md_params["content_link"] = flask.request.form['module_link']
-        md_params["content_type"] = flask.request.form['module_type']
-        md_params["module_index"] = flask.request.form['module_seq']
+        # # iterate this multiple times if multiple modules?
+        # # modules_params
+        # md_params = {}
+        # md_params["module_id"] = modify_database.create_module_id()
+        # md_params["program_id"] = pgm_params["program_id"]
+        # md_params["module_name"] = flask.request.form['module_name']
+        # md_params["content_link"] = flask.request.form['module_link']
+        # md_params["content_type"] = flask.request.form['module_type']
+        # md_params["module_index"] = flask.request.form['module_seq']
 
-        success = modify_database.insert_module(md_params)
-        if success:
-            print("new module inserted")
-            display_database.main()
+        # success = modify_database.insert_module(md_params)
+        # if success:
+        #     print("new module inserted")
+        #     display_database.main()
 
-    html_code = flask.render_template('admin_create_program.html')
+    # html_code = flask.render_template('admin_create_program.html')
     response = flask.make_response(html_code)
     return response
 
@@ -262,6 +274,22 @@ def edit_module_link():
 
     response = flask.make_response(html_code)
     return response
+
+@app.route('/admin/programs/delete/program', methods=['POST'])
+def delete_program():
+    program_id = flask.request.args.get('program_id')
+    print('program_id = ', program_id)
+    success, message = modify_database.delete_program(program_id)
+
+    if success:
+        admin_programs()
+
+    else:
+        html_code = flask.render_template('error.html', err_msg = message)
+
+    response = flask.make_response(html_code)
+    return response
+
 
 @app.route('/student', methods=['GET'])
 def student_interface():

@@ -23,24 +23,5 @@ https://stackoverflow.com/questions/3327312/how-can-i-drop-all-the-tables-in-a-p
 - POST vs GET
 https://stackoverflow.com/questions/11556958/sending-data-from-html-form-to-a-python-script-in-flask
 
-
-# Contributions:
-Liz:
-- created the schema of the database
-- wrote insert_module
-- wrote insert_program
-- wrote insert_students
-- wrote update_assessment_status, update_program_status, delete_program,
-delete_module.
-- test for adding students into students table.
-- tests for update_assessment_status, update_program_status, delete_program,
-delete_module.
-
-Week 3/20
-Liz:
-- included code for status of enrolled.
-- ran tests up to updates and debugged so that functions work
-- wrote get_student_id
-
 UID:
 https://docs.python.org/3/library/uuid.html
