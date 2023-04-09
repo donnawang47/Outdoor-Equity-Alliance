@@ -46,7 +46,8 @@ def get_program_modules(program_id):
                 # print("in get pgm modules", program_id)
                 stmt_str = "SELECT * FROM programs, modules WHERE "
                 stmt_str += "programs.program_id=modules.program_id "
-                stmt_str += "AND modules.program_id LIKE %s;"
+                stmt_str += "AND modules.program_id LIKE %s "
+                # stmt_str += "ORDER BY program_id ASC, module_id ASC;"
 
                 cursor.execute(stmt_str, [program_id])
 
@@ -55,29 +56,35 @@ def get_program_modules(program_id):
                 # for row in table:
                 #     print(row)
 
-                data = {}
-                data['program_id'] = table[0][0]
-                data['program_name'] = table[0][1]
-                data['description'] = table[0][2]
-                data['program_availability'] = table[0][3]
+                if table:
 
-                # list of dictionaries of modules within program
-                modules = []
-                for row in table:
-                    modules_row = {}
-                    modules_row['module_id'] = row[4]
-                    # row[5] is program_id
-                    modules_row['module_name'] = row[6]
-                    modules_row['content_type'] = row[7]
-                    modules_row['content_link'] = row[8]
-                    modules_row['module_index'] = row[9]
-                    modules.append(modules_row)
+                    data = {}
+                    data['program_id'] = table[0][0]
+                    data['program_name'] = table[0][1]
+                    data['description'] = table[0][2]
+                    data['program_availability'] = table[0][3]
 
-                #sort modules via index
-                modules = sorted(modules, key=lambda x:x['module_index'])
-                data['modules'] = modules
-                # print(modules)
-                return (True, data)
+                    # list of dictionaries of modules within program
+                    modules = []
+                    for row in table:
+                        modules_row = {}
+                        modules_row['module_id'] = row[4]
+                        # row[5] is program_id
+                        modules_row['module_name'] = row[6]
+                        modules_row['content_type'] = row[7]
+                        modules_row['content_link'] = row[8]
+                        modules_row['module_index'] = row[9]
+                        modules.append(modules_row)
+
+                    #sort modules via index
+                    modules = sorted(modules, key=lambda x:x['module_index'])
+                    data['modules'] = modules
+                    # print(modules)
+                    return (True, data)
+                else:
+                    data = {}
+                    data['modules'] = []
+                    return (True, data)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -259,9 +266,8 @@ def get_student_module_completion(student_id, assessment_ids):
                 return (True, data[0][0])
 
     except Exception as error:
-            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-            sys.exit(1)
-            return (False, err_msg)
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
 
 
 # returns a fractional string indicating studentid progress of programid

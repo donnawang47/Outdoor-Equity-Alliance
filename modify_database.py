@@ -199,13 +199,20 @@ def create_program_id():
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-
-                stmt_str = "SELECT COUNT(*) FROM programs"
+                # stmt_str = "SELECT COUNT(*) FROM programs"
+                stmt_str = """SELECT program_id FROM programs ORDER BY
+                program_id DESC LIMIT 1"""
                 cursor.execute(stmt_str)
+                print('stmt_str =', stmt_str)
                 count = cursor.fetchall()
+                print('count =', count[0][0])
                 # print("program id", count[0][0])
-                program_id = 'p' + str(count[0][0] + 1)
+                id = count[0][0]
+                num = int(id[1]) + 1
+                print('num = ', num)
+                program_id = 'p' + str(num)
                 # print("create program id:", program_id)
+                print('program id created = ', program_id)
                 return program_id
 
     except Exception as error:
@@ -332,22 +339,19 @@ def delete_program(program_id):
         with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
-                 # remove program from students table
-                 statement = " ALTER TABLE users DROP COLUMN "
-                 statement += str(program_id)
-                 cursor.execute(statement)
+                # remove program from students table
+                statement = " ALTER TABLE users DROP COLUMN "
+                statement += program_id
+                cursor.execute(statement)
 
-                 # remove program from programs table
-                 statement = "DELETE FROM programs WHERE program_id = "
-                 statement += str(program_id)
-                 cursor.execute(statement)
+                # remove program from programs table
+                statement = "DELETE FROM programs WHERE program_id = %s"
+                cursor.execute(statement, [program_id])
 
-
-                 # remove program from modules table
-                 statement = "DELETE FROM modules WHERE program_id =  "
-                 statement += str(program_id)
-                 cursor.execute(statement)
-                 return (True, "deleted program successfully")
+                # remove program from modules table
+                statement = "DELETE FROM modules WHERE program_id = %s"
+                cursor.execute(statement, [program_id])
+                return (True, "deleted program successfully")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -458,9 +462,13 @@ def edit_module_link(new_module_link, id):
 
 # write functionality to deal with duplicate entries!
 def main():
-    #  ! must pass in data to be inserted into modules table from interface interaction.
+    # #  ! must pass in data to be inserted into modules table from interface interaction.
 
-    # ? what are the different types of contents?
+    # #----------------- testing creating program id --------------------
+    # id = create_program_id()
+    # print('Newly created program id = ', id)
+
+    # # ? what are the different types of contents?
 
     # # create new program: Tree Ambassador 101
     print("program id: create program id")
@@ -544,73 +552,73 @@ def main():
     insert_module(module4_data)
     print("main: insert module4")
 
-    # # # ------------creating test programs -------------------- #
+    # # # # ------------creating test programs -------------------- #
 
-    # # create locked program
-    program2_id = create_program_id()
-    program2_data = {
-        "program_id": program2_id,
-        "program_name": "Course 105",
-        "description": "Description",
-        "program_availability": "none"
-    }
-    # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
-    insert_program(program2_data)
-    print("main: program2 inserted")
+    # # # create locked program
+    # program2_id = create_program_id()
+    # program2_data = {
+    #     "program_id": program2_id,
+    #     "program_name": "Course 105",
+    #     "description": "Description",
+    #     "program_availability": "none"
+    # }
+    # # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
+    # insert_program(program2_data)
+    # print("main: program2 inserted")
 
-    # # create random module in program2
-    module3_id = create_module_id()
-    module3_name = 'test module' # module 1 not a typo
-    module3_content_type = "content type"
-    module3_content_link = 'content link'
-    module3_index = 0 # need a function to get index
-
-
-    module3_data = {
-        'module_id' : module3_id,
-        'program_id': program2_id,
-        'module_name': module3_name,
-        'content_type': module3_content_type,
-        'content_link': module3_content_link,
-        'module_index': module3_index
-    }
+    # # # create random module in program2
+    # module3_id = create_module_id()
+    # module3_name = 'test module' # module 1 not a typo
+    # module3_content_type = "content type"
+    # module3_content_link = 'content link'
+    # module3_index = 0 # need a function to get index
 
 
-    insert_module(module3_data)
-    print("main: insert module3")
+    # module3_data = {
+    #     'module_id' : module3_id,
+    #     'program_id': program2_id,
+    #     'module_name': module3_name,
+    #     'content_type': module3_content_type,
+    #     'content_link': module3_content_link,
+    #     'module_index': module3_index
+    # }
 
 
-    # # #--------------test adding students -------------------------- #
+    # insert_module(module3_data)
+    # print("main: insert module3")
 
-    # add Liz as student
-    print('add student1 Liz')
-    student_data = {
-         'student_name': 'Liz Garcia',
-         'student_email': 'lg6248@princeton.edu'
-    }
-    insert_student(student_data)
 
-    # add Annie as student
-    print('add student2 Annie')
-    student_data = {
-         'student_name': 'Annie Liu',
-         'student_email': 'an2334@princeton.edu'
-    }
-    insert_student(student_data)
+    # # # #--------------test adding students -------------------------- #
 
-    # add Donna as student
-    print('add student3 Donna')
-    student_data = {
-         'student_name': 'Donna Wang',
-         'student_email': 'dw5609@princeton.edu'
-    }
-    insert_student(student_data)
+    # # add Liz as student
+    # print('add student1 Liz')
+    # student_data = {
+    #      'student_name': 'Liz Garcia',
+    #      'student_email': 'lg6248@princeton.edu'
+    # }
+    # insert_student(student_data)
 
-    # ----------- test changing program name ------------------------#
-    print('changing course 105 to course #2')
+    # # add Annie as student
+    # print('add student2 Annie')
+    # student_data = {
+    #      'student_name': 'Annie Liu',
+    #      'student_email': 'an2334@princeton.edu'
+    # }
+    # insert_student(student_data)
 
-    change_program_name('P2', 'Course #2')
-    print('Changed program name successfully!')
+    # # add Donna as student
+    # print('add student3 Donna')
+    # student_data = {
+    #      'student_name': 'Donna Wang',
+    #      'student_email': 'dw5609@princeton.edu'
+    # }
+    # insert_student(student_data)
+
+    # # ----------- test changing program name ------------------------#
+    # print('changing course 105 to course #2')
+
+    # change_program_name('P2', 'Course #2')
+    # print('Changed program name successfully!')
 
     # # ----------- test update_assessment_status -------------------#
     # update status for Liz to 1 (complete)

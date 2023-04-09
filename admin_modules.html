@@ -19,18 +19,18 @@
         <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
             <table>
                 <!-- row 1, containing names of each column -->
-                <tr>
-                    <th align = "left">ID</th>
-                    <th align = "left">Name</th>
-                    <th align = "left">Content Type</th>
-                    <th align = "left">Link</th>
-                    <th align = "left">module_index</th>
-                </tr>
 
                         <!-- rows of programslist -->
                         <!-- each row only displays program name -->
                 {% if moduleslist|length != 0: %}
                     {% for module in moduleslist: %}
+                        <tr>
+                            <th align = "left">ID</th>
+                            <th align = "left">Name</th>
+                            <th align = "left">Content Type</th>
+                            <th align = "left">Link</th>
+                            <th align = "left">module_index</th>
+                        </tr>
                         <tr>
                             <!-- col 1 is row["ClsId"] -->
                             <!-- <form action="/admin/edit/program/name" method="POST"> -->
@@ -67,6 +67,8 @@
                             </td>
                         </tr>
                     {% endfor %}
+                {% else %}
+                No modules exist in this program yet!
                 {% endif %}
 
             </table>

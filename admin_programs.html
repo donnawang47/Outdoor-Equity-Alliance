@@ -51,14 +51,15 @@
                             <td align = 'left'>
                                 {{program['program_availability']}}
                             </td>
+
                             <td align="right">
-
                             <!-- send arguments to the editing page -->
-
                             <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
+                            </td>
 
-                            <a href="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" class="btn btn-secondary" role="dialog"> Delete</a>
-
+                            <td align = right>
+                                <form action="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" method = 'POST'> <input type="submit" value="Delete">
+                                </form>
                             </td>
                         </tr>
                     {% endfor %}

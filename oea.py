@@ -187,7 +187,9 @@ def edit_program_name():
 @app.route('/admin/modules', methods=['GET'])
 def get_modules_of_program():
     program_id = flask.request.args.get('program_id')
+    print('modules page program id = ', program_id)
     program_name = flask.request.args.get('program_name')
+    print('modules page program name = ', program_name)
 
     status, data = access_database.get_program_modules(program_id)
     moduleslist = data['modules']
@@ -282,10 +284,17 @@ def delete_program():
     success, message = modify_database.delete_program(program_id)
 
     if success:
-        admin_programs()
+        status, programslist = access_database.get_programslist()
+        if status:
+             html_code = flask.render_template('admin_programs.html',
+                    programslist = programslist)
 
-    else:
-        html_code = flask.render_template('error.html', err_msg = message)
+    elif not success:
+        html_code = flask.render_template('error.html',
+                            err_msg = "There was an error while deleting program.")
+    elif not status:
+        html_code = flask.render_template('error.html',
+                                        err_msg = 'There was an error while getting list of programs.')
 
     response = flask.make_response(html_code)
     return response
