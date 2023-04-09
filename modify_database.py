@@ -1,112 +1,139 @@
 import psycopg2
+import queue
 import sys
 import os
 
 # DATABASE_URL = os.getenv('DATABASE_URL')
-CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
+# CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
+_database_url = os.getenv('DATABASE_URL')
+_connection_pool = queue.Queue()
+
+def _get_connection():
+    try:
+        conn = _connection_pool.get(block=False)
+    except:
+        conn = psycopg2.connect(_database_url)
+    return conn
+
+def _put_connection(conn):
+    _connection_pool.put(conn)
+
+#-------------------------------------------------------------------
 
 ## CHECK CASE: CANNOT HAVE DUPLICATE MODULE INDICES IF FOR SAME PROGRAM, OR INDEX DOESNT DEPEND ON USER
 
 def insert_module(data):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        # with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                # can prob call max
-                statement = """ INSERT INTO modules (module_id, program_id, module_name, content_type, content_link, module_index) VALUES (%s, %s, %s, %s, %s, %s);  """
-                param = [data['module_id'], data['program_id'], data['module_name'], data['content_type'], data['content_link'], data['module_index']]
+            # can prob call max
+            statement = """ INSERT INTO modules (module_id, program_id, module_name, content_type, content_link, module_index) VALUES (%s, %s, %s, %s, %s, %s);  """
+            param = [data['module_id'], data['program_id'], data['module_name'], data['content_type'], data['content_link'], data['module_index']]
 
-                cursor.execute(statement, param)
+            cursor.execute(statement, param)
 
-                # modify users table
+            # modify users table
 
-                # assuming data is a dictionary
-                # check if module is an assessment
-                # add new assessment column to users table
+            # assuming data is a dictionary
+            # check if module is an assessment
+            # add new assessment column to users table
 
-                if data['content_type'] == "assessment":
-                    statement = "ALTER TABLE users"
-                    # default of 0 = incomplete
-                    statement += " ADD COLUMN " + data['module_id']
-                    statement += " INTEGER DEFAULT 0;"
-                    cursor.execute(statement)
+            if data['content_type'] == "assessment":
+                statement = "ALTER TABLE users"
+                # default of 0 = incomplete
+                statement += " ADD COLUMN " + data['module_id']
+                statement += " INTEGER DEFAULT 0;"
+                cursor.execute(statement)
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 def insert_program(data):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
 
-            with connection.cursor() as cursor:
-                if (data['program_availability'] != 'all' and
-                    data['program_availability'] != 'none'):
-                    raise Exception('Program availability must be: all or none')
+        with connection.cursor() as cursor:
+            if (data['program_availability'] != 'all' and
+                data['program_availability'] != 'none'):
+                raise Exception('Program availability must be: all or none')
 
-                # modify program table
-                statement = """
-                INSERT INTO programs (program_id, program_name, description, program_availability) VALUES (%s, %s, %s, %s);
-                """
-                param = [data['program_id'], data['program_name'], data['description'], data['program_availability']]
-                cursor.execute(statement, param)
+            # modify program table
+            statement = """
+            INSERT INTO programs (program_id, program_name, description, program_availability) VALUES (%s, %s, %s, %s);
+            """
+            param = [data['program_id'], data['program_name'], data['description'], data['program_availability']]
+            cursor.execute(statement, param)
 
-                # modify students table to include new program column
-                # with specified program_id as the name of the column
-                pgm_status = 'locked'
-                if data['program_availability'] == 'all':
-                    pgm_status= 'available'
-                elif data['program_availability'] == 'enroll':
-                     pgm_status = 'enrolled'
+            # modify students table to include new program column
+            # with specified program_id as the name of the column
+            pgm_status = 'locked'
+            if data['program_availability'] == 'all':
+                pgm_status= 'available'
+            elif data['program_availability'] == 'enroll':
+                    pgm_status = 'enrolled'
 
-                stmt_str = "ALTER TABLE users "
-                stmt_str += "ADD " + data['program_id']
-                stmt_str += " TEXT DEFAULT %s;"
-                cursor.execute(stmt_str, [pgm_status])
+            stmt_str = "ALTER TABLE users "
+            stmt_str += "ADD " + data['program_id']
+            stmt_str += " TEXT DEFAULT %s;"
+            cursor.execute(stmt_str, [pgm_status])
 
-                return(True, "success!")
+            return(True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 # insert information about a student into the users table
 def insert_student(data): #data is 4-string-tuple
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                statement = """ INSERT INTO users (user_status, user_name, user_email) VALUES ('student', %s, %s);  """
-                param = [data['student_name'], data['student_email']]
-                cursor.execute(statement, param)
+        with connection.cursor() as cursor:
+            statement = """ INSERT INTO users (user_status, user_name, user_email) VALUES ('student', %s, %s);  """
+            param = [data['student_name'], data['student_email']]
+            cursor.execute(statement, param)
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 # insert information about an admin into the users table
 def insert_admin(data):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                statement = """ INSERT INTO users (user_status, user_name, user_email) VALUES ('admin', %s, %s);  """
-                param = [data['admin_name'], data['admin_email']]
-                cursor.execute(statement, param)
+        with connection.cursor() as cursor:
+            statement = """ INSERT INTO users (user_status, user_name, user_email) VALUES ('admin', %s, %s);  """
+            param = [data['admin_name'], data['admin_email']]
+            cursor.execute(statement, param)
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 # # insert information about a student into the students table
 # def insert_student(data): #data is 4-string-tuple
@@ -174,108 +201,123 @@ def insert_admin(data):
 
 # use this function to create assessment_id as well
 def create_module_id():
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                stmt_str = "SELECT COUNT(*) FROM modules"
-                cursor.execute(stmt_str)
-                count = cursor.fetchall()
-                # print("create module_id: ", count)
+            stmt_str = "SELECT COUNT(*) FROM modules"
+            cursor.execute(stmt_str)
+            count = cursor.fetchall()
+            # print("create module_id: ", count)
 
-                module_id = 'm' + str(count[0][0] + 1)
-                print("create module id:", module_id)
-                return module_id
+            module_id = 'm' + str(count[0][0] + 1)
+            print("create module id:", module_id)
+            return module_id
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 def create_program_id():
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                stmt_str = "SELECT COUNT(*) FROM programs"
-                cursor.execute(stmt_str)
-                count = cursor.fetchall()
-                # print("program id", count[0][0])
-                program_id = 'p' + str(count[0][0] + 1)
-                # print("create program id:", program_id)
-                return program_id
+            stmt_str = "SELECT COUNT(*) FROM programs"
+            cursor.execute(stmt_str)
+            count = cursor.fetchall()
+            # print("program id", count[0][0])
+            program_id = 'p' + str(count[0][0] + 1)
+            # print("create program id:", program_id)
+            return program_id
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 def get_user_id(student_email):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                stmt_str = "SELECT user_id FROM users WHERE user_email= %s"
-                cursor.execute(stmt_str, [student_email])
-                data = cursor.fetchall()
-                # print("program id", count[0][0])
-                student_id = data[0][0]
-                # print("create program id:", program_id)
-                return student_id
+            stmt_str = "SELECT user_id FROM users WHERE user_email= %s"
+            cursor.execute(stmt_str, [student_email])
+            data = cursor.fetchall()
+            # print("program id", count[0][0])
+            student_id = data[0][0]
+            # print("create program id:", program_id)
+            return student_id
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 def get_program_id(program_name):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                statement = "SELECT program_id FROM programs WHERE"
-                statement += " program_name = %s"
-                cursor.execute(statement, [program_name])
-                data = cursor.fetchall()
-                # print("program id", count[0][0])
-                program_name = data[0][0]
-                # print("create program id:", program_id)
-                return (True, program_name)
+            statement = "SELECT program_id FROM programs WHERE"
+            statement += " program_name = %s"
+            cursor.execute(statement, [program_name])
+            data = cursor.fetchall()
+            # print("program id", count[0][0])
+            program_name = data[0][0]
+            # print("create program id:", program_id)
+            return (True, program_name)
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 #! might have to delete later (not needed?)
 def get_module_id(module_name):
+    onnection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                statement = "SELECT module_id FROM modules WHERE"
-                statement += " module_name = %s"
-                cursor.execute(statement, [module_name])
-                data = cursor.fetchall()
-                # print("program id", count[0][0])
-                program_name = data[0][0]
-                # print("create program id:", program_id)
-                return (True, program_name)
+            statement = "SELECT module_id FROM modules WHERE"
+            statement += " module_name = %s"
+            cursor.execute(statement, [module_name])
+            data = cursor.fetchall()
+            # print("program id", count[0][0])
+            program_name = data[0][0]
+            # print("create program id:", program_id)
+            return (True, program_name)
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 
 
@@ -283,179 +325,200 @@ def get_module_id(module_name):
     # assessment = updated once the student completes quiz
     # program = updated once the student completes program or with admin permission
 def update_assessment_status(student_id, assessment_id, status):
+    onnection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute('BEGIN')
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
 
-                stmt_str = "UPDATE users SET "
-                stmt_str += assessment_id
-                stmt_str += "=%s WHERE user_id=%s;"
+            stmt_str = "UPDATE users SET "
+            stmt_str += assessment_id
+            stmt_str += "=%s WHERE user_id=%s;"
 
-                cursor.execute(stmt_str, [status, student_id])
+            cursor.execute(stmt_str, [status, student_id])
 
-                cursor.execute('COMMIT')
-                print("Transaction committed")
-                return (True, "assessment status changed")
+            cursor.execute('COMMIT')
+            print("Transaction committed")
+            return (True, "assessment status changed")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 
 # status: locked, available, enrolled
 def update_program_status(student_id, program_id, status):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute('BEGIN')
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
 
-                #
-                stmt_str = "UPDATE users SET "
-                stmt_str += program_id
-                stmt_str += "= %s WHERE user_id = %s"
+            #
+            stmt_str = "UPDATE users SET "
+            stmt_str += program_id
+            stmt_str += "= %s WHERE user_id = %s"
 
-                cursor.execute(stmt_str, [status, student_id])
-                cursor.execute('COMMIT')
-                print("Transaction committed")
-                return (True, "program status changed")
+            cursor.execute(stmt_str, [status, student_id])
+            cursor.execute('COMMIT')
+            print("Transaction committed")
+            return (True, "program status changed")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 def delete_program(program_id):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                 # remove program from students table
-                 statement = " ALTER TABLE users DROP COLUMN "
-                 statement += str(program_id)
-                 cursor.execute(statement)
+        with connection.cursor() as cursor:
+                # remove program from students table
+                statement = " ALTER TABLE users DROP COLUMN "
+                statement += str(program_id)
+                cursor.execute(statement)
 
-                 # remove program from programs table
-                 statement = "DELETE FROM programs WHERE program_id = "
-                 statement += str(program_id)
-                 cursor.execute(statement)
+                # remove program from programs table
+                statement = "DELETE FROM programs WHERE program_id = "
+                statement += str(program_id)
+                cursor.execute(statement)
 
 
-                 # remove program from modules table
-                 statement = "DELETE FROM modules WHERE program_id =  "
-                 statement += str(program_id)
-                 cursor.execute(statement)
-                 return (True, "deleted program successfully")
+                # remove program from modules table
+                statement = "DELETE FROM modules WHERE program_id =  "
+                statement += str(program_id)
+                cursor.execute(statement)
+                return (True, "deleted program successfully")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 
 def delete_module(module_id):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                # fetch content type with module_id
-                statement = "SELECT content_type FROM modules WHERE "
-                statement += "module_id = "
-                statement += str(module_id)
-                cursor.execute(statement)
-                content_type = cursor.fetchall()
+        with connection.cursor() as cursor:
+            # fetch content type with module_id
+            statement = "SELECT content_type FROM modules WHERE "
+            statement += "module_id = "
+            statement += str(module_id)
+            cursor.execute(statement)
+            content_type = cursor.fetchall()
 
             # determine if module id corresponds to assessment.
             # if so, delete its assessment column from students table.
-                if content_type[0] == 'assessment':
-                     statement = "ALTER TABLE users DROP COLUMN "
-                     statement += str(module_id)
-                     cursor.execute(statement)
+            if content_type[0] == 'assessment':
+                    statement = "ALTER TABLE users DROP COLUMN "
+                    statement += str(module_id)
+                    cursor.execute(statement)
 
             # delete row with specified module id from programs table
-                statement = "DELETE FROM programs WHERE module_id = "
-                statement += str(module_id)
-                cursor.execute(statement)
+            statement = "DELETE FROM programs WHERE module_id = "
+            statement += str(module_id)
+            cursor.execute(statement)
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 
 def change_program_name(program_id, new_program_name):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                cursor.execute('BEGIN')
-                statement = "UPDATE programs SET program_name= "
-                statement += "%s WHERE program_id = %s"
+            cursor.execute('BEGIN')
+            statement = "UPDATE programs SET program_name= "
+            statement += "%s WHERE program_id = %s"
 
-                cursor.execute(statement, [new_program_name, program_id])
+            cursor.execute(statement, [new_program_name, program_id])
 
-                cursor.execute('COMMIT')
-                print('Progran name successfully updated!')
-                return (True, "success!")
+            cursor.execute('COMMIT')
+            print('Progran name successfully updated!')
+            return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, error)
+    finally:
+        _put_connection(connection)
 
 def change_module_name(module_id, new_module_name):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                print('module_id for changing name: ', module_id)
-                print('new name for module: ', new_module_name)
-                cursor.execute('BEGIN')
-                statement = "UPDATE modules SET module_name="
-                statement += "%s WHERE module_id= %s"
+            print('module_id for changing name: ', module_id)
+            print('new name for module: ', new_module_name)
+            cursor.execute('BEGIN')
+            statement = "UPDATE modules SET module_name="
+            statement += "%s WHERE module_id= %s"
 
-                cursor.execute(statement, [new_module_name, module_id])
+            cursor.execute(statement, [new_module_name, module_id])
 
-                cursor.execute('COMMIT')
-                print('Module name successfully updated!')
-                return (True, "success!")
+            cursor.execute('COMMIT')
+            print('Module name successfully updated!')
+            return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, error)
+    finally:
+        _put_connection(connection)
 
 def edit_module_link(new_module_link, id):
+    connection = _get_connection()
     try:
-        with CONN as connection:
+        #with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute('BEGIN')
-                statement = "UPDATE modules SET content_link= %s"
-                statement += " WHERE module_id= %s"
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
+            statement = "UPDATE modules SET content_link= %s"
+            statement += " WHERE module_id= %s"
 
-                cursor.execute(statement, [new_module_link, id])
+            cursor.execute(statement, [new_module_link, id])
 
-                cursor.execute('COMMIT')
-                print('Progran name successfully updated!')
-                return (True, "success!")
+            cursor.execute('COMMIT')
+            print('Progran name successfully updated!')
+            return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, error)
+    finally:
+        _put_connection(connection)
 
 
 
