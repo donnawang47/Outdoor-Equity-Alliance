@@ -320,7 +320,6 @@ def update_program_status(student_id, program_id, status):
                 stmt_str += "= %s WHERE user_id = %s"
 
                 cursor.execute(stmt_str, [status, student_id])
-$
                 cursor.execute('COMMIT')
                 print("Transaction committed")
                 return (True, "program status changed")

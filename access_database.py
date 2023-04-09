@@ -281,13 +281,15 @@ def get_student_program_progress(studentid, programid):
             # module_id = module['module_id']
             # get student completion of module_id
         print("for loop done:", assessment_ids)
-        success, completed_modules = get_student_module_completion(studentid, assessment_ids)
-        if success:
-            pgm_size = len(assessment_ids)
-            progress = str(completed_modules) + "/" + str(pgm_size)
-            print("student progress", progress)
-            return progress
-
+        progress = "no assessment module for this program yet"
+        if len(assessment_ids) != 0:
+            success, completed_modules = get_student_module_completion(studentid, assessment_ids)
+            if success:
+                pgm_size = len(assessment_ids)
+                progress = str(completed_modules) + "/" + str(pgm_size)
+                print("student progress", progress)
+        return True, progress
+    return False, "error"
 # for testing
 def main():
     # status, programs = get_all_programs()

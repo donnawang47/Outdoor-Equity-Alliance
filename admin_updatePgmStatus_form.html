@@ -1,0 +1,10 @@
+<form action="{{'/admin/students/studentdetails/updatePgmStatus?studentid=%s&pgm_id=%s' %(studentid, pgm)}}">
+    <p>Please select program status for the student:</p>
+    <input type="radio" id = "available" name="pgm_status" value="available">
+    <label for="available">Make available (unlock)</label><br>
+
+    <input type="radio" id="locked" name="pgm_status" value="locked">
+    <label for="locked">Lock program</label><br>
+    <input type="radio" id="enrolled" name="pgm_status" value="enrolled">
+    <label for="enrolled">Enroll student</label>
+</form>

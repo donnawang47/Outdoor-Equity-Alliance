@@ -32,10 +32,18 @@ def admin_students():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/students/studentdetails', methods=['GET'])
+@app.route('/admin/students/studentdetails', methods=['GET','POST'])
 def admin_studentdetails():
     studentid = flask.request.args.get('studentid')
     print("studentid", studentid)
+
+    if flask.request.args.get('updatePgmStatus') == 'true':
+        pgm_id = flask.request.args.get('pgm_id')
+        print("pgm_id", pgm_id)
+        if flask.request.method == 'POST':
+            pgm_status = flask.request.form['pgm_status']
+            status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
+            print("oea:", msg)
 
     status, student_programs = access_database.get_student_programs(studentid)
     print("oea: get student programs done")
@@ -45,10 +53,9 @@ def admin_studentdetails():
     print(enrolled_pgms)
     enrolled_pgms_status = {} # pgm_id : status
     for pgm_id in enrolled_pgms:
-        pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
+        success, pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
         print("pgm_status" + pgm_status)
         enrolled_pgms_status[pgm_id] = pgm_status
-
 
     print("oea.py, enrolled_pgms_status:", enrolled_pgms_status)
 
@@ -61,20 +68,21 @@ def admin_studentdetails():
     return response
 
 # doesnt produce new page
-@app.route('/admin/students/studentdetails/updatePgmStatus', methods=['GET'])
+@app.route('/admin/students/studentdetails/updatePgmStatus', methods=['GET','POST'])
 def admin_updatePgmStatus():
     print("updating program status")
     studentid = flask.request.args.get('studentid')
     print("studentid", studentid)
     pgm_id = flask.request.args.get('pgm_id')
     print("pgm_id", pgm_id)
-    pgm_status = flask.request.args.get('pgm_status')
 
-    status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
-    print("oea:", msg)
-    html_code = flask.render_template('admin_edit_pgm_status_btn.html',
-                studentid = studentid,
-                pgm = pgm_id,)
+    if flask.request.method == 'POST':
+        pgm_status = flask.request.form['pgm_status']
+        status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
+        print("oea:", msg)
+        html_code = flask.render_template('admin_edit_pgm_status_btn.html')
+    else:
+        html_code = flask.render_template('error.html', err_msg = "error has occurred")
     response = flask.make_response(html_code)
     return response
 
