@@ -217,16 +217,15 @@ def get_modules_of_program():
     print('modules page program name = ', program_name)
 
     status, data = access_database.get_program_modules(program_id)
-    moduleslist = data['modules']
-    print('modules list: ', moduleslist)
+    print('modules list: ', data['modules'])
 
     if status:
         print("Got modules list for program")
         html_code = flask.render_template('admin_modules.html',
                                           program_name = program_name, program_id = program_id,
-                                          moduleslist = moduleslist)
+                                          moduleslist = data['modules'])
     else:
-        html_code = flask.render_template('error.html', err_msg = moduleslist)
+        html_code = flask.render_template('error.html', err_msg = data)
 
     response = flask.make_response(html_code)
     return response

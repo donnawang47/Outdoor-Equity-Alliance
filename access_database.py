@@ -85,24 +85,23 @@ def get_program_modules(program_id):
             #     print(row)
 
             if table:
+                data = {}
+                data['program_id'] = table[0][0]
+                data['program_name'] = table[0][1]
+                data['description'] = table[0][2]
+                data['program_availability'] = table[0][3]
 
-            data = {}
-            data['program_id'] = table[0][0]
-            data['program_name'] = table[0][1]
-            data['description'] = table[0][2]
-            data['program_availability'] = table[0][3]
-
-            # list of dictionaries of modules within program
-            modules = []
-            for row in table:
-                modules_row = {}
-                modules_row['module_id'] = row[4]
-                # row[5] is program_id
-                modules_row['module_name'] = row[6]
-                modules_row['content_type'] = row[7]
-                modules_row['content_link'] = row[8]
-                modules_row['module_index'] = row[9]
-                modules.append(modules_row)
+                # list of dictionaries of modules within program
+                modules = []
+                for row in table:
+                    modules_row = {}
+                    modules_row['module_id'] = row[4]
+                    # row[5] is program_id
+                    modules_row['module_name'] = row[6]
+                    modules_row['content_type'] = row[7]
+                    modules_row['content_link'] = row[8]
+                    modules_row['module_index'] = row[9]
+                    modules.append(modules_row)
 
                 #sort modules via index
                 modules = sorted(modules, key=lambda x:x['module_index'])
