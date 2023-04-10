@@ -65,6 +65,7 @@ def get_programslist():
 # given a program_id, get all modules within that program
 def get_program_modules(program_id):
     try:
+        connection = _get_connection()
         # with CONN as connection:
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
