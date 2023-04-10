@@ -5,13 +5,14 @@
 # Author: Bob Dondero
 #-----------------------------------------------------------------------
 
-import os
-import sys
 import psycopg2
+import sys
+import os
 import queue
 
-# _database_url = os.getenv('DATABASE_URL')
-_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+#-----------------------------------------------------------------------
+
+_database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
 
 def _get_connection():
@@ -24,7 +25,7 @@ def _get_connection():
 def _put_connection(conn):
     _connection_pool.put(conn)
 
-#-----------------------------------------------------------------------
+#-------------------------------------------------------
 
 def display_programs_table():
     connection = _get_connection()

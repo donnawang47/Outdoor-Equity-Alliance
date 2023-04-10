@@ -1,5 +1,6 @@
 import psycopg2
 import queue
+import queue
 import sys
 import os
 
@@ -161,16 +162,16 @@ def create_module_id():
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                stmt_str = "SELECT COUNT(*) FROM modules"
-                cursor.execute(stmt_str)
-                count = cursor.fetchall()
-                # print("create module_id: ", count)
+            stmt_str = "SELECT COUNT(*) FROM modules"
+            cursor.execute(stmt_str)
+            count = cursor.fetchall()
+            # print("create module_id: ", count)
 
-                module_id = 'm' + str(count[0][0] + 1)
-                print("create module id:", module_id)
-                return module_id
+            module_id = 'm' + str(count[0][0] + 1)
+            print("create module id:", module_id)
+            return module_id
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -213,15 +214,15 @@ def get_user_id(student_email):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                stmt_str = "SELECT user_id FROM users WHERE user_email= %s"
-                cursor.execute(stmt_str, [student_email])
-                data = cursor.fetchall()
-                # print("program id", count[0][0])
-                student_id = data[0][0]
-                # print("create program id:", program_id)
-                return student_id
+            stmt_str = "SELECT user_id FROM users WHERE user_email= %s"
+            cursor.execute(stmt_str, [student_email])
+            data = cursor.fetchall()
+            # print("program id", count[0][0])
+            student_id = data[0][0]
+            # print("create program id:", program_id)
+            return student_id
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -235,16 +236,16 @@ def get_program_id(program_name):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                statement = "SELECT program_id FROM programs WHERE"
-                statement += " program_name = %s"
-                cursor.execute(statement, [program_name])
-                data = cursor.fetchall()
-                # print("program id", count[0][0])
-                program_name = data[0][0]
-                # print("create program id:", program_id)
-                return (True, program_name)
+            statement = "SELECT program_id FROM programs WHERE"
+            statement += " program_name = %s"
+            cursor.execute(statement, [program_name])
+            data = cursor.fetchall()
+            # print("program id", count[0][0])
+            program_name = data[0][0]
+            # print("create program id:", program_id)
+            return (True, program_name)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -259,16 +260,16 @@ def get_module_id(module_name):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                statement = "SELECT module_id FROM modules WHERE"
-                statement += " module_name = %s"
-                cursor.execute(statement, [module_name])
-                data = cursor.fetchall()
-                # print("program id", count[0][0])
-                program_name = data[0][0]
-                # print("create program id:", program_id)
-                return (True, program_name)
+            statement = "SELECT module_id FROM modules WHERE"
+            statement += " module_name = %s"
+            cursor.execute(statement, [module_name])
+            data = cursor.fetchall()
+            # print("program id", count[0][0])
+            program_name = data[0][0]
+            # print("create program id:", program_id)
+            return (True, program_name)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -287,18 +288,18 @@ def update_assessment_status(student_id, assessment_id, status):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute('BEGIN')
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
 
-                stmt_str = "UPDATE users SET "
-                stmt_str += assessment_id
-                stmt_str += "=%s WHERE user_id=%s;"
+            stmt_str = "UPDATE users SET "
+            stmt_str += assessment_id
+            stmt_str += "=%s WHERE user_id=%s;"
 
-                cursor.execute(stmt_str, [status, student_id])
+            cursor.execute(stmt_str, [status, student_id])
 
-                cursor.execute('COMMIT')
-                print("Transaction committed")
-                return (True, "assessment status changed")
+            cursor.execute('COMMIT')
+            print("Transaction committed")
+            return (True, "assessment status changed")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -314,18 +315,18 @@ def update_program_status(student_id, program_id, status):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute('BEGIN')
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
 
-                #
-                stmt_str = "UPDATE users SET "
-                stmt_str += program_id
-                stmt_str += "= %s WHERE user_id = %s"
+            #
+            stmt_str = "UPDATE users SET "
+            stmt_str += program_id
+            stmt_str += "= %s WHERE user_id = %s"
 
-                cursor.execute(stmt_str, [status, student_id])
-                cursor.execute('COMMIT')
-                print("Transaction committed")
-                return (True, "program status changed")
+            cursor.execute(stmt_str, [status, student_id])
+            cursor.execute('COMMIT')
+            print("Transaction committed")
+            return (True, "program status changed")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -367,25 +368,25 @@ def delete_module(module_id):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                # fetch content type with module_id
-                statement = "SELECT content_type FROM modules WHERE "
-                statement += "module_id = "
-                statement += str(module_id)
-                cursor.execute(statement)
-                content_type = cursor.fetchall()
+        with connection.cursor() as cursor:
+            # fetch content type with module_id
+            statement = "SELECT content_type FROM modules WHERE "
+            statement += "module_id = "
+            statement += str(module_id)
+            cursor.execute(statement)
+            content_type = cursor.fetchall()
 
             # determine if module id corresponds to assessment.
             # if so, delete its assessment column from students table.
-                if content_type[0] == 'assessment':
-                     statement = "ALTER TABLE users DROP COLUMN "
-                     statement += str(module_id)
-                     cursor.execute(statement)
+            if content_type[0] == 'assessment':
+                    statement = "ALTER TABLE users DROP COLUMN "
+                    statement += str(module_id)
+                    cursor.execute(statement)
 
             # delete row with specified module id from programs table
-                statement = "DELETE FROM programs WHERE module_id = "
-                statement += str(module_id)
-                cursor.execute(statement)
+            statement = "DELETE FROM programs WHERE module_id = "
+            statement += str(module_id)
+            cursor.execute(statement)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -400,17 +401,17 @@ def change_program_name(program_id, new_program_name):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                cursor.execute('BEGIN')
-                statement = "UPDATE programs SET program_name= "
-                statement += "%s WHERE program_id = %s"
+            cursor.execute('BEGIN')
+            statement = "UPDATE programs SET program_name= "
+            statement += "%s WHERE program_id = %s"
 
-                cursor.execute(statement, [new_program_name, program_id])
+            cursor.execute(statement, [new_program_name, program_id])
 
-                cursor.execute('COMMIT')
-                print('Progran name successfully updated!')
-                return (True, "success!")
+            cursor.execute('COMMIT')
+            print('Progran name successfully updated!')
+            return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -424,19 +425,19 @@ def change_module_name(module_id, new_module_name):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
 
-                print('module_id for changing name: ', module_id)
-                print('new name for module: ', new_module_name)
-                cursor.execute('BEGIN')
-                statement = "UPDATE modules SET module_name="
-                statement += "%s WHERE module_id= %s"
+            print('module_id for changing name: ', module_id)
+            print('new name for module: ', new_module_name)
+            cursor.execute('BEGIN')
+            statement = "UPDATE modules SET module_name="
+            statement += "%s WHERE module_id= %s"
 
-                cursor.execute(statement, [new_module_name, module_id])
+            cursor.execute(statement, [new_module_name, module_id])
 
-                cursor.execute('COMMIT')
-                print('Module name successfully updated!')
-                return (True, "success!")
+            cursor.execute('COMMIT')
+            print('Module name successfully updated!')
+            return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -450,16 +451,16 @@ def edit_module_link(new_module_link, id):
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute('BEGIN')
-                statement = "UPDATE modules SET content_link= %s"
-                statement += " WHERE module_id= %s"
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
+            statement = "UPDATE modules SET content_link= %s"
+            statement += " WHERE module_id= %s"
 
-                cursor.execute(statement, [new_module_link, id])
+            cursor.execute(statement, [new_module_link, id])
 
-                cursor.execute('COMMIT')
-                print('Progran name successfully updated!')
-                return (True, "success!")
+            cursor.execute('COMMIT')
+            print('Progran name successfully updated!')
+            return (True, "success!")
 
     except Exception as error:
         err_msg = "A server error occurred. "
