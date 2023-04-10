@@ -17,15 +17,137 @@
 
         <h3>Available Programs</h3>
         {% for pgm in programs['Available']: %}
-            {{pgm}}<br>
-        {% endfor %}
+        {{pgm}}
+        <span id = "edit_{{pgm}}StatusSpan">
+            <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
+            <button type = "button" onclick = "editStatus( '{{pgm}}')" >Edit Program Status</button>
+        </span>
+        <br>
+        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updatePgmStatus=true&studentid=%s&pgm_id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
+            <p>Please select program status for the student:</p>
+            <input type="radio" id = "{{pgm}}_available" name="pgm_status" value="available">
+            <label for="{{pgm}}_available">Make available (unlock)</label><br>
 
-        <h3>Locked Programs</h3>
-        {% for pgm in programs['Locked']: %}
-            {{pgm}}<br>
-        {% endfor %}
+            <input type="radio" id="{{pgm}}_locked" name="pgm_status" value="locked">
+            <label for="{{pgm}}_locked">Lock program</label><br>
 
+            <input type="radio" id="{{pgm}}_enrolled" name="pgm_status" value="enrolled">
+            <label for="{{pgm}}_enrolled">Enroll student</label> <br>
+
+            <button type="submit" form="update_{{pgm}}Status" value="Submit">Submit</button>
+        </form>
+    {% endfor %}
+
+    <!-- to unlock program for studentid -->
+    <h3>Locked Programs</h3>
+    {% for pgm in programs['Locked']: %}
+        {{pgm}}
+        <span id = "edit_{{pgm}}StatusSpan">
+            <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
+            <button type = "button" onclick = "editStatus( '{{pgm}}')">Edit Program Status</button>
+        </span>
+        <br>
+        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updatePgmStatus=true&studentid=%s&pgm_id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
+            <p>Please select program status for the student:</p>
+            <input type="radio" id = "{{pgm}}_available" name="pgm_status" value="available">
+            <label for="{{pgm}}_available">Make available (unlock)</label><br>
+
+            <input type="radio" id="{{pgm}}_locked" name="pgm_status" value="locked">
+            <label for="{{pgm}}_locked">Lock program</label><br>
+
+            <input type="radio" id="{{pgm}}_enrolled" name="pgm_status" value="enrolled">
+            <label for="{{pgm}}_enrolled">Enroll student</label> <br>
+
+            <button type="submit" form="update_{{pgm}}Status" value="Submit">Submit</button>
+        </form>
+    {% endfor %}
+
+
+
+
+
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        'use strict';
+
+        // display pgm status options
+        // function editStatus(pgm, studentid){
+        //     console.log("edit button pressed");
+        //     console.log("pgm:" + pgm);
+
+
+        //     let html_str = ' Unlock <input type = "checkbox" id = "' + pgm + '"> \
+        //     <button type = "button" id = "saveBtn" onclick = "saveStatus( \'' + pgm + '\', \'' + studentid + '\')" >save</button> ';
+        //     console.log(html_str);
+        //     $('#editStatusSpan').html(html_str);
+        // }
+
+        let request = null;
+        // function saveStatus(pgm_id, studentid){
+        //     console.log("saving status")
+        //     // modify database -- change status of pgm to unlocked
+        //     let pgm_status = 'locked';
+        //     let id = "\'#" + pgm_id + "\'";
+        //     // console.log($(id).val());
+        //     if ($('#' + pgm_id).is(":checked")) {
+        //         pgm_status = 'available';
+        //         console.log("unlock checked");
+        //     }
+        //     pgm_status = encodeURIComponent(pgm_status)
+        //     console.log(pgm_status);
+        //     console.log("pgm_id:" + pgm_id);
+        //     console.log("studentid:" + studentid);
+        //     let encode_studentid = encodeURIComponent(studentid);
+        //     let encode_pgm_id = encodeURIComponent(pgm_id);
+
+        //     let url = '/admin/students/studentdetails/updatePgmStatus?studentid=' + encode_studentid + '&pgm_id=' + encode_pgm_id + '&pgm_status=' + pgm_status;
+        //     console.log(url);
+
+        //     request = $.ajax({
+        //         type: 'GET',
+        //         url: url,
+        //         success: changedStatus
+        //     });
+
+        //     // change html again
+        // }
+        // function saveStatus(){
+        //     console.log("saving status")
+        //     // modify database -- change status of pgm to unlocked
+
+
+        //     let url = $('#updatePgmStatus').attr('action');
+        //     console.log(url);
+
+        //     request = $.ajax({
+        //         type: 'GET',
+        //         url: url,
+        //         success: changedStatus
+        //     });
+
+        //     // change html again
+        // }
+        // function changedStatus(response) {
+        //     $('#editStatusSpan').html(response);
+        // }
+
+        function editStatus(pgm){
+            let element_id = "#update_" + pgm + "Status";
+            // update_{{pgm}}Status
+            $(element_id).show();
+        }
+
+        // function setup() {
+        //     $( "#editStatusBtn" ).on("click", function() {
+        //         $( "#updatePgmStatus" ).show();
+        //         });
+        //     // $("#updatePgmStatus").on("submit", saveStatus);
+        // }
+        // $('document').ready(setup);
+
+
+    </script>
 
     </body>
-
 </html>
