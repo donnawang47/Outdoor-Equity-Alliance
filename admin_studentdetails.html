@@ -14,10 +14,15 @@
         {% for pgm in programs['Enrolled']: %}
             {{pgm}} status: {{enrolled_pgms[pgm]['pgm_status']}}<br>
             {% for assessment in enrolled_pgms[pgm]['assessments'] %}
-                assessment {{assessment[0]}}, status {{assessment[1]}}
+                assessment {{assessment[0]}}, status 
+                {% if assessment[1] == 1 %}
+                    complete
+                {% else %}
+                    incomplete
+                {% endif %}
                 <span id = "edit_{{assessment[0]}}StatusSpan">
                     <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
-                    <button type = "button" onclick = "editModuleStatus( '{{assessment[0]}}')" >Edit Program Status</button>
+                    <button type = "button" onclick = "editModuleStatus( '{{assessment[0]}}')" >Edit Module Status</button>
                 </span>
                 <br>
                 <form id = "update_{{assessment[0]}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=module&studentid=%s&id=%s' %(studentid, assessment[0])}}" method='POST' style = "display: none">
