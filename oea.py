@@ -50,7 +50,7 @@ def admin_studentdetails():
                 mod_status = flask.request.form['mod_status']
                 status, msg = modify_database.update_assessment_status(studentid, id, mod_status)
                 print("oea updating module status:", msg)
-    
+
 
     status, student_programs = access_database.get_student_programs(studentid)
     status, student_info = access_database.get_student_info(studentid)
@@ -73,7 +73,7 @@ def admin_studentdetails():
                 assessments.append((mod['module_id'], student_info[mod['module_id']]))
         pgm['assessments'] = assessments
         enrolled_pgms[pgm_id] = pgm
-    
+
 
     print("oea.py, enrolled_pgms:", enrolled_pgms)
 
@@ -108,14 +108,15 @@ def admin_updatePgmStatus():
 def admin_programs():
     # programslist is a tuple
     # programslist[0] indicates whether data was retrieved successfully
-    status, programslist = access_database.get_programslist()
-    if status is True:
+    status, data = access_database.get_programslist()
+    if status:
         print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',
-                    programslist = programslist)
+                    programslist = data)
     else:
         print("Error: " + programslist)
-        #html_code=""
+        html_code= flask.render_template('error.html',
+                    err_msg = data)
 
     response = flask.make_response(html_code)
     return response

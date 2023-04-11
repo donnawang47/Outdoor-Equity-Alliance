@@ -28,10 +28,12 @@ def insert_module(data):
         with connection.cursor() as cursor:
 
             # can prob call max
+            cursor.execute('BEGIN;')
             statement = """ INSERT INTO modules (module_id, program_id, module_name, content_type, content_link, module_index) VALUES (%s, %s, %s, %s, %s, %s);  """
             param = [data['module_id'], data['program_id'], data['module_name'], data['content_type'], data['content_link'], data['module_index']]
 
             cursor.execute(statement, param)
+            cursor.execute('COMMIT;')
             # connection.commit()
 
             # modify users table
@@ -41,13 +43,15 @@ def insert_module(data):
             # add new assessment column to users table
 
             if data['content_type'] == "assessment":
+                cursor.execute('BEGIN;')
                 statement = "ALTER TABLE users"
                 # default of 0 = incomplete
                 statement += " ADD COLUMN " + data['module_id']
                 statement += " INTEGER DEFAULT 0;"
                 cursor.execute(statement)
+                cursor.execute('COMMIT;')
 
-            connection.commit()
+            #connection.commit()
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -69,12 +73,14 @@ def insert_program(data):
                 raise Exception('Program availability must be: all or none')
 
             # modify program table
+            cursor.execute('BEGIN;')
 
             statement = """
             INSERT INTO programs (program_id, program_name, description, program_availability) VALUES (%s, %s, %s, %s);
             """
             param = [data['program_id'], data['program_name'], data['description'], data['program_availability']]
             cursor.execute(statement, param)
+
 
             # modify students table to include new program column
             # with specified program_id as the name of the column
@@ -84,12 +90,14 @@ def insert_program(data):
             elif data['program_availability'] == 'enroll':
                     pgm_status = 'enrolled'
 
+
             stmt_str = "ALTER TABLE users "
             stmt_str += "ADD " + data['program_id']
             stmt_str += " TEXT DEFAULT %s;"
             cursor.execute(stmt_str, [pgm_status])
+            cursor.execute('COMMIT;')
 
-            connection.commit()
+            #connection.commit()
 
             return(True, "success!")
 
@@ -360,6 +368,7 @@ def delete_program(program_id):
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 # remove program from students table
+                cursor.execute('BEGIN;')
                 statement = " ALTER TABLE users DROP COLUMN "
                 statement += program_id
                 cursor.execute(statement)
@@ -373,7 +382,8 @@ def delete_program(program_id):
                 # remove program from modules table
                 statement = "DELETE FROM modules WHERE program_id = %s"
                 cursor.execute(statement, [program_id])
-                connection.commit()
+                cursor.execute('COMMIT;')
+                #connection.commit()
                 return (True, "deleted program successfully")
 
     except Exception as error:
