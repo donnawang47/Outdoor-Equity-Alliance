@@ -1,19 +1,19 @@
 import psycopg2
 import queue
-import queue
 import sys
 import os
 
 # DATABASE_URL = os.getenv('DATABASE_URL')
 # CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
-# _database_url = os.getenv('DATABASE_URL')
-_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+#_database_url = "dbname=oea user=rmd password=xxx"
+_database_url = os.getenv('DATABASE_URL')
+#_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 _connection_pool = queue.Queue()
 
 def _get_connection():
     try:
         conn = _connection_pool.get(block=False)
-    except:
+    except queue.Empty:
         conn = psycopg2.connect(_database_url)
     return conn
 
@@ -32,6 +32,7 @@ def insert_module(data):
             param = [data['module_id'], data['program_id'], data['module_name'], data['content_type'], data['content_link'], data['module_index']]
 
             cursor.execute(statement, param)
+            # connection.commit()
 
             # modify users table
 
@@ -45,6 +46,8 @@ def insert_module(data):
                 statement += " ADD COLUMN " + data['module_id']
                 statement += " INTEGER DEFAULT 0;"
                 cursor.execute(statement)
+
+            connection.commit()
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -66,6 +69,7 @@ def insert_program(data):
                 raise Exception('Program availability must be: all or none')
 
             # modify program table
+
             statement = """
             INSERT INTO programs (program_id, program_name, description, program_availability) VALUES (%s, %s, %s, %s);
             """
@@ -84,6 +88,8 @@ def insert_program(data):
             stmt_str += "ADD " + data['program_id']
             stmt_str += " TEXT DEFAULT %s;"
             cursor.execute(stmt_str, [pgm_status])
+
+            connection.commit()
 
             return(True, "success!")
 
@@ -107,6 +113,8 @@ def insert_student(data): #data is 4-string-tuple
             param = [data['student_name'], data['student_email']]
             cursor.execute(statement, param)
 
+            connection.commit()
+
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
@@ -125,6 +133,8 @@ def insert_admin(data):
             statement = """ INSERT INTO users (user_status, user_name, user_email) VALUES ('admin', %s, %s);  """
             param = [data['admin_name'], data['admin_email']]
             cursor.execute(statement, param)
+
+            connection.commit()
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -166,11 +176,15 @@ def create_module_id():
 
             stmt_str = "SELECT COUNT(*) FROM modules"
             cursor.execute(stmt_str)
-            count = cursor.fetchall()
+            data = cursor.fetchall()
             # print("create module_id: ", count)
+            num = 1
+            if len(data) != 0:
+                num = str(data[0][0] + 1)
 
-            module_id = 'm' + str(count[0][0] + 1)
+            module_id = 'm' + num
             print("create module id:", module_id)
+            connection.commit()
             return module_id
 
     except Exception as error:
@@ -191,11 +205,13 @@ def create_program_id():
                 program_id DESC LIMIT 1"""
                 cursor.execute(stmt_str)
                 print('stmt_str =', stmt_str)
-                count = cursor.fetchall()
-                print('count =', count[0][0])
-                # print("program id", count[0][0])
-                id = count[0][0]
-                num = int(id[1]) + 1
+                data = cursor.fetchall()
+                num = 1
+                if len(data) != 0:
+                    print('count =', data[0][0])
+                    # print("program id", count[0][0])
+                    id = data[0][0]
+                    num = int(id[1]) + 1
                 print('num = ', num)
                 program_id = 'p' + str(num)
                 # print("create program id:", program_id)
@@ -222,6 +238,7 @@ def get_user_id(student_email):
             # print("program id", count[0][0])
             student_id = data[0][0]
             # print("create program id:", program_id)
+
             return student_id
 
     except Exception as error:
@@ -345,14 +362,17 @@ def delete_program(program_id):
                 statement = " ALTER TABLE users DROP COLUMN "
                 statement += program_id
                 cursor.execute(statement)
+                connection.commit()
 
                 # remove program from programs table
                 statement = "DELETE FROM programs WHERE program_id = %s"
                 cursor.execute(statement, [program_id])
+                connection.commit()
 
                 # remove program from modules table
                 statement = "DELETE FROM modules WHERE program_id = %s"
                 cursor.execute(statement, [program_id])
+                connection.commit()
                 return (True, "deleted program successfully")
 
     except Exception as error:
@@ -387,6 +407,7 @@ def delete_module(module_id):
             statement = "DELETE FROM programs WHERE module_id = "
             statement += str(module_id)
             cursor.execute(statement)
+            connection.commit()
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -567,64 +588,65 @@ def main():
     # # # # ------------creating test programs -------------------- #
 
     # # # create locked program
-    # program2_id = create_program_id()
-    # program2_data = {
-    #     "program_id": program2_id,
-    #     "program_name": "Course 105",
-    #     "description": "Description",
-    #     "program_availability": "none"
-    # }
-    # # program2_data = [program2_id, "LOCKED PROGRAM", "Description", "NONE"]
-    # insert_program(program2_data)
-    # print("main: program2 inserted")
+    program2_id = create_program_id()
+    program2_data = {
+        "program_id": program2_id,
+        "program_name": "Course 105",
+        "description": "Description",
+        "program_availability": "none"
+    }
+    insert_program(program2_data)
+    print("main: program2 inserted")
 
-    # # # create random module in program2
-    # module3_id = create_module_id()
-    # module3_name = 'test module' # module 1 not a typo
-    # module3_content_type = "content type"
-    # module3_content_link = 'content link'
-    # module3_index = 0 # need a function to get index
-
-
-    # module3_data = {
-    #     'module_id' : module3_id,
-    #     'program_id': program2_id,
-    #     'module_name': module3_name,
-    #     'content_type': module3_content_type,
-    #     'content_link': module3_content_link,
-    #     'module_index': module3_index
-    # }
+    # # create random module in program2
+    module3_id = create_module_id()
+    module3_name = 'test module' # module 1 not a typo
+    module3_content_type = "content type"
+    module3_content_link = 'content link'
+    module3_index = 0 # need a function to get index
 
 
-    # insert_module(module3_data)
-    # print("main: insert module3")
+    module3_data = {
+        'module_id' : module3_id,
+        'program_id': program2_id,
+        'module_name': module3_name,
+        'content_type': module3_content_type,
+        'content_link': module3_content_link,
+        'module_index': module3_index
+    }
+
+
+    insert_module(module3_data)
+    print("main: insert module3")
 
 
     # # # #--------------test adding students -------------------------- #
 
-    # # add Liz as student
-    # print('add student1 Liz')
-    # student_data = {
-    #      'student_name': 'Liz Garcia',
-    #      'student_email': 'lg6248@princeton.edu'
-    # }
-    # insert_student(student_data)
+    # add Liz as student
+    print('add student1 Liz')
+    student_data = {
+         'student_name': 'Liz Garcia',
+         'student_email': 'lg6248@princeton.edu'
+    }
+    insert_student(student_data)
 
-    # # add Annie as student
-    # print('add student2 Annie')
-    # student_data = {
-    #      'student_name': 'Annie Liu',
-    #      'student_email': 'an2334@princeton.edu'
-    # }
-    # insert_student(student_data)
+    # add Annie as student
+    print('add student2 Annie')
+    student_data = {
+         'student_name': 'Annie Liu',
+         'student_email': 'an2334@princeton.edu'
+    }
+    insert_student(student_data)
 
-    # # add Donna as student
-    # print('add student3 Donna')
-    # student_data = {
-    #      'student_name': 'Donna Wang',
-    #      'student_email': 'dw5609@princeton.edu'
-    # }
-    # insert_student(student_data)
+    # add Donna as student
+    print('add student3 Donna')
+    student_data = {
+         'student_name': 'Donna Wang',
+         'student_email': 'dw5609@princeton.edu'
+    }
+    insert_student(student_data)
+
+    #display_database.display_programs_table()
 
     # # ----------- test changing program name ------------------------#
     # print('changing course 105 to course #2')

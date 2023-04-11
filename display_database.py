@@ -13,12 +13,14 @@ import queue
 #-----------------------------------------------------------------------
 
 _database_url = os.getenv('DATABASE_URL')
+#_database_url = "dbname=oea user=rmd password=xxx"
 _connection_pool = queue.Queue()
 
 def _get_connection():
     try:
         conn = _connection_pool.get(block=False)
-    except:
+    except queue.Empty:
+        print(_database_url)
         conn = psycopg2.connect(_database_url)
     return conn
 
@@ -33,6 +35,8 @@ def display_programs_table():
         # conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
         # with conn as connection:
+
+        # with psycopg2.connect(database_url) as connection:
 
         with connection.cursor() as cursor:
             print('-------------------------------------------')
@@ -52,8 +56,8 @@ def display_programs_table():
 def display_users_table():
     connection = _get_connection()
     try:
-        # conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
-        # with conn as connection:
+        conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
+        #with conn as connection:
         # with psycopg2.connect(database_url) as connection:
         with connection.cursor() as cursor:
             print('-------------------------------------------')
@@ -63,7 +67,6 @@ def display_users_table():
             table = cursor.fetchall()
             for row in table:
                 print(row)
-
     except Exception as ex:
         print(ex, file=sys.stderr)
         sys.exit(1)
@@ -75,13 +78,16 @@ def main():
     # if len(sys.argv) != 1:
     #     print('Usage: python display.py', file=sys.stderr)
     #     sys.exit(1)
-
     connection = _get_connection()
     try:
-        # conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
-        # with conn as connection:
+        #conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
+
+        #with conn as connection:
+
+        # with psycopg2.connect(database_url) as connection:
 
         with connection.cursor() as cursor:
+            cursor.execute(''' SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'oea' AND pid <> pg_backend_pid(); ''')
 
             print('-------------------------------------------')
             print('users')

@@ -8,14 +8,15 @@ import psycopg2
 def _put_connection(conn):
     _connection_pool.put(conn)
 
-# _database_url = os.getenv('DATABASE_URL')
-_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+_database_url = os.getenv('DATABASE_URL')
+#_database_url = "dbname=oea user=rmd password=xxx"
+# _database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 _connection_pool = queue.Queue()
 
 def _get_connection():
     try:
         conn = _connection_pool.get(block=False)
-    except:
+    except queue.Empty:
         conn = psycopg2.connect(_database_url)
     return conn
 
