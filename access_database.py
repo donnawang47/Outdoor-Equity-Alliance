@@ -10,9 +10,9 @@ import queue
 # for windows cmd: set DATABASE_URL=postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea
 
 # this always works i think
-_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+#_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 
-# _database_url = os.getenv('DATABASE_URL')
+_database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
 # CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
@@ -277,6 +277,18 @@ def get_student_programs(student_id):
     data['Locked'] = locked
     data ['Enrolled'] = enrolled
     return status, data
+
+def get_student_program_status(student_id, program_id):
+    status, student_programs = get_student_programs(student_id)
+    if status:
+        if program_id in student_programs['Available']:
+            return status, "available"
+        elif program_id in student_programs['Locked']:
+            return status, "locked"
+        else:
+            return status, "enrolled"
+    else:
+        return status,student_programs
 
 # helper function
 # returns number of student_id's completed assessments

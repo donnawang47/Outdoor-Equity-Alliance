@@ -37,33 +37,51 @@ def admin_studentdetails():
     studentid = flask.request.args.get('studentid')
     print("studentid", studentid)
 
-    if flask.request.args.get('updatePgmStatus') == 'true':
-        pgm_id = flask.request.args.get('pgm_id')
-        print("pgm_id", pgm_id)
+    if flask.request.args.get('updateStatus') == 'true':
+        id = flask.request.args.get('id')
+        category = flask.request.args.get('category')
+        print("id", id)
         if flask.request.method == 'POST':
-            pgm_status = flask.request.form['pgm_status']
-            status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
-            print("oea updating program status:", msg)
+            if category == 'program':
+                pgm_status = flask.request.form['pgm_status']
+                status, msg = modify_database.update_program_status(studentid, id, pgm_status)
+                print("oea updating program status:", msg)
+            elif category == 'module':
+                mod_status = flask.request.form['mod_status']
+                status, msg = modify_database.update_assessment_status(studentid, id, mod_status)
+                print("oea updating module status:", msg)
+    
 
     status, student_programs = access_database.get_student_programs(studentid)
+    status, student_info = access_database.get_student_info(studentid)
     print("oea: get student programs done")
     # can only get student progress on enrolled programs?
     # need to change to enrolled
-    enrolled_pgms = student_programs['Enrolled'] # program ids
-    print(enrolled_pgms)
-    enrolled_pgms_status = {} # pgm_id : status
-    for pgm_id in enrolled_pgms:
+    enrolled = student_programs['Enrolled'] # program ids
+    print(enrolled)
+    enrolled_pgms = {} # pgm_id : status
+    for pgm_id in enrolled:
+        pgm = {}
         success, pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
         print("pgm_status" + pgm_status)
-        enrolled_pgms_status[pgm_id] = pgm_status
+        pgm['pgm_status'] = pgm_status
+        status, data = access_database.get_program_modules(pgm_id)
+        assessments = []
+        for mod in data['modules']:
+            print(mod)
+            if mod['content_type'] == 'assessment':
+                assessments.append((mod['module_id'], student_info[mod['module_id']]))
+        pgm['assessments'] = assessments
+        enrolled_pgms[pgm_id] = pgm
+    
 
-    print("oea.py, enrolled_pgms_status:", enrolled_pgms_status)
+    print("oea.py, enrolled_pgms:", enrolled_pgms)
 
     print("Student Interface: displaying programs list")
     html_code = flask.render_template('admin_studentdetails.html',
                 studentid = studentid,
                 programs = student_programs,
-                enrolled_pgms_status = enrolled_pgms_status)
+                enrolled_pgms = enrolled_pgms)
     response = flask.make_response(html_code)
     return response
 
@@ -323,46 +341,70 @@ def delete_program():
     response = flask.make_response(html_code)
     return response
 
+def get_current_student():
+    return 2
 
 @app.route('/student', methods=['GET'])
 def student_interface():
-    status, student_programs = access_database.get_student_programs(2)
+    studentid = get_current_student()
+    status, student_programs = access_database.get_student_programs(studentid)
     if status:
-        print("Student Interface: displaying programs list")
+        print("Student Interface: displaying programs list for " + str(studentid))
         html_code = flask.render_template('student_interface.html',
-                    programs = student_programs)
+                    programs = student_programs, studentid=studentid)
     else:
-        html_code = flask.render_template('error.html', err_msg=student_programs)
+        html_code = flask.render_template('error_student.html', err_msg=student_programs)
     response = flask.make_response(html_code)
     return response
 
 @app.route('/student/program', methods=['GET'])
 def student_program():
+    studentid = get_current_student()
     programid = flask.request.args.get('programid')
     print(programid)
     status, programdata = access_database.get_program_modules(programid)
+    status, program_status = access_database.get_student_program_status(studentid, programid)
     if status:
-        print("Student Interface: displaying program info " + programid + " for ")
+        print("Student Interface: displaying program info " + programid + " for " + str(studentid))
         html_code = flask.render_template('student_program.html',
-                    program = programdata)
+                    program = programdata, availability=program_status, studentid=studentid)
     else:
-        html_code = flask.render_template('error.html', err_msg=programdata)
+        html_code = flask.render_template('error_student.html', err_msg=programdata)
     response = flask.make_response(html_code)
     return response
 
 
 @app.route('/student/program/module', methods=['GET'])
 def student_program_module():
+    studentid=get_current_student()
     moduleid = flask.request.args.get('moduleid')
     print(moduleid)
     status, moduledata = access_database.get_module(moduleid)
-    status, programdata = access_database.get_program_modules(moduledata['program_id'])
-    if status:
-        print("Student Interface: displaying module info " + moduleid + " for ")
-        html_code = flask.render_template('student_program_module.html',
-                    module = moduledata, program=programdata)
+    status, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
+    if program_status == 'enrolled':
+        status, programdata = access_database.get_program_modules(moduledata['program_id'])
+        if status:
+            print("Student Interface: displaying module info " + moduleid + " for " + str(studentid))
+            html_code = flask.render_template('student_program_module.html',
+                        module = moduledata, program=programdata, studentid=studentid)
+        else:
+            html_code = flask.render_template('error_student.html', err_msg=moduledata)
     else:
-        html_code = flask.render_template('error.html', err_msg=moduledata)
+        html_code = flask.render_template('error_student.html', err_msg="Program " + moduledata['program_id'] + " is " + program_status + " please enroll or contact the admin to gain access.")
     response = flask.make_response(html_code)
     return response
 
+@app.route('/completemodule', methods=['GET'])
+def student_complete_module():
+    studentid = flask.request.args.get('studentid')
+    moduleid = flask.request.args.get('moduleid')
+    status, msg = modify_database.update_assessment_status(studentid, moduleid, 1)
+    return flask.make_response("")
+
+
+@app.route('/enrollpgm', methods=['GET'])
+def student_enroll_program():
+    studentid = flask.request.args.get('studentid')
+    programid = flask.request.args.get('programid')
+    status, msg = modify_database.update_program_status(studentid, programid, "enrolled")
+    return flask.make_response("")

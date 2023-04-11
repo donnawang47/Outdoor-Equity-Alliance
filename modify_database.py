@@ -216,6 +216,7 @@ def create_program_id():
                 program_id = 'p' + str(num)
                 # print("create program id:", program_id)
                 print('program id created = ', program_id)
+
                 return program_id
 
     except Exception as error:
@@ -362,12 +363,12 @@ def delete_program(program_id):
                 statement = " ALTER TABLE users DROP COLUMN "
                 statement += program_id
                 cursor.execute(statement)
-                connection.commit()
+                #connection.commit()
 
                 # remove program from programs table
                 statement = "DELETE FROM programs WHERE program_id = %s"
                 cursor.execute(statement, [program_id])
-                connection.commit()
+                #connection.commit()
 
                 # remove program from modules table
                 statement = "DELETE FROM modules WHERE program_id = %s"

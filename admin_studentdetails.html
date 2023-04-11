@@ -11,8 +11,26 @@
 
         <h3>Enrolled Programs</h3>
 
-        {% for pgm in enrolled_pgms_status: %}
-            {{pgm}} status: {{enrolled_pgms_status[pgm]}}<br>
+        {% for pgm in programs['Enrolled']: %}
+            {{pgm}} status: {{enrolled_pgms[pgm]['pgm_status']}}<br>
+            {% for assessment in enrolled_pgms[pgm]['assessments'] %}
+                assessment {{assessment[0]}}, status {{assessment[1]}}
+                <span id = "edit_{{assessment[0]}}StatusSpan">
+                    <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
+                    <button type = "button" onclick = "editModuleStatus( '{{assessment[0]}}')" >Edit Program Status</button>
+                </span>
+                <br>
+                <form id = "update_{{assessment[0]}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=module&studentid=%s&id=%s' %(studentid, assessment[0])}}" method='POST' style = "display: none">
+                    <p>Please select module status for the student:</p>
+                    <input type="radio" id = "{{assessment[0]}}_comp" name="mod_status" value="1">
+                    <label for="{{assessment[0]}}_comp">Mark complete</label><br>
+        
+                    <input type="radio" id="{{assessment[0]}}_inc" name="mod_status" value="0">
+                    <label for="{{assessment[0]}}_inc">Mark incomplete</label><br>
+        
+                    <button type="submit" form="update_{{assessment[0]}}Status" value="Submit">Submit</button>
+                </form>
+            {% endfor %}
         {% endfor %}
 
         <h3>Available Programs</h3>
@@ -20,10 +38,10 @@
         {{pgm}}
         <span id = "edit_{{pgm}}StatusSpan">
             <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
-            <button type = "button" onclick = "editStatus( '{{pgm}}')" >Edit Program Status</button>
+            <button type = "button" onclick = "editProgramStatus( '{{pgm}}')" >Edit Program Status</button>
         </span>
         <br>
-        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updatePgmStatus=true&studentid=%s&pgm_id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
+        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=pgm&studentid=%s&id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
             <p>Please select program status for the student:</p>
             <input type="radio" id = "{{pgm}}_available" name="pgm_status" value="available">
             <label for="{{pgm}}_available">Make available (unlock)</label><br>
@@ -44,10 +62,10 @@
         {{pgm}}
         <span id = "edit_{{pgm}}StatusSpan">
             <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
-            <button type = "button" onclick = "editStatus( '{{pgm}}')">Edit Program Status</button>
+            <button type = "button" onclick = "editProgramStatus( '{{pgm}}')">Edit Program Status</button>
         </span>
         <br>
-        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updatePgmStatus=true&studentid=%s&pgm_id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
+        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=pgm&studentid=%s&id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
             <p>Please select program status for the student:</p>
             <input type="radio" id = "{{pgm}}_available" name="pgm_status" value="available">
             <label for="{{pgm}}_available">Make available (unlock)</label><br>
@@ -132,7 +150,13 @@
         //     $('#editStatusSpan').html(response);
         // }
 
-        function editStatus(pgm){
+        function editModuleStatus(module){
+            let element_id = "#update_" + module + "Status";
+            // update_{{pgm}}Status
+            $(element_id).show();
+        }
+
+        function editProgramStatus(pgm){
             let element_id = "#update_" + pgm + "Status";
             // update_{{pgm}}Status
             $(element_id).show();

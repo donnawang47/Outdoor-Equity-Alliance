@@ -3,28 +3,50 @@
 <html>
     <head>
         <title> Outdoor Equity Alliance: Student Interface</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+
+        <style>
+            .header {
+                background-color:darkseagreen;
+                text-align: center;
+                color:rgb(13, 34, 20);
+            }
+
+            .links {
+                text-align: center;
+            }
+
+        </style>
     </head>
 
     <body>
-        <h1> Outdoor Equity Alliance</h1>
 
-        <h2>Welcome: </h2>
+        <div class="container-fluid, header">
+            <center>
+                <h1>Outdoor Equity Alliance</h1>
+                <h2>Welcome {{studentid}}</h2>
+            </center>
+        </div>
+
 
         <hr>
 
         <h3>Enrolled Programs</h3>
         {% for pgm in programs['Enrolled']: %}
-            <a href="{{"/student/program?programid=" + pgm}}">{{pgm}}</a><br>
+            <a href="{{"/student/program?programid=" + pgm}}" class="btn btn-outline-info">{{pgm}}</a><br>
         {% endfor %}
 
         <h3>Available Programs</h3>
         {% for pgm in programs['Available']: %}
-            <a href="{{"/student/program?programid=" + pgm}}">{{pgm}}</a><br>
+            <a href="{{"/student/program?programid=" + pgm}}" class="btn btn-outline-info">{{pgm}}</a><br>
         {% endfor %}
 
         <h3>Locked Programs</h3>
         {% for pgm in programs['Locked']: %}
-            <a href="{{"/student/program?programid=" + pgm}}">{{pgm}}</a><br>
+            <a href="{{"/student/program?programid=" + pgm}}" class="btn btn-outline-info">{{pgm}}</a><br>
         {% endfor %}
 
 
