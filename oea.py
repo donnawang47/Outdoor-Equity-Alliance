@@ -249,6 +249,37 @@ def get_modules_of_program():
     response = flask.make_response(html_code)
     return response
 
+@app.route('/admin/modules/edit/sequence', methods=['GET', 'POST'])
+def edit_module_seq():
+    print("oea.py: edit_module_seq")
+    program_id = flask.request.args.get('program_id')
+    print('modules page program id = ', program_id)
+    program_name = flask.request.args.get('program_name')
+    print('modules page program name = ', program_name)
+
+    status, data = access_database.get_program_modules(program_id)
+    print('modules list: ', data['modules'])
+
+    if flask.request.method == 'POST':
+        # num_modules = flask.request.form['num_modules']
+        for name, val in flask.request.form.items():
+            print(name, val)
+            modify_database.change_module_idx(name, val)
+
+            # get module id from flask req
+            # get new idx from flask req
+            # call database function to update
+    if status:
+        print("Got modules list for program")
+        html_code = flask.render_template('admin_modules.html',
+                                          program_name = program_name, program_id = program_id,
+                                          moduleslist = data['modules'])
+    else:
+        html_code = flask.render_template('error.html', err_msg = data)
+
+    response = flask.make_response(html_code)
+    return response
+
 # DISPLAY EDITING PAGE FOR SPECIFIC MODULE AFTER CLICKING EDIT BUTTON
 @app.route('/admin/modules/edit/name', methods=['GET', 'POST'])
 def edit_module_name():

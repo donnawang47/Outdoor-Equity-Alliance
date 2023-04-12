@@ -4,8 +4,22 @@
     <head>
         <title> Outdoor Equity Alliance: Admin Interface</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
+
+
+        <style type="text/css">
+            .selected
+            {
+                background-color: #414141;
+            }
+        </style>
 
     </head>
 
@@ -18,19 +32,20 @@
         <!-- display list of existing programs -->
         <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
             <table>
+                <tr>
+                    <th align = "left">ID</th>
+                    <th align = "left">Name</th>
+                    <th align = "left">Content Type</th>
+                    <th align = "left">Link</th>
+                    <th align = "left">module_index</th>
+                </tr>
                 <!-- row 1, containing names of each column -->
 
                         <!-- rows of programslist -->
                         <!-- each row only displays program name -->
                 {% if moduleslist|length != 0: %}
                     {% for module in moduleslist: %}
-                        <tr>
-                            <th align = "left">ID</th>
-                            <th align = "left">Name</th>
-                            <th align = "left">Content Type</th>
-                            <th align = "left">Link</th>
-                            <th align = "left">module_index</th>
-                        </tr>
+
                         <tr>
                             <!-- col 1 is row["ClsId"] -->
                             <!-- <form action="/admin/edit/program/name" method="POST"> -->
@@ -78,5 +93,99 @@
 <!-- #TODO! -->
         <a href="/admin/programs/create_module">Create New Module</a>
 
+        <hr>
+
+        <a href="/admin/programs">Back to Programs</a>
+
+        <!-- form for module sequence-->
+
+        <!--ref: https://stackoverflow.com/questions/44091397/pop-up-a-form-when-a-button-is-clicked -->
+        <!--ref: https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_modal&stacked=h -->
+
+        <!-- Trigger the modal with a button -->
+        <div class="container">
+            <button type = "button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#change_module_idx"> Change Sequence</button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="change_module_idx" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
+                        </div>
+                        <div class="modal-body container-fluid">
+                            <form role="form" method="POST" action="{{'/admin/modules/edit/sequence?program_id=%s&program_name=%s' %(program_id, program_name)}}">
+                                <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
+                                <table id="module_idx_table" class = "table table-hover">
+                                    <thead>
+                                        <tr>
+                                          <th>Index</th>
+                                          <th>Module Name</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% if moduleslist|length != 0: %}
+                                        {% for module in moduleslist: %}
+                                            <tr>
+                                                <td>
+                                                    {{module['module_index']}}
+                                                </td>
+                                                <td>
+                                                <label for="{{module['module_id']}}">{{module['module_name']}}</label>
+                                                <input type="hidden" name="{{module['module_id']}}" id="{{module['module_id']}}" value="{{module['module_index']}}">
+                                                </td>
+                                            </tr>
+
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                                    <div class="row">
+                                        <button type="submit" class="btn btn-default">Save Changes</button>
+                                    </div>
+
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    <script>
+        // ref: https://www.aspsnippets.com/Articles/Sort-Table-rows-with-jQuery-using-Drag-and-Drop-method.aspx
+        $("#module_idx_table").sortable({
+            items: 'tr:not(tr:first-child)',
+            cursor: 'pointer',
+            axis: 'y',
+            dropOnEmpty: false,
+            start: function(e, ui) {
+                ui.item.addClass("selected");
+                console.log("selected");
+            },
+
+            stop: function(e, ui) {
+                ui.item.removeClass("selected");
+                $(this).find("tr").each(function (index) {
+                    if (index > 0) {
+                        $(this).find("td").eq(0).html(index);
+                        $(this).find("input").val(index);
+                    }
+
+                });
+            }
+
+        });
+
+    </script>
     </body>
 </html>
