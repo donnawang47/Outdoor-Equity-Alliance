@@ -40,6 +40,7 @@ def get_programslist():
     try:
         # with CONN as connection:
         with connection.cursor() as cursor:
+            print("access_database.py: get_programslist")
             stmt_str = "SELECT * FROM programs;"
 
             cursor.execute(stmt_str)
@@ -55,6 +56,7 @@ def get_programslist():
                 data_row['program_availability'] = row[3]
                 data.append(data_row)
 
+            print("success access_database.py: get_programslist")
             return (True, data)
 
     except Exception as error:
@@ -71,6 +73,7 @@ def get_program_modules(program_id):
     try:
         # with CONN as connection:
         with connection.cursor() as cursor:
+            print("access_database.py: get_program_modules")
             # print("in get pgm modules", program_id)
             stmt_str = "SELECT * FROM programs, modules WHERE "
             stmt_str += "programs.program_id=modules.program_id "
@@ -83,35 +86,33 @@ def get_program_modules(program_id):
             # print("table:", table)
             # for row in table:
             #     print(row)
+            data = {}
+            data['program_id'] = table[0][0]
+            data['program_name'] = table[0][1]
+            data['description'] = table[0][2]
+            data['program_availability'] = table[0][3]
 
-            if table:
-                data = {}
-                data['program_id'] = table[0][0]
-                data['program_name'] = table[0][1]
-                data['description'] = table[0][2]
-                data['program_availability'] = table[0][3]
 
-                # list of dictionaries of modules within program
-                modules = []
-                for row in table:
-                    modules_row = {}
-                    modules_row['module_id'] = row[4]
-                    # row[5] is program_id
-                    modules_row['module_name'] = row[6]
-                    modules_row['content_type'] = row[7]
-                    modules_row['content_link'] = row[8]
-                    modules_row['module_index'] = row[9]
-                    modules.append(modules_row)
+            # list of dictionaries of modules within program
+            modules = []
+            for row in table:
+                modules_row = {}
+                modules_row['module_id'] = row[4]
+                # row[5] is program_id
+                modules_row['module_name'] = row[6]
+                modules_row['content_type'] = row[7]
+                modules_row['content_link'] = row[8]
+                modules_row['module_index'] = row[9]
+                modules.append(modules_row)
 
                 #sort modules via index
+            if len(modules) != 0:
                 modules = sorted(modules, key=lambda x:x['module_index'])
-                data['modules'] = modules
+            data['modules'] = modules
                 # print(modules)
-                return (True, data)
-            else:
-                data = {}
-                data['modules'] = []
-                return (True, data)
+            print("data", data)
+            print("success access_database.py: get_program_modules")
+            return (True, data)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -127,7 +128,7 @@ def get_module(module_id):
     try:
         # with CONN as connection:
         with connection.cursor() as cursor:
-            print("in get pgm modules for", module_id)
+            print("access_database.py: get_module:", module_id)
             stmt_str = "SELECT * FROM modules WHERE "
             stmt_str += "modules.module_id LIKE %s;"
 
@@ -146,6 +147,8 @@ def get_module(module_id):
             data['content_type'] = table[0][3]
             data['content_link'] = table[0][4]
             data['module_index'] = table[0][5]
+            print("data", data)
+            print("success access_database.py: get_module:", module_id)
             return (True, data)
 
     except Exception as error:
@@ -160,25 +163,24 @@ def get_student_info(student_id):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            print("access_database.py: get_student_info:", student_id)
             list_stmt = """
                 SELECT column_name FROM information_schema.columns where table_name = 'users' ORDER BY ordinal_position;"""
             cursor.execute(list_stmt)
 
             columns = cursor.fetchall()
-            print(columns)
-            # stored in format [('student_id',), ('student_name',), ('student_email',), ('p1',)... etc
 
             stmt_str = "SELECT * FROM users WHERE user_status = 'student' AND user_id=%s;"
             cursor.execute(stmt_str, [student_id])
             data = cursor.fetchall()
             #data[0] because should only be one row of data
 
-            print("get_student_info:", data)
-
             student_data = {}
             for index, column in enumerate(columns):
                     student_data[column[0]] = data[0][index]
 
+            print("student_data:", student_data)
+            print("success access_database.py: get_student_info:", student_id)
             return (True, student_data)
 
     except Exception as error:
@@ -196,6 +198,7 @@ def get_all_students():
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
+            print("access_database.py: get_all_students:")
             stmt_str = "SELECT * FROM users WHERE user_status='student';"
 
             cursor.execute(stmt_str)
@@ -211,7 +214,8 @@ def get_all_students():
                 data_row['student_status'] = row[3]
                 #check if the column name method works
                 data.append(data_row)
-
+            print("data:", data)
+            print("success access_database.py: get_all_students")
             return (True, data)
 
     except Exception as error:
@@ -225,34 +229,7 @@ def get_all_students():
 # get list of programs for a student
 # should be divided into three categories
 def get_student_programs(student_id):
-    # try:
-    #     with CONN as connection:
-    #     # with psycopg2.connect(DATABASE_URL) as connection:
-    #         with connection.cursor() as cursor:
-
-    #             # programs = get_all_programs()
-
-    #             # params = []
-    #             # program_list_str = '' #account for first program_id, shouldnt have comma in front
-    #             # for program in programs:
-    #             #      params.append(program['program_id'])
-    #             #      #make program_list_str
-    #             #      program_list_str += ','+program['program_id']
-
-    #             # stmt_str = "SELECT %s FROM students WHERE "
-    #             # stmt_str += "students.student_id LIKE %s;"
-
-    #             # cursor.execute(stmt_str, [program_list_str, student_id])
-    #             # table = cursor.fetchall()
-    #             # # for row in table:
-    #             # #     print(row)
-
-    # except Exception as error:
-    #     err_msg = "A server error occurred. "
-    #     err_msg += "Please contact the system administrator."
-    #     print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-    #     return (False, err_msg)
-
+    print("access_database.py: get_student programs (no database)")
     status, student_info = get_student_info(student_id)
     print(student_info)
 
@@ -276,6 +253,8 @@ def get_student_programs(student_id):
     data['Available'] = available
     data['Locked'] = locked
     data ['Enrolled'] = enrolled
+    print("data", data)
+    print("success access_database.py: get_student programs (no database)")
     return status, data
 
 def get_student_program_status(student_id, program_id):
@@ -298,6 +277,7 @@ def get_student_module_completion(student_id, assessment_ids):
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
             #print(module_ids[0])
+            print("access_database.py: get_student_module_completion:", student_id, assessment_ids)
             stmt_str = "SELECT SUM( users." + assessment_ids[0]
             for i in range(1,len(assessment_ids)):
                 #print(module_ids[1])
@@ -308,6 +288,7 @@ def get_student_module_completion(student_id, assessment_ids):
             data = cursor.fetchall()
 
             print("num of completed assess:" , data[0][0])
+            print("success access_database.py: get_student_module_completion")
 
             return (True, data[0][0])
 
@@ -321,7 +302,7 @@ def get_student_module_completion(student_id, assessment_ids):
 # returns a fractional string indicating studentid progress of programid
 def get_student_program_progress(studentid, programid):
     # get all moduleids for desired program
-    print("in get std pgm prog")
+    print("access_database.py: get_student_program_progress (no database):", student_id, programid)
     success, module_info = get_program_modules(programid)
     print("get_student_pgm_prog get pgm modules done")
     modules = module_info['modules']

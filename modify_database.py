@@ -372,6 +372,7 @@ def delete_program(program_id):
                 statement = " ALTER TABLE users DROP COLUMN "
                 statement += program_id
                 cursor.execute(statement)
+                cursor.execute('COMMIT;')
                 #connection.commit()
 
                 # remove program from programs table
@@ -382,7 +383,7 @@ def delete_program(program_id):
                 # remove program from modules table
                 statement = "DELETE FROM modules WHERE program_id = %s"
                 cursor.execute(statement, [program_id])
-                cursor.execute('COMMIT;')
+
                 #connection.commit()
                 return (True, "deleted program successfully")
 
