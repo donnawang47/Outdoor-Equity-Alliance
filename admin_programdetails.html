@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Outdoor Equity Alliance: Admin Interface</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    </head>
+
+    <body>
+        <h1> Outdoor Equity Alliance: Admin Interface </h1>
+        <h2> Program Details </h2>
+
+        <strong>Program Id:</strong> {{pgm_data['program_id']}} <br>
+
+        <strong>Program Name: </strong>
+        {{pgm_data['program_name']}}
+        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_name">
+            <span class="glyphicon glyphicon-edit"></span> Edit
+        </button>
+        <br>
+
+        <!-- modal for changing pgm name -->
+        <!-- Trigger the modal with a button -->
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="change_pgm_name" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Change Program Name</h4>
+                        </div>
+                        <div class="modal-body container-fluid">
+                            <form action="{{'/admin/programs/edit/name?program_id=%s' %pgm_data['program_id']}}" method='POST'>
+                                <strong>Current Name:</strong>
+                                {{pgm_data['program_name']}}
+                                <br>
+                                <table>
+                                    <tr>
+                                        <td align= "right"> <strong>New Name: </strong></td>
+                                        <td align="right"> <input type="text"
+                                            name="new_program_name"></td>
+                                        <td align="left">
+                                            <input type="submit" value="Save">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <strong>Program Description: </strong>
+        {{pgm_data['description']}}
+        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_desc">
+            <span class="glyphicon glyphicon-edit"></span> Edit
+        </button>
+        <br>
+
+        <!-- modal for changing pgm desc -->
+        <!-- Trigger the modal with a button -->
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="change_pgm_desc" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Change Program Description</h4>
+                        </div>
+                        <div class="modal-body container-fluid">
+                            <form action="{{'/admin/programs/edit/description?program_id=%s' %pgm_data['program_id']}}" method='POST'>
+                                <strong>Current Description:</strong>
+                                {{pgm_data['description']}}
+                                <br>
+                                <strong>New Description: </strong>
+                                <textarea class="form-control" rows="5" name="new_pgm_desc"></textarea>
+                                <input type="submit" value="Save">
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <strong>Program Availability: </strong>
+        {{pgm_data['program_availability']}}
+        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_avail">
+            <span class="glyphicon glyphicon-edit"></span> Edit
+        </button>
+        <br>
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="change_pgm_avail" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Change Program Availability</h4>
+                        </div>
+                        <div class="modal-body container-fluid">
+                            <form action="{{'/admin/programs/edit/availability?program_id=%s' %pgm_data['program_id']}}" method='POST'>
+                                <strong>Current Description:</strong>
+                                {{pgm_data['program_availability']}}
+                                <br>
+                                <strong>Update Availability: </strong>
+
+                                <div class="radio">
+                                    <label><input type="radio" name="new_pgm_avail" value = "all" checked>Available to <em>all</em></label>
+                                  </div>
+                                  <div class="radio">
+                                    <label><input type="radio" name="new_pgm_avail" value = "none">Available to <em>none</em></label>
+                                  </div>
+
+                                <input type="submit" value="Save">
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <hr>
+
+        <h2> Program Modules </h2>
+        {% if moduleslist|length != 0: %}
+            <table>
+                <tr>
+                    <th align = "left">Index</th>
+                    <th align = "left">ID</th>
+                    <th align = "left">Name</th>
+                </tr>
+            {% for module in moduleslist: %}
+                <tr>
+                    <!-- col 1 is row["ClsId"] -->
+                    <!-- <form action="/admin/edit/program/name" method="POST"> -->
+                    <td align = 'left'>
+                        {{module['module_index']}}
+                    </td>
+                    <td align= 'left'>
+                    {{module['module_id']}}
+                    </td>
+                    <!-- </form> -->
+                    <td align = 'left'>
+                        {{module['module_name']}}
+                    </td>
+
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+        No modules exist in this program yet!
+        {% endif %}
+
+
+        <hr>
+
+        <!-- delete program button here -->
+
+        <!-- back to prev page -->
+        <a href="/admin/programs">Back to Programs</a>
+
+
+    </body>
+
+</html>

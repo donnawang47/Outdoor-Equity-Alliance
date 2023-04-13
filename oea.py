@@ -65,7 +65,7 @@ def admin_studentdetails():
         success, pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
         print("pgm_status" + pgm_status)
         pgm['pgm_status'] = pgm_status
-        status, data = access_database.get_program_modules(pgm_id)
+        status, data = access_database.get_program_details(pgm_id)
         assessments = []
         for mod in data['modules']:
             print(mod)
@@ -193,36 +193,103 @@ def admin_create_module():
     response = flask.make_response(html_code)
     return response
 
+@app.route('/admin/programs/edit', methods=['GET', 'POST'])
+def admin_edit_program():
+    pgm_id = flask.request.args.get('program_id')
+    print('program id: ', id)
+
+    success, data = access_database.get_program_details(pgm_id)
+    if success:
+        print("data retrieved:",data)
+        html_code = flask.render_template('admin_programdetails.html',
+                            pgm_data = data,
+                            moduleslist = data['modules'])
+    else:
+        html_code = flask.render_template('error.html',
+                                err_msg = data)
+
+    response = flask.make_response(html_code)
+    return response
+
 #TODO: ASK why we can reference html_code outside of scope?
 @app.route('/admin/programs/edit/name', methods=['GET', 'POST'])
 def edit_program_name():
 
-    id = flask.request.args.get('program_id')
+    pgm_id = flask.request.args.get('program_id')
     print('program id: ', id)
 
-    if flask.request.method == 'POST' and id is not None:
+    if flask.request.method == 'POST':
         # get new name from text input field
         new_program_name = flask.request.form['new_program_name']
         print('Got new program name! :', new_program_name)
 
-        success, message = modify_database.change_program_name(id, new_program_name)
+        success, message = modify_database.change_program_name(pgm_id, new_program_name)
 
         if success: # if successfully changed program name
-            status, programslist = access_database.get_programslist()
-            if status:
-                print('Display program list with updated program name')
-                html_code = flask.render_template('admin_programs.html',
-                            programslist = programslist)
-        elif not success or not status:
+            status, data = access_database.get_program_details(pgm_id)
+            if success:
+                print("data retrieved:",data)
+                html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+            else:
+                html_code = flask.render_template('error.html',
+                                err_msg = data)
+        else:
             html_code = flask.render_template('error.html',
-                                err_msg = message)
+                                err_msg = data)
 
-    # display initial access to "edit program page" for specific program
-    else:
-        program_name = flask.request.args.get('program_name')
-        html_code = flask.render_template('admin_edit_program.html',
-                                    program_id = id,
-                                    program_name=program_name)
+    response = flask.make_response(html_code)
+    return response
+
+@app.route('/admin/programs/edit/description', methods=['GET', 'POST'])
+def edit_program_desc():
+    pgm_id = flask.request.args.get('program_id')
+    print('program id: ', pgm_id)
+
+    if flask.request.method == 'POST':
+        # get new desc from text input field
+        new_program_desc = flask.request.form['new_pgm_desc']
+        print('Got new program desc! :', new_program_desc)
+
+        success, message = modify_database.change_program_desc(pgm_id, new_program_desc)
+
+        if success: # if successfully changed program name
+            status, data = access_database.get_program_details(pgm_id)
+            if success:
+                print("data retrieved:",data)
+                html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+            else:
+                html_code = flask.render_template('error.html',
+                                err_msg = data)
+        else:
+            html_code = flask.render_template('error.html',
+                                err_msg = data)
+
+    response = flask.make_response(html_code)
+    return response
+
+@app.route('/admin/programs/edit/availability', methods=['GET', 'POST'])
+def edit_program_avail():
+    pgm_id = flask.request.args.get('program_id')
+    print('program id: ', pgm_id)
+
+    if flask.request.method == 'POST':
+        # get new desc from text input field
+        new_program_avail = flask.request.form['new_pgm_avail']
+        print('Got new program avail! :', new_program_avail)
+
+        success, message = modify_database.change_program_avail(pgm_id, new_program_avail)
+
+        if success: # if successfully changed program name
+            status, data = access_database.get_program_details(pgm_id)
+            if success:
+                print("data retrieved:",data)
+                html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+            else:
+                html_code = flask.render_template('error.html',
+                                err_msg = data)
+        else:
+            html_code = flask.render_template('error.html',
+                                err_msg = data)
 
     response = flask.make_response(html_code)
     return response
@@ -235,7 +302,7 @@ def get_modules_of_program():
     program_name = flask.request.args.get('program_name')
     print('modules page program name = ', program_name)
 
-    status, data = access_database.get_program_modules(program_id)
+    status, data = access_database.get_program_details(program_id)
     print('modules list: ', data['modules'])
 
     if status:
@@ -257,7 +324,7 @@ def edit_module_seq():
     program_name = flask.request.args.get('program_name')
     print('modules page program name = ', program_name)
 
-    status, data = access_database.get_program_modules(program_id)
+    status, data = access_database.get_program_details(program_id)
     print('modules list: ', data['modules'])
 
     if flask.request.method == 'POST':
@@ -301,7 +368,7 @@ def edit_module_name():
 
         if success: # if successfully changed module name
             print('PROGRAM ID FOR MOD = ', program_id)
-            status, data = access_database.get_program_modules(program_id)
+            status, data = access_database.get_program_details(program_id)
             print('DATA = ', data)
             modules_list = data['modules']
             print('TEST A modulelist = ', modules_list)
@@ -338,7 +405,7 @@ def edit_module_link():
 
     if success:
         print("Modifying module link to: ", new_module_link)
-        status, data = access_database.get_program_modules(program_id)
+        status, data = access_database.get_program_details(program_id)
         modules_list = data['modules']
         if status:
             print('Changed module link to: ', new_module_link)
@@ -394,7 +461,7 @@ def student_program():
     studentid = get_current_student()
     programid = flask.request.args.get('programid')
     print(programid)
-    status, programdata = access_database.get_program_modules(programid)
+    status, programdata = access_database.get_program_details(programid)
     status, program_status = access_database.get_student_program_status(studentid, programid)
     if status:
         print("Student Interface: displaying program info " + programid + " for " + str(studentid))
@@ -414,7 +481,7 @@ def student_program_module():
     status, moduledata = access_database.get_module(moduleid)
     status, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
     if program_status == 'enrolled':
-        status, programdata = access_database.get_program_modules(moduledata['program_id'])
+        status, programdata = access_database.get_program_details(moduledata['program_id'])
         if status:
             print("Student Interface: displaying module info " + moduleid + " for " + str(studentid))
             html_code = flask.render_template('student_program_module.html',

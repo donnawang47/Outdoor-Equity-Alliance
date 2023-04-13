@@ -52,9 +52,12 @@
                                 {{program['program_availability']}}
                             </td>
 
-                            <td align="right">
-                            <!-- send arguments to the editing page -->
+                            <!-- <td align="right">
                             <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
+                            </td> -->
+
+                            <td align="right">
+                            <a href="{{'/admin/programs/edit?program_id=%s' %program['program_id']}}" class="btn btn-secondary" role="button"> View </a>
                             </td>
 
                             <td align = right>

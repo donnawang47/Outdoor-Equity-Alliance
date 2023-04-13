@@ -443,7 +443,55 @@ def change_program_name(program_id, new_program_name):
             cursor.execute(statement, [new_program_name, program_id])
 
             cursor.execute('COMMIT')
-            print('Progran name successfully updated!')
+            print('Program name successfully updated!')
+            return (True, "success!")
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
+def change_program_desc(pgm_id, new_program_desc):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+
+            cursor.execute('BEGIN')
+            statement = "UPDATE programs SET description= "
+            statement += "%s WHERE program_id = %s"
+
+            cursor.execute(statement, [new_program_desc, pgm_id])
+
+            cursor.execute('COMMIT')
+            print('Program desc successfully updated!')
+            return (True, "success!")
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
+def change_program_avail(pgm_id, new_program_avail):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+
+            cursor.execute('BEGIN')
+            statement = "UPDATE programs SET program_availability= "
+            statement += "%s WHERE program_id = %s"
+
+            cursor.execute(statement, [new_program_avail, pgm_id])
+
+            cursor.execute('COMMIT')
+            print('Program avail successfully updated!')
             return (True, "success!")
 
     except Exception as error:
@@ -531,8 +579,10 @@ def change_module_idx(module_id, new_idx):
 
 # write functionality to deal with duplicate entries!
 def main():
-    change_module_idx('m3', 1)
-    change_module_idx('m2', 2)
+    # change_module_idx('m3', 1)
+    # change_module_idx('m2', 2)
+    #change_program_desc('p1', 'new p1 desc')
+    change_program_avail('p1', 'none')
     # #  ! must pass in data to be inserted into modules table from interface interaction.
 
     # #----------------- testing creating program id --------------------

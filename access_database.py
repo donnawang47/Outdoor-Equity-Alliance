@@ -67,23 +67,21 @@ def get_programslist():
     finally:
         _put_connection(connection)
 
-# given a program_id, get all modules within that program
-def get_program_modules(program_id):
+def get_program_details(program_id):
     connection = _get_connection()
     try:
         # with CONN as connection:
         with connection.cursor() as cursor:
-            print("access_database.py: get_program_modules")
+            print("access_database.py: get_program_details")
             # print("in get pgm modules", program_id)
-            stmt_str = "SELECT * FROM programs, modules WHERE "
-            stmt_str += "programs.program_id=modules.program_id "
-            stmt_str += "AND modules.program_id LIKE %s "
+            stmt_str = "SELECT * FROM programs WHERE "
+            stmt_str += "program_id=%s"
             # stmt_str += "ORDER BY program_id ASC, module_id ASC;"
 
             cursor.execute(stmt_str, [program_id])
 
             table = cursor.fetchall()
-            # print("table:", table)
+            #print("table:", table)
             # for row in table:
             #     print(row)
             data = {}
@@ -91,9 +89,19 @@ def get_program_modules(program_id):
             data['program_name'] = table[0][1]
             data['description'] = table[0][2]
             data['program_availability'] = table[0][3]
+            print('data', data)
 
+            # get program modules
+            stmt_str = "SELECT * FROM programs, modules WHERE "
+            stmt_str += "programs.program_id=modules.program_id "
+            stmt_str += "AND modules.program_id LIKE %s "
+            # stmt_str += "ORDER BY program_id ASC, module_id ASC;"
 
-            # list of dictionaries of modules within program
+            cursor.execute(stmt_str, [program_id])
+            table = cursor.fetchall()
+            print("table", table)
+
+            # # list of dictionaries of modules within program
             modules = []
             for row in table:
                 modules_row = {}
@@ -109,9 +117,9 @@ def get_program_modules(program_id):
             if len(modules) != 0:
                 modules = sorted(modules, key=lambda x:x['module_index'])
             data['modules'] = modules
-                # print(modules)
+            print('modles', modules)
             print("data", data)
-            print("success access_database.py: get_program_modules")
+            # print("success access_database.py: get_program_modules")
             return (True, data)
 
     except Exception as error:
@@ -121,6 +129,8 @@ def get_program_modules(program_id):
         return (False, err_msg)
     finally:
         _put_connection(connection)
+
+
 
 def get_module(module_id):
     #module_id TEXT, program_id TEXT, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER
@@ -328,6 +338,7 @@ def get_student_program_progress(studentid, programid):
 
 # for testing
 def main():
+    get_program_details('p3')
     # status, programs = get_all_programs()
     # # print(programs)
     # print("Display programs list for admin: ")
@@ -339,40 +350,40 @@ def main():
     #     print("Program availability:", program['program_availability'])
     #     print("------------------------------------------------------")
 
-    print("Display modules for Tree Ambassador 101")
-    # how are we going to get id
-    program_id = 'P1'
-    status, modules = get_program_modules(program_id)
-
-    # print("Program name:", modules['program_name'])
-    # print("Program description:", modules['description'])
-    # print("Program availability:", modules['program_availability'])
-    for module in modules['modules']:
-        print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
-    # print("------------------------------------------------------")
-
-    # print("Display modules for Test - LOCKED PROGRAM")
+    # print("Display modules for Tree Ambassador 101")
     # # how are we going to get id
-    # program_id = 'P2'
+    # program_id = 'P1'
     # status, modules = get_program_modules(program_id)
-    # print("Program name:", modules['program_name'])
-    # print("Program description:", modules['description'])
-    # print("Program availability:", modules['program_availability'])
+
+    # # print("Program name:", modules['program_name'])
+    # # print("Program description:", modules['description'])
+    # # print("Program availability:", modules['program_availability'])
     # for module in modules['modules']:
     #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
-    # print("------------------------------------------------------")
+    # # print("------------------------------------------------------")
 
-    # print("---------STUDENTS-------------------------")
-    get_student_info(2)
-    # std_pg = get_student_programs(2)
-    # print(std_pg)
+    # # print("Display modules for Test - LOCKED PROGRAM")
+    # # # how are we going to get id
+    # # program_id = 'P2'
+    # # status, modules = get_program_modules(program_id)
+    # # print("Program name:", modules['program_name'])
+    # # print("Program description:", modules['description'])
+    # # print("Program availability:", modules['program_availability'])
+    # # for module in modules['modules']:
+    # #     print("MODULE:", module['module_name'], module['content_type'], module['content_link'], module['module_index'])
+    # # print("------------------------------------------------------")
 
-    # # testing get student progress
-    program_id = 'p1'
-    status, modules = get_program_modules(program_id)
-    print(modules['modules'])
-    get_student_program_progress(2, program_id)
-    get_module("m1")
+    # # print("---------STUDENTS-------------------------")
+    # get_student_info(2)
+    # # std_pg = get_student_programs(2)
+    # # print(std_pg)
+
+    # # # testing get student progress
+    # program_id = 'p1'
+    # status, modules = get_program_modules(program_id)
+    # print(modules['modules'])
+    # get_student_program_progress(2, program_id)
+    # get_module("m1")
 
 if __name__ == '__main__':
     main()
