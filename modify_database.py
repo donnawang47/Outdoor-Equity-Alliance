@@ -152,27 +152,7 @@ def insert_admin(data):
     finally:
         _put_connection(connection)
 
-# # returns student_id based on existing number of columns in students table
-# def create_student_id():
-#     try:
-#         with CONN as connection:
-#         # with psycopg2.connect(DATABASE_URL) as connection:
-#             with connection.cursor() as cursor:
 
-#                 statement = "SELECT COUNT(*) FROM students"
-#                 cursor.execute(statement)
-#                 data = cursor.fetchall()
-
-#                 student_id = str(1 + data[0][0])
-#                 print("create student id:", student_id)
-
-#                 return student_id
-
-    # except Exception as error:
-    #     err_msg = "A server error occurred. "
-    #     err_msg += "Please contact the system administrator."
-    #     print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-    #     return (False, err_msg)
 
 
 # use this function to create assessment_id as well

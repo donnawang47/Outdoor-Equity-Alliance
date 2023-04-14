@@ -23,7 +23,7 @@ def _get_connection():
     try:
         conn = _connection_pool.get(block=False)
     except queue.Empty:
-        print('DATABASe_URL =',_database_url)
+        print('DATABASE_URL =',_database_url)
         conn = psycopg2.connect(_database_url)
     return conn
 

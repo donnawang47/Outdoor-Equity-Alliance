@@ -281,7 +281,7 @@ def edit_program_avail():
 
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
-            if success:
+            if status:
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
@@ -294,38 +294,11 @@ def edit_program_avail():
     response = flask.make_response(html_code)
     return response
 
-# DISPLAY LIST OF MODULES FOR SPECIFIC PROGRAM
-@app.route('/admin/modules', methods=['GET'])
-def get_modules_of_program():
-    program_id = flask.request.args.get('program_id')
-    print('modules page program id = ', program_id)
-    program_name = flask.request.args.get('program_name')
-    print('modules page program name = ', program_name)
-
-    status, data = access_database.get_program_details(program_id)
-    print('modules list: ', data['modules'])
-
-    if status:
-        print("Got modules list for program")
-        html_code = flask.render_template('admin_modules.html',
-                                          program_name = program_name, program_id = program_id,
-                                          moduleslist = data['modules'])
-    else:
-        html_code = flask.render_template('error.html', err_msg = data)
-
-    response = flask.make_response(html_code)
-    return response
-
-@app.route('/admin/modules/edit/sequence', methods=['GET', 'POST'])
+@app.route('/admin/programs/edit/module_seq', methods=['GET', 'POST'])
 def edit_module_seq():
     print("oea.py: edit_module_seq")
-    program_id = flask.request.args.get('program_id')
-    print('modules page program id = ', program_id)
-    program_name = flask.request.args.get('program_name')
-    print('modules page program name = ', program_name)
-
-    status, data = access_database.get_program_details(program_id)
-    print('modules list: ', data['modules'])
+    pgm_id = flask.request.args.get('program_id')
+    print('modules page program id = ', pgm_id)
 
     if flask.request.method == 'POST':
         # num_modules = flask.request.form['num_modules']
@@ -336,10 +309,30 @@ def edit_module_seq():
             # get module id from flask req
             # get new idx from flask req
             # call database function to update
+    success, data = access_database.get_program_details(pgm_id)
+    if success:
+        print("data retrieved:",data)
+        html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+    else:
+        html_code = flask.render_template('error.html',
+                        err_msg = data)
+
+    response = flask.make_response(html_code)
+    return response
+
+# DISPLAY LIST OF MODULES FOR SPECIFIC PROGRAM
+@app.route('/admin/programs/modules', methods=['GET'])
+def get_modules_of_program():
+    program_id = flask.request.args.get('program_id')
+    print('modules page program id = ', program_id)
+
+    status, data = access_database.get_program_details(program_id)
+    print('modules list: ', data['modules'])
+
     if status:
         print("Got modules list for program")
         html_code = flask.render_template('admin_modules.html',
-                                          program_name = program_name, program_id = program_id,
+                                          program_name = data['program_name'], program_id = program_id,
                                           moduleslist = data['modules'])
     else:
         html_code = flask.render_template('error.html', err_msg = data)
@@ -347,76 +340,69 @@ def edit_module_seq():
     response = flask.make_response(html_code)
     return response
 
-# DISPLAY EDITING PAGE FOR SPECIFIC MODULE AFTER CLICKING EDIT BUTTON
-@app.route('/admin/modules/edit/name', methods=['GET', 'POST'])
+@app.route('/admin/programs/modules/edit/name', methods=['GET', 'POST'])
 def edit_module_name():
-    # from URL of admin_module_edit_module.html
     module_id = flask.request.args.get('module_id')
     if module_id == "":
         print("module_id is none")
     print('GET get MODULE_ID', module_id)
     program_id = flask.request.args.get('program_id')
     print('program_id = ', program_id)
-    program_name = flask.request.args.get('program_name')
-    print('program_name: ', program_name)
 
-    if flask.request.method == 'POST' and program_id != "" and module_id != "" and program_name != "":
+    if flask.request.method == 'POST':
         new_module_name = flask.request.form['new_module_name']
         print('post get new module name: ', new_module_name)
 
         success, message = modify_database.change_module_name(module_id, new_module_name )
-
         if success: # if successfully changed module name
             print('PROGRAM ID FOR MOD = ', program_id)
-            status, data = access_database.get_program_details(program_id)
-            print('DATA = ', data)
-            modules_list = data['modules']
-            print('TEST A modulelist = ', modules_list)
-            if status:
-                print('Changed module name to: ', new_module_name)
-                html_code = flask.render_template('admin_modules.html', moduleslist = modules_list, module_id = module_id,
-                                            program_name = program_name, program_id=program_id)
-        elif not success or not status:
+            success, data = access_database.get_program_details(program_id)
+            if success:
+                print("data retrieved:",data)
+                html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+            else:
+                html_code = flask.render_template('error.html',
+                                err_msg = data)
+        else:
             html_code = flask.render_template('error.html',
                                 err_msg = message)
-
-    # display initial access to "edit program page" for specific program
-    else:
-        module_name = flask.request.args.get('module_name')
-        print( 'MODULE NAME: ', module_name)
-        html_code = flask.render_template('admin_edit_module.html', module_name=module_name, module_id = module_id, program_id = program_id, program_name = program_name)
 
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/modules/edit/link', methods=['POST'])
+
+@app.route('/admin/programs/modules/edit/link', methods=['GET','POST'])
 def edit_module_link():
     print('entering editing link function...')
     module_id = flask.request.args.get('module_id')
     print('module id = ', module_id)
     program_id  = flask.request.args.get('program_id')
     print('program_id = ', program_id)
-    program_name = flask.request.args.get('program_name')
-    print('program_name = ', program_name)
-    new_module_link = flask.request.form['new_module_link']
-    print('new_module_link = ', new_module_link)
 
-    success, message = modify_database.edit_module_link(new_module_link, module_id)
+    if flask.request.method == 'POST':
+        new_module_link = flask.request.form['new_module_link']
+        print('new_module_link = ', new_module_link)
 
-    if success:
-        print("Modifying module link to: ", new_module_link)
-        status, data = access_database.get_program_details(program_id)
-        modules_list = data['modules']
-        if status:
-            print('Changed module link to: ', new_module_link)
-            html_code = flask.render_template('admin_modules.html', moduleslist = modules_list, module_id = module_id,
-                                        program_name = program_name, program_id=program_id)
-    elif not success or not status:
-        html_code = flask.render_template('error.html',
-                            err_msg = message)
+        success, message = modify_database.edit_module_link(new_module_link, module_id)
+
+        if success:
+            print("Modifying module link to: ", new_module_link)
+            success, data = access_database.get_program_details(program_id)
+            if success:
+                print('Changed module link to: ', new_module_link)
+                print("data retrieved:",data)
+                html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+            else:
+                html_code = flask.render_template('error.html',
+                                err_msg = data)
+
+        else:
+            html_code = flask.render_template('error.html',
+                                err_msg = message)
 
     response = flask.make_response(html_code)
     return response
+
 
 @app.route('/admin/programs/delete/program', methods=['POST'])
 def delete_program():

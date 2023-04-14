@@ -3,9 +3,26 @@
 <html>
     <head>
         <title> Outdoor Equity Alliance: Admin Interface</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+        <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+
+        <!-- for collapsible -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+        <!-- for drag and drop -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
+
+        <style>
+            .hiddenRow {
+                padding: 0 !important;
+            }
+        </style>
 
     </head>
 
@@ -15,41 +32,71 @@
 
         <strong>Program Id:</strong> {{pgm_data['program_id']}} <br>
 
-        <strong>Program Name: </strong>
-        {{pgm_data['program_name']}}
-        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_name">
-            <span class="glyphicon glyphicon-edit"></span> Edit
-        </button>
-        <br>
+        {% include 'admin_edit_program.html' %}
 
-        <!-- modal for changing pgm name -->
+        <hr>
+        <!------------------------------------------------------>
+        <h2> Program Modules </h2>
+
+        <!-- change module sequence -->
+
+        <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#change_module_idx">
+            <span class="glyphicon glyphicon-edit"></span> Edit Module Sequence
+        </button>
+
+
+        <!-- form for module sequence-->
+
+        <!--ref: https://stackoverflow.com/questions/44091397/pop-up-a-form-when-a-button-is-clicked -->
+        <!--ref: https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_modal&stacked=h -->
+
+        <!-- modal for changing sequence -->
         <!-- Trigger the modal with a button -->
         <div class="container">
+
+
             <!-- Modal -->
-            <div class="modal fade" id="change_pgm_name" role="dialog">
+            <div class="modal fade" id="change_module_idx" role="dialog">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
 
                     <!-- Modal content-->
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Change Program Name</h4>
+                            <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
                         </div>
                         <div class="modal-body container-fluid">
-                            <form action="{{'/admin/programs/edit/name?program_id=%s' %pgm_data['program_id']}}" method='POST'>
-                                <strong>Current Name:</strong>
-                                {{pgm_data['program_name']}}
-                                <br>
-                                <table>
-                                    <tr>
-                                        <td align= "right"> <strong>New Name: </strong></td>
-                                        <td align="right"> <input type="text"
-                                            name="new_program_name"></td>
-                                        <td align="left">
-                                            <input type="submit" value="Save">
-                                        </td>
-                                    </tr>
+                            <form role="form" method="POST" action="{{'/admin/programs/edit/module_seq?program_id=%s' %pgm_data['program_id']}}">
+                                <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
+                                <table id="module_idx_table" class = "table table-hover">
+                                    <thead>
+                                        <tr>
+                                          <th>Index</th>
+                                          <th>Module Name</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% if moduleslist|length != 0: %}
+                                        {% for module in moduleslist: %}
+                                            <tr>
+                                                <td>
+                                                    {{module['module_index']}}
+                                                </td>
+                                                <td>
+                                                <label for="{{module['module_id']}}">{{module['module_name']}}</label>
+                                                <input type="hidden" name="{{module['module_id']}}" id="{{module['module_id']}}" value="{{module['module_index']}}">
+                                                </td>
+                                            </tr>
+
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
                                 </table>
+                                    <div class="row">
+                                        <button type="submit" class="btn btn-default">Save Changes</button>
+                                    </div>
+
                             </form>
                         </div>
 
@@ -62,104 +109,27 @@
             </div>
         </div>
 
-
-
-        <strong>Program Description: </strong>
-        {{pgm_data['description']}}
-        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_desc">
-            <span class="glyphicon glyphicon-edit"></span> Edit
-        </button>
-        <br>
-
-        <!-- modal for changing pgm desc -->
-        <!-- Trigger the modal with a button -->
-        <div class="container">
-            <!-- Modal -->
-            <div class="modal fade" id="change_pgm_desc" role="dialog">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Change Program Description</h4>
-                        </div>
-                        <div class="modal-body container-fluid">
-                            <form action="{{'/admin/programs/edit/description?program_id=%s' %pgm_data['program_id']}}" method='POST'>
-                                <strong>Current Description:</strong>
-                                {{pgm_data['description']}}
-                                <br>
-                                <strong>New Description: </strong>
-                                <textarea class="form-control" rows="5" name="new_pgm_desc"></textarea>
-                                <input type="submit" value="Save">
-                            </form>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <strong>Program Availability: </strong>
-        {{pgm_data['program_availability']}}
-        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_avail">
-            <span class="glyphicon glyphicon-edit"></span> Edit
-        </button>
-        <br>
-        <div class="container">
-            <!-- Modal -->
-            <div class="modal fade" id="change_pgm_avail" role="dialog">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Change Program Availability</h4>
-                        </div>
-                        <div class="modal-body container-fluid">
-                            <form action="{{'/admin/programs/edit/availability?program_id=%s' %pgm_data['program_id']}}" method='POST'>
-                                <strong>Current Description:</strong>
-                                {{pgm_data['program_availability']}}
-                                <br>
-                                <strong>Update Availability: </strong>
-
-                                <div class="radio">
-                                    <label><input type="radio" name="new_pgm_avail" value = "all" checked>Available to <em>all</em></label>
-                                  </div>
-                                  <div class="radio">
-                                    <label><input type="radio" name="new_pgm_avail" value = "none">Available to <em>none</em></label>
-                                  </div>
-
-                                <input type="submit" value="Save">
-                            </form>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
 
         <hr>
 
-        <h2> Program Modules </h2>
+        <!-- display list of program modules -->
+        <div class = "container">
         {% if moduleslist|length != 0: %}
-            <table>
-                <tr>
-                    <th align = "left">Index</th>
-                    <th align = "left">ID</th>
-                    <th align = "left">Name</th>
-                </tr>
-            {% for module in moduleslist: %}
-                <tr>
+            <table class = "table">
+                <thead>
+                    <tr>
+                        <th align = "left">Index</th>
+                        <th align = "left">ID</th>
+                        <th align = "left">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for module in moduleslist: %}
+                <!-- ref for collapsible things -->
+                <!-- https://www.w3schools.com/bootstrap/bootstrap_collapse.asp -->
+                <!-- https://codepen.io/n3k1t/pen/OJMGgyq-->
+                <!-- https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_panels_group&stacked=h -->
+                <tr data-toggle="collapse" data-target="#view_{{module['module_id']}}" >
                     <!-- col 1 is row["ClsId"] -->
                     <!-- <form action="/admin/edit/program/name" method="POST"> -->
                     <td align = 'left'>
@@ -173,14 +143,35 @@
                         {{module['module_name']}}
                     </td>
 
-                    </td>
+                    <!-- <td>
+                    <a href="{{'/admin/programs/modules?program_id=%s' %pgm_data['program_id']}}" class="btn btn-info btn-sm">
+                        <span class="glyphicon glyphicon-info-sign"></span> Info
+                    </a>
+                    </td> -->
+
+                    <!-- <td><button class="btn btn-basic" type="button"  data-toggle="collapse" data-target="#view_{{module['module_id']}}" >expand</button></td> -->
+
                 </tr>
-            {% endfor %}
+                <tr>
+                    <td colspan="12" class="hiddenRow">
+                        <div class="collapse" id="view_{{module['module_id']}}">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    {% include 'admin_edit_module.html' %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
             </table>
         {% else %}
         No modules exist in this program yet!
         {% endif %}
-
+        </div>
 
         <hr>
 
@@ -191,5 +182,31 @@
 
 
     </body>
+    <script>
+        // ref: https://www.aspsnippets.com/Articles/Sort-Table-rows-with-jQuery-using-Drag-and-Drop-method.aspx
+        $("#module_idx_table").sortable({
+            items: 'tr',
+            cursor: 'pointer',
+            axis: 'y',
+            dropOnEmpty: false,
+            start: function(e, ui) {
+                ui.item.addClass("selected");
+                console.log("selected");
+            },
+
+            stop: function(e, ui) {
+                ui.item.removeClass("selected");
+                $(this).find("tr").each(function (index) {
+                    if (index > 0) {
+                        $(this).find("td").eq(0).html(index);
+                        $(this).find("input").val(index);
+                    }
+
+                });
+            }
+
+        });
+
+    </script>
 
 </html>
