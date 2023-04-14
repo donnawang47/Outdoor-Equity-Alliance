@@ -4,7 +4,10 @@
     <head>
         <title> Outdoor Equity Alliance: Admin Interface</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+        <!-- <link rel="stylesheet" href = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"> -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 
     </head>
@@ -17,12 +20,12 @@
 
         <!-- display list of existing programs -->
         <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
-            <table>
+            <table class = "table">
                 <!-- row 1, containing names of each column -->
                 <tr>
                     <th align = "left">ID</th>
                     <th align = "left">Name</th>
-                    <th align = "left">Description</th>
+                    <!-- <th align = "left">Description</th> -->
                     <th align = "left">Availability</th>
                 </tr>
 
@@ -38,16 +41,17 @@
                             </td>
                             <!-- </form> -->
                             <td align = 'left'>
-                                <a href="
+                                {{program['program_name']}}
+                                <!-- <a href="
                                 {{'/admin/programs/modules?program_id=%s&program_name=%s' %(program['program_id'],
                                 program['program_name'])}} "
                                 >
                                 {{program['program_name']}}
-                                </a>
+                                </a> -->
                             </td>
-                            <td align = 'left'>
+                            <!-- <td align = 'left'>
                                 {{program['description']}}
-                            </td>
+                            </td> -->
                             <td align = 'left'>
                                 {{program['program_availability']}}
                             </td>
@@ -57,7 +61,7 @@
                             </td> -->
 
                             <td align="right">
-                            <a href="{{'/admin/programs/edit?program_id=%s' %program['program_id']}}" class="btn btn-secondary" role="button"> View </a>
+                                <a href="{{'/admin/programs/edit?program_id=%s' %program['program_id']}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-pencil"></span> Edit </a>
                             </td>
 
                             <td align = right>
@@ -73,7 +77,9 @@
 
         <hr>
 
-        <a href="/admin/programs/create_program"> Create New Program</a>
+        {% include 'admin_create_program.html'%}
+
+        <!-- <a href="/admin/programs/create_program"> Create New Program</a> -->
 
     </body>
 </html>

@@ -1,78 +1,44 @@
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <title> Outdoor Equity Alliance: Admin Interface </title>
-    </head>
-
-    <body>
-        <h1> Outdoor Equity Alliance: Admin Interface </h1>
-
-        <h2> Create New Program</h2>
-
-        <hr>
-
-        <h3> Program Information </h3>
-
-        <form action = "/admin/programs/create_program" method = "POST">
-            <!-- program name -->
-            Program Name: <input type = "text" name = "pgm_name"> <br>
-
-            Program Description: <input type = "text" name = "pgm_descrip"> <br>
-
-            <!-- indicate availability of program -->
-            <!-- should use check boxes -->
-            Program Availability: <input type = "text" name = "pgm_avail"> <br>
-
-            <!-- module name -->
-
-            <!-- Module Name: <input type = "text" name = "module_name"> <br> -->
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#create_program">
+    <span class="glyphicon glyphicon-plus"></span> Create Program
+</button>
+<br>
 
 
-            <!-- module link -->
+<!-- modal for changing module name -->
+<!-- Trigger the modal with a button -->
+<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="create_program" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
 
-            <!-- Module Link: <input type = "text" name = "module_link"> <br> -->
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Create Program</h4>
+                </div>
+                <div class="modal-body container-fluid">
+                    <form action = "/admin/programs/create_program" method = "POST">
+                        <!-- program name -->
+                        Program Name: <input type = "text" name = "pgm_name"> <br>
 
+                        Program Description: <input type = "text" name = "pgm_descrip"> <br>
 
-            <!-- module type-->
-            <!-- should use check boxes -->
+                        <!-- indicate availability of program -->
+                        <!-- should use check boxes -->
+                        Program Availability: <input type = "text" name = "pgm_avail"> <br>
 
-            <!-- Module Type: <input type = "text" name = "module_type"> <br> -->
+                        <!-- submit form -->
+                        <input type="submit" value="Submit">
 
+                    </form>
+                </div>
 
-            <!-- module sequence? -->
-            <!-- Module Sequence: <input type = "text" name = "module_seq"> <br> -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
 
-            <!-- add another module -->
-            <!-- go to edit programs page for this program id-->
-
-            <!-- <span id ="addModuleSpan"> </span>
-            <button type = "button" id = "addModuleButton" onclick = "addModule()" >Add Module</button> <br> -->
-
-            <!-- submit form -->
-            <input type="submit" value="Submit">
-
-        </form>
-
-
-    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    <script>
-        'use strict';
-
-        function addModule(){
-            $('#addModuleSpan').append (' \
-            Module Name: <input type = "text" name = "module_name"> <br> \
-            Module Link: <input type = "text" name = "module_link"> <br> \
-            <!-- module type--> \
-            <!-- should use check boxes --> \
-            Module Type: <input type = "text" name = "module_type"> <br> \
-            Module Sequence: <input type = "text" name = "module_seq"> <br>\
-            ');
-        }
-
-
-    </script>
-
-    </body>
-</html>
+    </div>
+</div>

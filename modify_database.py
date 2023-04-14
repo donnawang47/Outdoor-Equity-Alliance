@@ -50,7 +50,7 @@ def insert_module(data):
                 statement += " INTEGER DEFAULT 0;"
                 cursor.execute(statement)
                 cursor.execute('COMMIT;')
-
+            return (True, "module inserted")
             #connection.commit()
 
     except Exception as error:

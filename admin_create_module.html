@@ -1,56 +1,68 @@
-<!DOCTYPE html>
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#add_module">
+    <span class="glyphicon glyphicon-plus"></span> Add Module
+</button>
+<br>
 
-<html>
-    <head>
-        <title> Outdoor Equity Alliance: Admin Interface </title>
-    </head>
 
-    <body>
-        <h1> Outdoor Equity Alliance: Admin Interface </h1>
+<!-- modal for changing module name -->
+<!-- Trigger the modal with a button -->
+<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="add_module" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
 
-        <h2> Insert New Module into Program {{program_name}}</h2>
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Change Module Name</h4>
+                </div>
+                <div class="modal-body container-fluid">
+                    <form action="{{'/admin/programs/edit/add_module?program_id=%s' %pgm_data['program_id']}}" method='POST'>
 
-        <hr>
+                        <table >
+                            <tr>
+                                <td align= "right"> Module Name : </td>
+                                <td align="left">
+                                    <input type = "text"
+                                    name = "module_name"> <br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align= "right"> Content-type : </td>
+                                <td align="left">
+                                    <input type = "text"
+                                    name = "content_type"> <br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align= "right"> Content-link : </td>
+                                <td align="left">
+                                    <input type = "text"
+                                    name = "content_link"> <br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align= "right"> Index : </td>
+                                <td align="left">
+                                    <input type = "text"
+                                    name = "index"> <br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align = "right"></td>
+                                <td align = "left"><input type="submit"
+                                    value="Submit"> </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
 
-        <h3> Module Information </h3>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
 
-        <form action = "/admin/programs/create_module" method = "POST">
-            <table>
-                <tr>
-                    <td align= "right"> Module Name : </td>
-                    <td align="left">
-                        <input type = "text"
-                        name = "module_name"> <br>
-                    </td>
-                </tr>
-                <tr>
-                    <td align= "right"> Content-type : </td>
-                    <td align="left">
-                        <input type = "text"
-                        name = "content_type"> <br>
-                    </td>
-                </tr>
-                <tr>
-                    <td align= "right"> Content-link : </td>
-                    <td align="left">
-                        <input type = "text"
-                        name = "content_link"> <br>
-                    </td>
-                </tr>
-                <tr>
-                    <td align= "right"> Index : </td>
-                    <td align="left">
-                        <input type = "text"
-                        name = "index"> <br>
-                    </td>
-                </tr>
-                <tr>
-                    <td align = "right"></td>
-                    <td align = "left"><input type="submit"
-                        value="Submit"> </td>
-                </tr>
-            </table>
-        </form>
-
-    </body>
-</html>
+    </div>
+</div>

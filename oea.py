@@ -132,42 +132,27 @@ def admin_create_program():
         pgm_params["program_availability"] = flask.request.form['pgm_avail']
 
         success, message = modify_database.insert_program(pgm_params)
-        status, programslist = access_database.get_programslist()
+        #status, programslist = access_database.get_programslist()
 
         if success:
             print("new program inserted")
-            html_code = flask.render_template('admin_programs.html',
-                                        programslist = programslist)
-        elif not success:
+            success, data = access_database.get_programslist()
+            if success:
+                print("Admin Interface: displaying programs list")
+                html_code = flask.render_template('admin_programs.html',
+                            programslist = data)
+            else:
+                print("Error: " + programslist)
+                html_code= flask.render_template('error.html',
+                            err_msg = data)
+        else:
             html_code = flask.render_template('error.html',
                                 err_msg = "A server error occurred while inserting program.")
-        elif not status:
-            html_code = flask.render_template('error.html',
-                                    err_msg = "A server error occurred while getting programs list.")
-    else:
-        html_code = flask.render_template('admin_create_program.html')
-            # display_database.main()
 
-        # # iterate this multiple times if multiple modules?
-        # # modules_params
-        # md_params = {}
-        # md_params["module_id"] = modify_database.create_module_id()
-        # md_params["program_id"] = pgm_params["program_id"]
-        # md_params["module_name"] = flask.request.form['module_name']
-        # md_params["content_link"] = flask.request.form['module_link']
-        # md_params["content_type"] = flask.request.form['module_type']
-        # md_params["module_index"] = flask.request.form['module_seq']
-
-        # success = modify_database.insert_module(md_params)
-        # if success:
-        #     print("new module inserted")
-        #     display_database.main()
-
-    # html_code = flask.render_template('admin_create_program.html')
     response = flask.make_response(html_code)
     return response
 
-@app.route("/admin/programs/create_module", methods=['GET', 'POST'])
+@app.route("/admin/programs/edit/add_module", methods=['GET', 'POST'])
 def admin_create_module():
     program_id = flask.request.args.get('program_id')
     if flask.request.method == 'POST':
@@ -180,12 +165,18 @@ def admin_create_module():
         md_params["content_type"] = flask.request.form['content_type']
         md_params["module_index"] = flask.request.form['index']
 
-        success = modify_database.insert_module(md_params)
+        success, msg = modify_database.insert_module(md_params)
         if success:
-            print("new module inserted")
-            display_database.main()
+            print(msg)
+            success, data = access_database.get_program_details(program_id)
+            if success:
+                print("data retrieved:",data)
+                html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+            else:
+                html_code = flask.render_template('error.html',
+                                err_msg = data)
         else:
-            html_code = flask.render_template('error.html', )
+            html_code = flask.render_template('error.html', err_msg = msg)
     else:
         program_name = flask.request.args.get('program_name')
         html_code = flask.render_template('admin_create_module.html', program_name)
