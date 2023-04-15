@@ -381,25 +381,29 @@ def delete_module(module_id):
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
+            print("modify_database.py: delete_module", module_id)
             # fetch content type with module_id
             statement = "SELECT content_type FROM modules WHERE "
-            statement += "module_id = "
-            statement += str(module_id)
-            cursor.execute(statement)
+            statement += "module_id = %s"
+            #statement += str(module_id)
+            cursor.execute(statement, [module_id])
             content_type = cursor.fetchall()
 
             # determine if module id corresponds to assessment.
             # if so, delete its assessment column from students table.
             if content_type[0] == 'assessment':
+
+                    cursor.execute('BEGIN;')
                     statement = "ALTER TABLE users DROP COLUMN "
                     statement += str(module_id)
                     cursor.execute(statement)
+                    cursor.execute('COMMIT;')
 
             # delete row with specified module id from programs table
-            statement = "DELETE FROM programs WHERE module_id = "
-            statement += str(module_id)
-            cursor.execute(statement)
-            connection.commit()
+            statement = "DELETE FROM modules WHERE module_id = %s"
+            # statement += str(module_id)
+            cursor.execute(statement, [module_id])
+            return(True, "module successfully deleted")
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -559,10 +563,12 @@ def change_module_idx(module_id, new_idx):
 
 # write functionality to deal with duplicate entries!
 def main():
+    delete_module('m6')
+    # delete_program('p5')
     # change_module_idx('m3', 1)
     # change_module_idx('m2', 2)
     #change_program_desc('p1', 'new p1 desc')
-    change_program_avail('p1', 'none')
+    # change_program_avail('p1', 'none')
     # #  ! must pass in data to be inserted into modules table from interface interaction.
 
     # #----------------- testing creating program id --------------------

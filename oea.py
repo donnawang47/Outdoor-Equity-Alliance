@@ -402,20 +402,47 @@ def delete_program():
     success, message = modify_database.delete_program(program_id)
 
     if success:
-        status, programslist = access_database.get_programslist()
+        status, data = access_database.get_programslist()
         if status:
-             html_code = flask.render_template('admin_programs.html',
-                    programslist = programslist)
+            print("Admin Interface: displaying programs list")
+            html_code = flask.render_template('admin_programs.html',
+                        programslist = data)
+        else:
+            print("Error: " + programslist)
+            html_code= flask.render_template('error.html',
+                        err_msg = data)
 
-    elif not success:
+    else:
         html_code = flask.render_template('error.html',
                             err_msg = "There was an error while deleting program.")
-    elif not status:
-        html_code = flask.render_template('error.html',
-                                        err_msg = 'There was an error while getting list of programs.')
-
     response = flask.make_response(html_code)
     return response
+
+
+@app.route('/admin/programs/modules/delete', methods=['POST'])
+def delete_module():
+    module_id = flask.request.args.get('module_id')
+    print('module_id', module_id)
+    program_id = flask.request.args.get('program_id')
+    print('program_id', program_id)
+    success, message = modify_database.delete_module(module_id)
+
+    if success:
+        print(message)
+        success, data = access_database.get_program_details(program_id)
+        if success:
+            print("data retrieved:",data)
+            html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
+        else:
+            html_code = flask.render_template('error.html',
+                            err_msg = data)
+
+    else:
+        html_code = flask.render_template('error.html',
+                            err_msg = message)
+    response = flask.make_response(html_code)
+    return response
+
 
 def get_current_student():
     return 2

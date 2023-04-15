@@ -149,6 +149,14 @@
                     </button>
                     </td>
 
+                    <td>
+                        <form action="{{'/admin/programs/modules/delete?module_id=%s&program_id=%s' %(module['module_id'], pgm_data['program_id'])}}" method = 'POST'> <input type="submit" value="Delete">
+                        </form>
+                        <!-- <button typw = "button" class="btn btn-info btn-sm">
+                            <span class="glyphicon glyphicon-trash"></span></span> Delete
+                        </button> -->
+                    </td>
+
                     <!-- <td><button class="btn btn-basic" type="button"  data-toggle="collapse" data-target="#view_{{module['module_id']}}" >expand</button></td> -->
 
                 </tr>
@@ -175,10 +183,10 @@
 
         <!-- add module button -->
 
-        <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#add_module">
+        <!-- <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#add_module">
             <span class="glyphicon glyphicon-edit"></span> Add Module
-        </button>
-
+        </button> -->
+        {% include 'admin_create_module.html' %}
 
 
         <hr>
