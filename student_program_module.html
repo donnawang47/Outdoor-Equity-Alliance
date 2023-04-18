@@ -47,16 +47,18 @@
         <br>
 
         <!--set conditions for no prev/no next based on index-->
-        {% if module['module_index']-1 >= 0 %}
-            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']-1]['module_id']}}" class="btn btn-primary col-sm-4">Previous {{program['modules'][module['module_index']-1]['module_id']}}</a>
+        <!-- module index starts at 1, thus, instead of module['module_index']-1 doing module['module_index']-2-->
+        {% if module['module_index']-2 >= 0 %}
+            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']-2]['module_id']}}" class="btn btn-primary col-sm-4">Previous {{program['modules'][module['module_index']-2]['module_id']}}</a>
         {% else %}
             <!--want to add spacing not working rn-->
             <span class="col-sm-4"></span>
         {% endif %}
         
-        {% if module['module_index']+1 < program['modules']|length %}
-            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']+1]['module_id']}}" class="btn btn-primary col-sm-4" id="complete_button">Next {{program['modules'][module['module_index']+1]['module_id']}}</a>
-        {% elif module['module_index']+1 == program['modules']|length %}
+        <!-- module index starts at 1, thus, instead of module['module_index']+1 doing module['module_index']-->
+        {% if module['module_index'] < program['modules']|length %}
+            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']]['module_id']}}" class="btn btn-primary col-sm-4" id="complete_button">Next {{program['modules'][module['module_index']]['module_id']}}</a>
+        {% elif module['module_index'] == program['modules']|length %}
         <a href="{{"/student/program?programid=" + program['program_id']}}" class="btn btn-primary col-sm-4" id="complete_button">Finish</a> 
         {% endif %}
 

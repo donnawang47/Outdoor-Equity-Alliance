@@ -1,9 +1,62 @@
+import os
 import flask
 import access_database
 import modify_database
 import display_database
+import flask_wtf.csrf
+import flask_talisman
+import auth
+
+# export APP_SECRET_KEY=yourappsecretkey
+# export GOOGLE_CLIENT_ID=yourgoogleclientid
+# export GOOGLE_CLIENT_SECRET=yourgoogleclientsecret
 
 app = flask.Flask(__name__, template_folder=".")
+
+# app.secret_key = os.environ['APP_SECRET_KEY']
+# flask_wtf.csrf.CSRFProtect(app)
+# flask_talisman.Talisman(app)
+
+
+#routes for authetication
+# @app.route('/login', methods=['GET'])
+# def login():
+#     return auth.login()
+
+# @app.route('/login/callback', methods=['GET'])
+# def callback():
+#     return auth.callback()
+
+# @app.route('/logoutapp', methods=['GET'])
+# def logoutapp():
+#     return auth.logoutapp()
+
+# @app.route('/logoutgoogle', methods=['GET'])
+# def logoutgoogle():
+#     return auth.logoutgoogle()
+
+def authorize(username):
+
+    #74: def is_authorized(username):
+    #in database.py file
+# 75:
+# 76: with sqlalchemy.orm.Session(_engine) as session:
+# 77: query = session.query(AuthorizedUser) \
+# 78: .filter(AuthorizedUser.username==username)
+# 79: try:
+# 80: query.one()
+# 81: return True
+# 82: except sqlalchemy.exc.NoResultFound:
+# 83: return False
+    if not access_database.is_admin_authorized(username):
+        html_code = 'You are not authorized to use this application.'
+        response = flask.make_response(html_code)
+        flask.abort(response)
+
+    if not access_database.is_student_authorized(username):
+        html_code = 'You are not authorized to use this application.'
+        response = flask.make_response(html_code)
+        flask.abort(response)
 
 # temporary main page
 # not sure what it should be
@@ -27,8 +80,9 @@ def admin_interface():
 @app.route('/admin/students', methods=['GET'])
 def admin_students():
     status, students = access_database.get_all_students()
+    status, admins = access_database.get_all_admins()
 
-    html_code = flask.render_template('admin_students.html', students=students)
+    html_code = flask.render_template('admin_students.html', students=students, admins=admins)
     response = flask.make_response(html_code)
     return response
 
@@ -104,6 +158,46 @@ def admin_updatePgmStatus():
     response = flask.make_response(html_code)
     return response
 
+@app.route('/admin/students/new_user', methods=['GET','POST'])
+def admin_new_user():
+    if flask.request.method == 'POST':
+        
+        user_status = flask.request.form['user_status']
+
+        print(user_status)
+
+        if user_status == "admin":
+            user_info = {}
+        # user_info["user_id"] = modify_database.create_program_id()
+            user_info["admin_name"] = flask.request.form['user_name']
+            user_info["admin_email"] = flask.request.form['user_email']
+            success, message = modify_database.insert_admin(user_info)
+        #status, programslist = access_database.get_programslist()
+        elif user_status == "student":
+            user_info = {}
+        # user_info["user_id"] = modify_database.create_program_id()
+            user_info["student_name"] = flask.request.form['user_name']
+            user_info["student_email"] = flask.request.form['user_email']
+            success, message = modify_database.insert_student(user_info)
+
+        if success:
+            print("user inserted")
+            status, students = access_database.get_all_students()
+            status, admins = access_database.get_all_admins()
+            if status:
+                print("Admin Interface: displaying user list")
+                html_code = flask.render_template('admin_students.html', students=students, admins=admins)
+            else:
+                print("Error: " + admins)
+                html_code= flask.render_template('error.html',
+                            err_msg = admins)
+        else:
+            html_code = flask.render_template('error.html',
+                                err_msg = "A server error occurred while inserting program.")
+
+    response = flask.make_response(html_code)
+    return response
+
 @app.route('/admin/programs', methods=['GET'])
 def admin_programs():
     # programslist is a tuple
@@ -114,7 +208,7 @@ def admin_programs():
         html_code = flask.render_template('admin_programs.html',
                     programslist = data)
     else:
-        print("Error: " + programslist)
+        print("Error: " + data)
         html_code= flask.render_template('error.html',
                     err_msg = data)
 
@@ -142,7 +236,7 @@ def admin_create_program():
                 html_code = flask.render_template('admin_programs.html',
                             programslist = data)
             else:
-                print("Error: " + programslist)
+                print("Error: " + data)
                 html_code= flask.render_template('error.html',
                             err_msg = data)
         else:
@@ -408,7 +502,7 @@ def delete_program():
             html_code = flask.render_template('admin_programs.html',
                         programslist = data)
         else:
-            print("Error: " + programslist)
+            print("Error: " + data)
             html_code= flask.render_template('error.html',
                         err_msg = data)
 

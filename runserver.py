@@ -2,6 +2,10 @@ import sys
 import argparse
 import oea
 
+#google expects app to run on port 5000
+PORT = 5000
+
+#NOte: probably uneccessary to have arg parser
 
 def main():
     parser = argparse.ArgumentParser(description= \
@@ -12,8 +16,13 @@ def main():
 
     port = args.port
 
+    # if len(sys.argv) != 1:
+    #     print('Usage: ' + sys.argv[0], file=sys.stderr)
+    #     sys.exit(1)
+
     try:
-        oea.app.run(host='0.0.0.0', port=port, debug=True)
+        oea.app.run(host='0.0.0.0', port=port, debug=True)#,
+                    #ssl_context = ('cert.pem','key.pem'))
     except Exception as ex:
         print(ex, file=sys.stderr)
         sys.exit(1)
