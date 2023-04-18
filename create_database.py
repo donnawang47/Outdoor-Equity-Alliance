@@ -45,7 +45,7 @@ def main():
             # assessments: 0 for incomplete, 1 for complete
             # assessment id: a* (append number of 5 digits)
 
-            create_users_table = """ CREATE TABLE users (user_id INTEGER GENERATED ALWAYS AS IDENTITY, user_name TEXT DEFAULT NULL, user_email TEXT DEFAULT NULL, user_status TEXT);"""
+            create_users_table = """ CREATE TABLE users (user_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY, user_name TEXT DEFAULT NULL, user_email TEXT DEFAULT NULL, user_status TEXT);"""
             #! do not add P1 and A1 columns because that should be done by admin.
 
 
@@ -53,7 +53,7 @@ def main():
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
             cursor.execute("DROP TABLE IF EXISTS programs;")
 
-            create_programs_table = """ CREATE TABLE programs (program_id TEXT, program_name TEXT DEFAULT NULL, description TEXT DEFAULT NULL, program_availability TEXT DEFAULT 'none');"""
+            create_programs_table = """ CREATE TABLE programs (program_id TEXT PRIMARY KEY, program_name TEXT DEFAULT NULL, description TEXT DEFAULT NULL, program_availability TEXT DEFAULT 'none');"""
 
             cursor.execute(create_programs_table)
 
@@ -61,7 +61,7 @@ def main():
 
             cursor.execute("DROP TABLE IF EXISTS modules;")
 
-            create_modules_table = """ CREATE TABLE modules (module_id TEXT, program_id TEXT, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER);"""
+            create_modules_table = """ CREATE TABLE modules (module_id TEXT PRIMARY KEY, program_id TEXT, module_name TEXT, content_type TEXT, content_link TEXT, module_index INTEGER);"""
 
             cursor.execute(create_modules_table)
 

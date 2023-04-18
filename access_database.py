@@ -10,14 +10,11 @@ import queue
 # for windows cmd: set DATABASE_URL=postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea
 
 # this always works i think
-#_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 
-_database_url = os.getenv('DATABASE_URL')
+# _database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
-# CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
-
-# DATABASE_URL = os.getenv('DATABASE_URL')
-# CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
+conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
 def _get_connection():
     try:
@@ -72,7 +69,7 @@ def get_program_details(program_id):
     try:
         # with CONN as connection:
         with connection.cursor() as cursor:
-            print("access_database.py: get_program_details")
+            print("In access_database.py: get_program_details")
             # print("in get pgm modules", program_id)
             stmt_str = "SELECT * FROM programs WHERE "
             stmt_str += "program_id=%s"
@@ -89,7 +86,7 @@ def get_program_details(program_id):
             data['program_name'] = table[0][1]
             data['description'] = table[0][2]
             data['program_availability'] = table[0][3]
-            print('data', data)
+            print('Program info', data)
 
             # get program modules
             stmt_str = "SELECT * FROM programs, modules WHERE "
@@ -99,7 +96,7 @@ def get_program_details(program_id):
 
             cursor.execute(stmt_str, [program_id])
             table = cursor.fetchall()
-            print("table", table)
+            print("Modules of program", table)
 
             # # list of dictionaries of modules within program
             modules = []
@@ -117,8 +114,8 @@ def get_program_details(program_id):
             if len(modules) != 0:
                 modules = sorted(modules, key=lambda x:x['module_index'])
             data['modules'] = modules
-            print('modles', modules)
-            print("data", data)
+            # print('modules', modules)
+            # print("data", data)
             # print("success access_database.py: get_program_modules")
             return (True, data)
 

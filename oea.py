@@ -28,7 +28,18 @@ def admin_interface():
 def admin_students():
     status, students = access_database.get_all_students()
 
-    html_code = flask.render_template('admin_students.html', students=students)
+    if status:
+        html_code = flask.render_template('admin_students.html', students=students)
+    else:
+        data = """ There was a server error while getting all students.
+        Please contact system administrator."""
+        html_code = flask.render_template('error.html', err_msg = data)
+    response = flask.make_response(html_code)
+    return response
+
+# display error html page
+def errorResponse(data):
+    html_code = flask.render_template('error.html', err_msg = data)
     response = flask.make_response(html_code)
     return response
 
@@ -45,15 +56,33 @@ def admin_studentdetails():
             if category == 'program':
                 pgm_status = flask.request.form['pgm_status']
                 status, msg = modify_database.update_program_status(studentid, id, pgm_status)
+                if not status:
+                    data = """ There was a server error while updating
+                    program status. Please contact system administrator."""
+                    errorResponse(data)
+
                 print("oea updating program status:", msg)
             elif category == 'module':
                 mod_status = flask.request.form['mod_status']
                 status, msg = modify_database.update_assessment_status(studentid, id, mod_status)
+                if not status:
+                    data = """ There was a server error while updating
+                    assessment status. Please contact system administrator."""
+                    errorResponse(data)
                 print("oea updating module status:", msg)
 
-
     status, student_programs = access_database.get_student_programs(studentid)
-    status, student_info = access_database.get_student_info(studentid)
+    status2, student_info = access_database.get_student_info(studentid)
+
+    if not status:
+        data = """There was a server error while getting student programs.
+        Please contact system administrator."""
+        errorResponse(data)
+    elif not status2:
+        data = """ There was a server error while getting student information.
+        Please contact system administrator."""
+        errorResponse(data)
+
     print("oea: get student programs done")
     # can only get student progress on enrolled programs?
     # need to change to enrolled
@@ -63,9 +92,19 @@ def admin_studentdetails():
     for pgm_id in enrolled:
         pgm = {}
         success, pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
+        if not success:
+            data = """ There was a server error while getting student program progress.
+        Please contact system administrator."""
+            errorResponse(data)
+
         print("pgm_status" + pgm_status)
         pgm['pgm_status'] = pgm_status
         status, data = access_database.get_program_details(pgm_id)
+        if not status:
+            data = """ There was a server error while getting program details.
+            Please contact system administrator."""
+            errorResponse(data)
+
         assessments = []
         for mod in data['modules']:
             print(mod)
@@ -73,7 +112,6 @@ def admin_studentdetails():
                 assessments.append((mod['module_id'], student_info[mod['module_id']]))
         pgm['assessments'] = assessments
         enrolled_pgms[pgm_id] = pgm
-
 
     print("oea.py, enrolled_pgms:", enrolled_pgms)
 
@@ -97,6 +135,11 @@ def admin_updatePgmStatus():
     if flask.request.method == 'POST':
         pgm_status = flask.request.form['pgm_status']
         status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
+        if not status:
+            data = """ There was a server error while updating program status.
+            Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
+
         print("oea updating program status:", msg)
         html_code = flask.render_template('admin_edit_pgm_status_btn.html')
     else:
@@ -114,7 +157,8 @@ def admin_programs():
         html_code = flask.render_template('admin_programs.html',
                     programslist = data)
     else:
-        print("Error: " + programslist)
+        data = """ There was a server error while getting programs list.
+        Please contact system administrator."""
         html_code= flask.render_template('error.html',
                     err_msg = data)
 
@@ -125,16 +169,17 @@ def admin_programs():
 def admin_create_program():
     if flask.request.method == 'POST':
         pgm_params = {}
-        # create program_id
-        pgm_params["program_id"] = modify_database.create_program_id()
         pgm_params["program_name"] = flask.request.form['pgm_name']
+        # create program_id
+        isDuplicate = modify_database.isProgramNameDuplicate(pgm_params["program_name"])  #todo: duplicate
+        status, pgm_params["program_id"] = modify_database.create_program_id()
         pgm_params["description"] = flask.request.form['pgm_descrip']
         pgm_params["program_availability"] = flask.request.form['pgm_avail']
 
         success, message = modify_database.insert_program(pgm_params)
         #status, programslist = access_database.get_programslist()
 
-        if success:
+        if success and status and not isDuplicate:
             print("new program inserted")
             success, data = access_database.get_programslist()
             if success:
@@ -142,12 +187,23 @@ def admin_create_program():
                 html_code = flask.render_template('admin_programs.html',
                             programslist = data)
             else:
-                print("Error: " + programslist)
+                data = """ There was a server error while getting programs list.
+        Please contact system administrator."""
                 html_code= flask.render_template('error.html',
                             err_msg = data)
-        else:
+        elif(isDuplicate):
+            print("duplicate name") #! This should display alert message, not send error page. Give user another try.
+        elif(not status):
+            data = """ There was a server error while creating program id.
+        Please contact system administrator."""
             html_code = flask.render_template('error.html',
-                                err_msg = "A server error occurred while inserting program.")
+                                err_msg = data)
+        elif(not success):
+            data = """ There was a server error while inserting program.
+        Please contact system administrator."""
+            html_code = flask.render_template('error.html',
+                                err_msg = data)
+
 
     response = flask.make_response(html_code)
     return response
@@ -158,7 +214,7 @@ def admin_create_module():
     if flask.request.method == 'POST':
         # modules_params
         md_params = {}
-        md_params["module_id"] = modify_database.create_module_id()
+        status, md_params["module_id"] = modify_database.create_module_id()
         md_params["program_id"] = program_id
         md_params["module_name"] = flask.request.form['module_name']
         md_params["content_link"] = flask.request.form['content_link']
@@ -166,17 +222,23 @@ def admin_create_module():
         md_params["module_index"] = flask.request.form['index']
 
         success, msg = modify_database.insert_module(md_params)
-        if success:
+        if status and success:
             print(msg)
             success, data = access_database.get_program_details(program_id)
-            if success:
+            if success: # return back to programs page
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
-        else:
-            html_code = flask.render_template('error.html', err_msg = msg)
+        elif(not status):
+            data = """ There was a server error while creating module id.
+        Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
+        elif(not success):
+            data = """ There was a server error while inserting module.
+        Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
     else:
         program_name = flask.request.args.get('program_name')
         html_code = flask.render_template('admin_create_module.html', program_name)
@@ -196,6 +258,8 @@ def admin_edit_program():
                             pgm_data = data,
                             moduleslist = data['modules'])
     else:
+        data = """ There was a server error while getting program details.
+        Please contact system administrator."""
         html_code = flask.render_template('error.html',
                                 err_msg = data)
 
@@ -218,13 +282,17 @@ def edit_program_name():
 
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
-            if success:
+            if status:
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
+                data = """ There was a server error while getting program details.
+                Please contact system administrator."""
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
         else:
+            data = """ There was a server error while changing program name.
+        Please contact system administrator."""
             html_code = flask.render_template('error.html',
                                 err_msg = data)
 
@@ -245,13 +313,17 @@ def edit_program_desc():
 
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
-            if success:
+            if status:
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
+                data = """ There was a server error while getting program details.
+                Please contact system administrator."""
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
         else:
+            data = """ There was a server error while changing program description.
+            Please contact system administrator."""
             html_code = flask.render_template('error.html',
                                 err_msg = data)
 
@@ -276,9 +348,13 @@ def edit_program_avail():
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
+                data = """ There was a server error while getting program details.
+                Please contact system administrator."""
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
         else:
+            data = """ There was a server error while changing program availability.
+        Please contact system administrator."""
             html_code = flask.render_template('error.html',
                                 err_msg = data)
 
@@ -295,7 +371,12 @@ def edit_module_seq():
         # num_modules = flask.request.form['num_modules']
         for name, val in flask.request.form.items():
             print(name, val)
-            modify_database.change_module_idx(name, val)
+            status, msg = modify_database.change_module_idx(name, val)
+
+            if not status:
+                data = """ There was a server error while creating program id.
+                Please contact system administrator."""
+                errorResponse(data)
 
             # get module id from flask req
             # get new idx from flask req
@@ -305,6 +386,8 @@ def edit_module_seq():
         print("data retrieved:",data)
         html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
     else:
+        data = """ There was a server error while getting program details.
+                Please contact system administrator."""
         html_code = flask.render_template('error.html',
                         err_msg = data)
 
@@ -326,6 +409,8 @@ def get_modules_of_program():
                                           program_name = data['program_name'], program_id = program_id,
                                           moduleslist = data['modules'])
     else:
+        data = """ There was a server error while getting program details.
+        Please contact system administrator."""
         html_code = flask.render_template('error.html', err_msg = data)
 
     response = flask.make_response(html_code)
@@ -352,11 +437,15 @@ def edit_module_name():
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
+                data = """ There was a server error while getting program details.
+                Please contact system administrator."""
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
         else:
+            data = """ There was a server error while changing module name.
+        Please contact system administrator."""
             html_code = flask.render_template('error.html',
-                                err_msg = message)
+                                err_msg = data)
 
     response = flask.make_response(html_code)
     return response
@@ -384,12 +473,16 @@ def edit_module_link():
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
+                data = """ There was a server error while getting program details.
+                Please contact system administrator."""
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
 
         else:
+            data = """ There was a server error while editing module link.
+            Please contact system administrator."""
             html_code = flask.render_template('error.html',
-                                err_msg = message)
+                                err_msg = data)
 
     response = flask.make_response(html_code)
     return response
@@ -408,13 +501,16 @@ def delete_program():
             html_code = flask.render_template('admin_programs.html',
                         programslist = data)
         else:
-            print("Error: " + programslist)
+            data = """ There was a server error while getting programs list.
+            Please contact system administrator."""
             html_code= flask.render_template('error.html',
                         err_msg = data)
 
     else:
+        data = """ There was a server error while deleting program.
+        Please contact system administrator."""
         html_code = flask.render_template('error.html',
-                            err_msg = "There was an error while deleting program.")
+                            err_msg = data)
     response = flask.make_response(html_code)
     return response
 
@@ -426,20 +522,25 @@ def delete_module():
     program_id = flask.request.args.get('program_id')
     print('program_id', program_id)
     success, message = modify_database.delete_module(module_id)
+    print("deleting module success = ", success)
 
     if success:
         print(message)
         success, data = access_database.get_program_details(program_id)
+        print("success of getting program details = ", success)
         if success:
-            print("data retrieved:",data)
+            print("modules of program:", data['modules'])
             html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
         else:
+            data = """ There was a server error while getting program details.
+        Please contact system administrator."""
             html_code = flask.render_template('error.html',
                             err_msg = data)
-
     else:
+        data = """ There was a server error while deleting module.
+        Please contact system administrator."""
         html_code = flask.render_template('error.html',
-                            err_msg = message)
+                            err_msg = data)
     response = flask.make_response(html_code)
     return response
 
@@ -456,7 +557,9 @@ def student_interface():
         html_code = flask.render_template('student_interface.html',
                     programs = student_programs, studentid=studentid)
     else:
-        html_code = flask.render_template('error_student.html', err_msg=student_programs)
+        data = """ There was a server error while getting student programs.
+        Please contact system administrator."""
+        html_code = flask.render_template('error_student.html', err_msg= data)
     response = flask.make_response(html_code)
     return response
 
@@ -466,33 +569,43 @@ def student_program():
     programid = flask.request.args.get('programid')
     print(programid)
     status, programdata = access_database.get_program_details(programid)
-    status, program_status = access_database.get_student_program_status(studentid, programid)
-    if status:
+    success, program_status = access_database.get_student_program_status(studentid, programid)
+    if status and success:
         print("Student Interface: displaying program info " + programid + " for " + str(studentid))
         html_code = flask.render_template('student_program.html',
                     program = programdata, availability=program_status, studentid=studentid)
-    else:
-        html_code = flask.render_template('error_student.html', err_msg=programdata)
+    elif(not status):
+        data = """ There was a server error while getting program details.
+        Please contact system administrator."""
+        html_code = flask.render_template('error_student.html', err_msg=data)
+    elif(not success):
+        data = """ There was a server error while getting student program status.
+        Please contact system administrator."""
+        html_code = flask.render_template('error_student.html', err_msg=data)
     response = flask.make_response(html_code)
     return response
 
 
 @app.route('/student/program/module', methods=['GET'])
 def student_program_module():
-    studentid=get_current_student()
+    studentid= get_current_student()
     moduleid = flask.request.args.get('moduleid')
     print(moduleid)
     status, moduledata = access_database.get_module(moduleid)
-    status, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
-    if program_status == 'enrolled':
+    success, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
+    if status and program_status == 'enrolled':
         status, programdata = access_database.get_program_details(moduledata['program_id'])
         if status:
             print("Student Interface: displaying module info " + moduleid + " for " + str(studentid))
             html_code = flask.render_template('student_program_module.html',
                         module = moduledata, program=programdata, studentid=studentid)
         else:
-            html_code = flask.render_template('error_student.html', err_msg=moduledata)
-    else:
+            data = """ There was a server error while getting program details.
+            Please contact system administrator."""
+            html_code = flask.render_template('error_student.html', err_msg=data)
+    elif(not status or not success):
+        data = """ There was a server error while getting student program status.
+        Please contact system administrator."""
         html_code = flask.render_template('error_student.html', err_msg="Program " + moduledata['program_id'] + " is " + program_status + " please enroll or contact the admin to gain access.")
     response = flask.make_response(html_code)
     return response
@@ -502,7 +615,12 @@ def student_complete_module():
     studentid = flask.request.args.get('studentid')
     moduleid = flask.request.args.get('moduleid')
     status, msg = modify_database.update_assessment_status(studentid, moduleid, 1)
-    return flask.make_response("")
+
+    if not status:
+        data = """ There was a server error while updating assessment status.
+        Please contact system administrator."""
+        html_code = flask.render_template('error_student.html', err_msg= data)
+    return flask.make_response(html_code)
 
 
 @app.route('/enrollpgm', methods=['GET'])
@@ -510,4 +628,8 @@ def student_enroll_program():
     studentid = flask.request.args.get('studentid')
     programid = flask.request.args.get('programid')
     status, msg = modify_database.update_program_status(studentid, programid, "enrolled")
-    return flask.make_response("")
+    if not status:
+        data = """ There was a server error while updating program status.
+        Please contact system administrator."""
+        html_code = flask.render_template('error_student.html', err_msg= data)
+    return flask.make_response(html_code)

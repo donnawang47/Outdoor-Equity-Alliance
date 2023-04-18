@@ -65,7 +65,10 @@
                             </td>
 
                             <td align = right>
-                                <form action="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" method = 'POST'> <input type="submit" value="Delete">
+                                <form action="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" method = 'POST' onsubmit="return isConfirmed(this);"> <input type="submit" value="Delete">
+                                <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
+                                <button class="pure-button button-warning confirm" type="submit"
+                                formaction="config" formmethod="post"> Confirm </button> -->
                                 </form>
                             </td>
                         </tr>
@@ -80,6 +83,20 @@
         {% include 'admin_create_program.html'%}
 
         <!-- <a href="/admin/programs/create_program"> Create New Program</a> -->
+
+        <script>
+            function isConfirmed (form) {
+            if(confirm('Are you sure you want to delete?')) {
+                return true;
+            }
+            else {
+                // alert('Cancelled deletion.');
+                return false;
+            }
+        }
+
+
+        </script>
 
     </body>
 </html>

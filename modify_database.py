@@ -3,12 +3,14 @@ import queue
 import sys
 import os
 
-# DATABASE_URL = os.getenv('DATABASE_URL')
-# CONN = psycopg2.connect("dbname=oea user=rmd password=xxx")
-#_database_url = "dbname=oea user=rmd password=xxx"
-_database_url = os.getenv('DATABASE_URL')
-#_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+# _database_url = os.getenv('DATABASE_URL')
+
+# this always works
+_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+
+# _database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
+conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
 def _get_connection():
     try:
@@ -152,7 +154,23 @@ def insert_admin(data):
     finally:
         _put_connection(connection)
 
+# returns the highest index
+def modules_max():
+    connection = _get_connection()
+    try:
+        with connection.cursor() as cursor:
+            statement = "SELECT count(*) FROM modules"
+            cursor.execute(statement)
+            data = cursor.fetchall()
+            return (True, data[0][0])
 
+    except Exception as error:
+            err_msg = "A server error occurred. "
+            err_msg += "Please contact the system administrator."
+            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+            return (False, err_msg)
+    finally:
+            _put_connection(connection)
 
 
 # use this function to create assessment_id as well
@@ -162,18 +180,19 @@ def create_module_id():
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
 
-            stmt_str = "SELECT COUNT(*) FROM modules"
+            stmt_str = """SELECT module_id FROM modules ORDER BY
+            module_id DESC limit 1 """
             cursor.execute(stmt_str)
             data = cursor.fetchall()
             # print("create module_id: ", count)
             num = 1
             if len(data) != 0:
-                num = str(data[0][0] + 1)
-
-            module_id = 'm' + num
+                id = data[0][0]
+                num = int(id[1]) + 1
+            module_id = 'm' + str(num)
             print("create module id:", module_id)
             connection.commit()
-            return module_id
+            return (True, module_id)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -204,8 +223,8 @@ def create_program_id():
                 program_id = 'p' + str(num)
                 # print("create program id:", program_id)
                 print('program id created = ', program_id)
-
-                return program_id
+                connection.commit()
+                return (True, program_id)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -389,9 +408,12 @@ def delete_module(module_id):
             cursor.execute(statement, [module_id])
             content_type = cursor.fetchall()
 
+            print("getting content type...")
+            print("content_type = ", content_type[0][0])
+
             # determine if module id corresponds to assessment.
             # if so, delete its assessment column from students table.
-            if content_type[0] == 'assessment':
+            if content_type[0][0] == 'assessment':
 
                     cursor.execute('BEGIN;')
                     statement = "ALTER TABLE users DROP COLUMN "
@@ -560,10 +582,66 @@ def change_module_idx(module_id, new_idx):
     finally:
         _put_connection(connection)
 
+# compares passed program name to all program names in database to
+# check if there are duplicates
+def isProgramNameDuplicate(newName):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+            statement = "SELECT program_name FROM programs"
+            cursor.execute(statement)
+
+            names = cursor.fetchall()
+
+            for name in names:
+                if newName == name:
+                    return True
+
+            return False
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
+# compares passed program name to all program names in database to
+# check if there are duplicates
+def isModuleNameDuplicate(newName):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+            statement = "SELECT module_name FROM modules"
+            cursor.execute(statement)
+
+            names = cursor.fetchall()
+
+            for name in names:
+                if newName == name:
+                    return True
+
+            return False
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
 
 # write functionality to deal with duplicate entries!
 def main():
-    delete_module('m6')
+   valid, num = modules_max()
+   print('max index = ', num)
+
+    # ----------------------------------------------------------------
+     # delete_module('m6')
     # delete_program('p5')
     # change_module_idx('m3', 1)
     # change_module_idx('m2', 2)
