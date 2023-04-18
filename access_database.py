@@ -111,8 +111,7 @@ def get_program_details(program_id):
                 modules.append(modules_row)
 
                 #sort modules via index
-            if len(modules) != 0:
-                modules = sorted(modules, key=lambda x:x['module_index'])
+            modules = sorted(modules, key=lambda x:x['module_index'])
             data['modules'] = modules
             # print('modules', modules)
             # print("data", data)
@@ -189,6 +188,78 @@ def get_student_info(student_id):
             print("student_data:", student_data)
             print("success access_database.py: get_student_info:", student_id)
             return (True, student_data)
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
+    finally:
+        _put_connection(connection)
+
+def is_admin_authorized(username):
+    connection = _get_connection()
+    try:
+        with connection.cursor() as cursor:
+            print("access_database: is_admin_authorized", username)
+            stmt_str = "SELECT * FROM users where user_status = 'admin' AND user_name =%s;"
+            cursor.execute(stmt_str, [username])
+            data = cursor.fetchall()
+
+            return (True, data)
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
+    finally:
+        _put_connection(connection)
+
+
+def is_student_authorized(username):
+    connection = _get_connection()
+    try:
+        with connection.cursor() as cursor:
+            print("access_database: is_admin_authorized", username)
+            stmt_str = "SELECT * FROM users where user_status = 'student' AND user_name =%s;"
+            cursor.execute(stmt_str, [username])
+            data = cursor.fetchall()
+
+            return (True, data)
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
+    finally:
+        _put_connection(connection)
+
+
+
+def get_all_admins():
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+            print("access_database.py: get_all_students:")
+            stmt_str = "SELECT * FROM users WHERE user_status='admin';"
+
+            cursor.execute(stmt_str)
+            table = cursor.fetchall()
+
+            # list of dictionaries of programs
+            data = []
+            for row in table:
+                data_row = {}
+                data_row['admin_id'] = row[0]
+                data_row['admin_name'] = row[1]
+                data_row['admin_email'] = row[2]
+                data_row['admin_status'] = row[3]
+                #check if the column name method works
+                data.append(data_row)
+            print("data:", data)
+            print("success access_database.py: get_all_admins")
+            return (True, data)
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -309,8 +380,8 @@ def get_student_module_completion(student_id, assessment_ids):
 # returns a fractional string indicating studentid progress of programid
 def get_student_program_progress(studentid, programid):
     # get all moduleids for desired program
-    print("access_database.py: get_student_program_progress (no database):", student_id, programid)
-    success, module_info = get_program_modules(programid)
+    print("access_database.py: get_student_program_progress (no database):", studentid, programid)
+    success, module_info = get_program_details(programid)
     print("get_student_pgm_prog get pgm modules done")
     modules = module_info['modules']
     # only want modules w/ assessment type

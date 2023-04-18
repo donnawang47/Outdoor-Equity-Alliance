@@ -125,6 +125,8 @@ def insert_student(data): #data is 4-string-tuple
 
             connection.commit()
 
+            return(True, "successfully added a new student")
+
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
@@ -145,6 +147,8 @@ def insert_admin(data):
             cursor.execute(statement, param)
 
             connection.commit()
+
+            return(True, "successfully added a new admin")
 
     except Exception as error:
         err_msg = "A server error occurred. "
