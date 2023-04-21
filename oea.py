@@ -5,7 +5,7 @@ import modify_database
 import display_database
 import flask_wtf.csrf
 import flask_talisman
-import auth
+#import auth
 
 # export APP_SECRET_KEY=yourappsecretkey
 # export GOOGLE_CLIENT_ID=yourgoogleclientid
@@ -77,6 +77,20 @@ def admin_interface():
     return response
 
 # admin
+@app.route('/admin/admins', methods=['GET'])
+def admin_admins():
+    #status, students = access_database.get_all_students()
+    status, admins = access_database.get_all_admins()
+
+    if status:
+        html_code = flask.render_template('admin_admins.html', admins=admins)
+    else:
+        data = """ There was a server error while getting all students.
+        Please contact system administrator."""
+        html_code = flask.render_template('error.html', err_msg = data)
+    response = flask.make_response(html_code)
+    return response
+
 @app.route('/admin/students', methods=['GET'])
 def admin_students():
     status, students = access_database.get_all_students()
@@ -201,39 +215,60 @@ def admin_updatePgmStatus():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/students/new_user', methods=['GET','POST'])
-def admin_new_user():
+
+@app.route('/admin/admins/new_admin', methods=['GET','POST'])
+def admin_new_admin():
     if flask.request.method == 'POST':
-        
-        user_status = flask.request.form['user_status']
 
-        print(user_status)
+        user_status = "admin"
 
-        if user_status == "admin":
-            user_info = {}
+        user_info = {}
         # user_info["user_id"] = modify_database.create_program_id()
-            user_info["admin_name"] = flask.request.form['user_name']
-            user_info["admin_email"] = flask.request.form['user_email']
-            success, message = modify_database.insert_admin(user_info)
-        #status, programslist = access_database.get_programslist()
-        elif user_status == "student":
-            user_info = {}
-        # user_info["user_id"] = modify_database.create_program_id()
-            user_info["student_name"] = flask.request.form['user_name']
-            user_info["student_email"] = flask.request.form['user_email']
-            success, message = modify_database.insert_student(user_info)
+        user_info["admin_name"] = flask.request.form['admin_name']
+        user_info["admin_email"] = flask.request.form['admin_email']
+        success, message = modify_database.insert_admin(user_info)
+
 
         if success:
-            print("user inserted")
+            print("admin inserted")
             status, students = access_database.get_all_students()
-            status, admins = access_database.get_all_admins()
+            status, data = access_database.get_all_admins()
             if status:
                 print("Admin Interface: displaying user list")
-                html_code = flask.render_template('admin_students.html', students=students, admins=admins)
+                html_code = flask.render_template('admin_admins.html',admins=data)
             else:
-                print("Error: " + admins)
+                print("Error: " + data)
                 html_code= flask.render_template('error.html',
-                            err_msg = admins)
+                            err_msg = data)
+        else:
+            html_code = flask.render_template('error.html',
+                                err_msg = "A server error occurred while inserting program.")
+
+    response = flask.make_response(html_code)
+    return response
+
+@app.route('/admin/students/new_student', methods=['GET','POST'])
+def admin_new_user():
+    if flask.request.method == 'POST':
+
+        user_status = "student"
+
+        user_info = {}
+        # user_info["user_id"] = modify_database.create_program_id()
+        user_info["student_name"] = flask.request.form['student_name']
+        user_info["student_email"] = flask.request.form['student_email']
+        success, message = modify_database.insert_student(user_info)
+
+        if success:
+            print("student inserted")
+            status, data = access_database.get_all_students()
+            if status:
+                print("Admin Interface: displaying user list")
+                html_code = flask.render_template('admin_students.html', students=data)
+            else:
+                print("Error: " + data)
+                html_code= flask.render_template('error.html',
+                            err_msg = data)
         else:
             html_code = flask.render_template('error.html',
                                 err_msg = "A server error occurred while inserting program.")
