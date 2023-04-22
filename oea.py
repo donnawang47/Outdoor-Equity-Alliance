@@ -1,5 +1,6 @@
 import os
 import flask
+from flask import request
 import access_database
 import modify_database
 import display_database
@@ -342,6 +343,14 @@ def admin_create_module():
         # modules_params
         md_params = {}
         status, md_params["module_id"] = modify_database.create_module_id()
+
+        if not status:
+            data = """ There was a server error while creating module id.
+            Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
+            response = flask.make_response(html_code)
+            return response
+
         md_params["program_id"] = program_id
         md_params["module_name"] = flask.request.form['module_name']
         md_params["content_link"] = flask.request.form['content_link']
@@ -349,7 +358,7 @@ def admin_create_module():
         md_params["module_index"] = flask.request.form['index']
 
         success, msg = modify_database.insert_module(md_params)
-        if status and success:
+        if success:
             print(msg)
             success, data = access_database.get_program_details(program_id)
             if success: # return back to programs page
@@ -358,17 +367,14 @@ def admin_create_module():
             else:
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
-        elif(not status):
-            data = """ There was a server error while creating module id.
-        Please contact system administrator."""
-            html_code = flask.render_template('error.html', err_msg = data)
-        elif(not success):
+
+        else:
             data = """ There was a server error while inserting module.
         Please contact system administrator."""
             html_code = flask.render_template('error.html', err_msg = data)
-    else:
-        program_name = flask.request.args.get('program_name')
-        html_code = flask.render_template('admin_create_module.html', program_name)
+    # else:
+    #     program_name = flask.request.args.get('program_name')
+    #     html_code = flask.render_template('admin_create_module.html', program_name)
 
     response = flask.make_response(html_code)
     return response
@@ -698,6 +704,7 @@ def student_program():
     success, program_status = access_database.get_student_program_status(studentid, programid)
     if status and success:
         print("Student Interface: displaying program info " + programid + " for " + str(studentid))
+        print(programdata)
         html_code = flask.render_template('student_program.html',
                     program = programdata, availability=program_status, studentid=studentid)
     elif(not status):
@@ -714,10 +721,29 @@ def student_program():
 
 @app.route('/student/program/module', methods=['GET'])
 def student_program_module():
-    studentid= get_current_student()
+    print("oea.py: student_program_module")
+    studentid= flask.request.args.get('studentid')
+    print("studentid", studentid)
     moduleid = flask.request.args.get('moduleid')
-    print(moduleid)
+    print("moduleid", moduleid)
+
+    # for security: need to validate studentid and moduleid before accessing db
+
+    print("current link", request.full_path)
     status, moduledata = access_database.get_module(moduleid)
+    # get first incomplete assessment
+    # if this module seq is greater than the completed assessment
+    # it should be locked
+    success, min_idx = access_database.get_locked_module_index(studentid, moduledata['program_id']) #handle error
+    print("last incomplete quiz is module at index", min_idx)
+    print(moduledata['module_index'])
+    if moduledata['module_index'] > min_idx:
+        print("curr_idx greater than min_idx")
+        html_code = flask.render_template('error.html',
+                    err_msg = "You do not have access to this module.")
+        response = flask.make_response(html_code)
+        return response
+
     success, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
     if status and program_status == 'enrolled':
         status, programdata = access_database.get_program_details(moduledata['program_id'])

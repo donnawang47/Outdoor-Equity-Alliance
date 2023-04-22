@@ -361,7 +361,6 @@ def get_student_module_completion(student_id, assessment_ids):
                 #print(module_ids[1])
                 stmt_str+= " + users." + assessment_ids[i]
             stmt_str += " ) FROM users WHERE user_id = %s"
-            print(stmt_str)
             cursor.execute(stmt_str, [student_id])
             data = cursor.fetchall()
 
@@ -375,6 +374,33 @@ def get_student_module_completion(student_id, assessment_ids):
         return (False, error)
     finally:
         _put_connection(connection)
+
+# index count starting at 1
+def get_locked_module_index(studentid, programid):
+    success, module_info = get_program_details(programid)
+    print("get_student_pgm_prog get pgm modules done")
+    modules = module_info['modules']
+    # get min incomplete asssessment
+    min_incomplete_idx = len(modules)
+    print("total modules", min_incomplete_idx)
+    if success:
+        for module in modules:
+            module_id = module['module_id']
+
+            curr_idx = module['module_index']
+            print("id:", module_id, "; type:", module['content_type'], "; curr_idx:", curr_idx )
+            if module['content_type'] == 'assessment' and  curr_idx < min_incomplete_idx:
+
+                success, complete = get_student_assessment_status(studentid, module_id)
+                print(module_id, complete)
+                # error handling
+                if complete == 0:
+                    min_incomplete_idx = curr_idx
+                    print("min_incomplete_idx", min_incomplete_idx)
+
+        return (True, min_incomplete_idx)
+    return (False, "error")
+
 
 
 # returns a fractional string indicating studentid progress of programid
@@ -404,9 +430,36 @@ def get_student_program_progress(studentid, programid):
         return (True, progress)
     return (False, "error")
 
+# returns 1 if studnet completed assess
+def get_student_assessment_status(studentid, assessmentid):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+            #print(module_ids[0])
+            print("access_database.py: get_student_assessment_status:", studentid, assessmentid)
+            stmt_str = "SELECT " + assessmentid + " FROM users WHERE "
+            stmt_str += "user_id = %s"
+
+            cursor.execute(stmt_str, [studentid])
+            data = cursor.fetchall()
+
+            print("data:" , data[0][0])
+            print("success access_database.py: get_student_module_completion")
+
+            return (True, data[0][0])
+
+    except Exception as error:
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
 # for testing
 def main():
-    get_program_details('p3')
+    get_locked_module_index('2', 'p4')
+    # get_student_assessment_status('2', 'm2')
+    # get_program_details('p3')
     # status, programs = get_all_programs()
     # # print(programs)
     # print("Display programs list for admin: ")
