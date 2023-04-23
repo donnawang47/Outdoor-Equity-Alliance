@@ -200,29 +200,6 @@ def admin_studentdetails():
     response = flask.make_response(html_code)
     return response
 
-# doesnt produce new page
-@app.route('/admin/students/studentdetails/updatePgmStatus', methods=['GET','POST'])
-def admin_updatePgmStatus():
-    print("updating program status")
-    studentid = flask.request.args.get('studentid')
-    print("studentid", studentid)
-    pgm_id = flask.request.args.get('pgm_id')
-    print("pgm_id", pgm_id)
-
-    if flask.request.method == 'POST':
-        pgm_progress = flask.request.form['pgm_progress']
-        status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_progress)
-        if not status:
-            data = """ There was a server error while updating program status.
-            Please contact system administrator."""
-            html_code = flask.render_template('error.html', err_msg = data)
-
-        print("oea updating program status:", msg)
-        html_code = flask.render_template('admin_edit_pgm_progress_btn.html')
-    else:
-        html_code = flask.render_template('error.html', err_msg = "error has occurred")
-    response = flask.make_response(html_code)
-    return response
 
 
 @app.route('/admin/admins/new_admin', methods=['GET','POST'])
