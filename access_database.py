@@ -179,11 +179,37 @@ def get_student_info(student_id):
             stmt_str = "SELECT * FROM users WHERE user_status = 'student' AND user_id=%s;"
             cursor.execute(stmt_str, [student_id])
             data = cursor.fetchall()
+            print(data)
             #data[0] because should only be one row of data
 
             student_data = {}
+            available_pgms = []
+            locked_pgms = []
+            enrolled_pgms = []
             for index, column in enumerate(columns):
+                print("column", column)
+                # categorize student programs
+                if 'p' in column[0]: #is a program
+                    p_status = data[0][index]
+                    success, pgm_details = get_program_details(column[0])
+                    if success:
+                        if p_status == 'available' :
+                            available_pgms.append(pgm_details)
+                        elif p_status == 'locked':
+                            locked_pgms.append(pgm_details)
+                        elif p_status == 'enrolled':
+                            enrolled_pgms.append(pgm_details)
+                    # error handle
+                else:
                     student_data[column[0]] = data[0][index]
+                    print(student_data[column[0]], data[0][index])
+
+            student_data['Available Programs'] = available_pgms
+            #print("available_pgms", available_pgms)
+            student_data['Locked Programs'] = locked_pgms
+            #print("locked_pgms", locked_pgms)
+            student_data ['Enrolled Programs'] = enrolled_pgms
+            #print("enrolled_pgms", enrolled_pgms)
 
             print("student_data:", student_data)
             print("success access_database.py: get_student_info:", student_id)
@@ -457,7 +483,8 @@ def get_student_assessment_status(studentid, assessmentid):
 
 # for testing
 def main():
-    get_locked_module_index('2', 'p4')
+    get_student_info('2')
+    # get_locked_module_index('2', 'p4')
     # get_student_assessment_status('2', 'm2')
     # get_program_details('p3')
     # status, programs = get_all_programs()
