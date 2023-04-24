@@ -16,7 +16,7 @@ app = flask.Flask(__name__, template_folder=".")
 
 app.secret_key = os.environ['APP_SECRET_KEY']
 #flask_wtf.csrf.CSRFProtect(app) -- need to check out post form?? i.e. new admin
-flask_talisman.Talisman(app)
+#flask_talisman.Talisman(app)
 
 
 #routes for authetication
