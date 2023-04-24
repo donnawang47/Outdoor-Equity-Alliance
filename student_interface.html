@@ -35,18 +35,18 @@
         <hr>
 
         <h3>Enrolled Programs</h3>
-        {% for pgm in programs['Enrolled']: %}
-            <a href="{{"/student/program?programid=" + pgm}}" class="btn btn-outline-info">{{pgm}}</a><br>
+        {% for pgm in student_info['Enrolled Programs']: %}
+            <a href="{{"/student/program?programid=" + pgm['program_id']}}" class="btn btn-outline-info">{{pgm['program_name']}}</a><br>
         {% endfor %}
 
         <h3>Available Programs</h3>
-        {% for pgm in programs['Available']: %}
-            <a href="{{"/student/program?programid=" + pgm}}" class="btn btn-outline-info">{{pgm}}</a><br>
+        {% for pgm in student_info['Available Programs']: %}
+            <a href="{{"/student/program?programid=" + pgm['program_id']}}" class="btn btn-outline-info">{{pgm['program_name']}}</a><br>
         {% endfor %}
 
         <h3>Locked Programs</h3>
-        {% for pgm in programs['Locked']: %}
-            <a href="{{"/student/program?programid=" + pgm}}" class="btn btn-outline-info">{{pgm}}</a><br>
+        {% for pgm in student_info['Locked Programs']: %}
+            <a href="{{"/student/program?programid=" + pgm['program_id']}}" class="btn btn-outline-info">{{pgm['program_name']}}</a><br>
         {% endfor %}
 
 

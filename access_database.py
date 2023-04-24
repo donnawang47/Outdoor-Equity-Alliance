@@ -114,7 +114,7 @@ def get_program_details(program_id):
             modules = sorted(modules, key=lambda x:x['module_index'])
             data['modules'] = modules
             # print('modules', modules)
-            # print("data", data)
+            print("data", data)
             # print("success access_database.py: get_program_modules")
             return (True, data)
 
@@ -366,16 +366,23 @@ def get_student_programs(student_id):
     locked = []
     enrolled = []
 
-    for key in student_info: #program_id specifically
-        print("key", key)
-        if 'p' in key: #is a program
-            p_status = student_info[key]
-            if p_status == 'available' :
-                available.append(key)
-            elif p_status == 'locked':
-                locked.append(key)
-            elif p_status == 'enrolled':
-                enrolled.append(key)
+    # for key in student_info: #program_id specifically
+    #     print("key", key)
+    #     if 'p' in key: #is a program
+    #         p_status = student_info[key]
+    #         if p_status == 'available' :
+    #             available.append(key)
+    #         elif p_status == 'locked':
+    #             locked.append(key)
+    #         elif p_status == 'enrolled':
+    #             enrolled.append(key)
+
+    for program in student_info['Available Programs']:
+        available.append(program['program_id'])
+    for program in student_info['Locked Programs']:
+        locked.append(program['program_id'])
+    for program in student_info['Enrolled Programs']:
+        enrolled.append(program['program_id'])
 
     data['Available'] = available
     data['Locked'] = locked
@@ -385,16 +392,16 @@ def get_student_programs(student_id):
     return status, data
 
 def get_student_program_status(student_id, program_id):
-    status, student_programs = get_student_programs(student_id)
+    status, student_info = get_student_programs(student_id)
     if status:
-        if program_id in student_programs['Available']:
+        if program_id in student_info['Available']:
             return status, "available"
-        elif program_id in student_programs['Locked']:
+        elif program_id in student_info['Locked']:
             return status, "locked"
-        else:
+        elif program_id in student_info['Enrolled']:
             return status, "enrolled"
     else:
-        return status,student_programs
+        return status, student_info
 
 # helper function
 # returns number of student_id's completed assessments

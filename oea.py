@@ -696,11 +696,11 @@ def student_interface():
     authorize_student(username)
 
     status, studentid = access_database.get_student_id(username)
-    status, student_programs = access_database.get_student_programs(studentid)
+    status, student_info = access_database.get_student_info(studentid)
     if status:
         print("Student Interface: displaying programs list for " + str(username))
         html_code = flask.render_template('student_interface.html',
-                    programs = student_programs, studentid=studentid, username=username)
+                    student_info = student_info, studentid=studentid, username=username)
     else:
         data = """ There was a server error while getting student programs.
         Please contact system administrator."""
