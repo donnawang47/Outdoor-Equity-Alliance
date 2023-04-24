@@ -28,7 +28,7 @@
                 <h1>Outdoor Equity Alliance</h1>
                 <h2><a href="\student">Main</a> </h2>
             </center>
-            <h3 class="text-right">User {{studentid}}</h3>
+            <h3 class="text-right">User {{username}}</h3>
         </div>
 
         <hr>
@@ -55,12 +55,10 @@
             <strong>Module {{module['module_index']}}:</strong> {{module['module_name']}}<br>
         {% endfor %}
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
-        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     
         <script>
     
-            'use strict';
 
             function handleResponse(response)
             {

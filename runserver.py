@@ -21,8 +21,8 @@ def main():
     #     sys.exit(1)
 
     try:
-        oea.app.run(host='0.0.0.0', port=port, debug=True)#,
-                    #ssl_context = ('cert.pem','key.pem'))
+        oea.app.run(host='0.0.0.0', port=PORT, debug=True,
+            ssl_context = ('cert.pem','key.pem'))
     except Exception as ex:
         print(ex, file=sys.stderr)
         sys.exit(1)

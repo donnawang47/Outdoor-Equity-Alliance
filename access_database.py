@@ -202,11 +202,11 @@ def is_admin_authorized(username):
     try:
         with connection.cursor() as cursor:
             print("access_database: is_admin_authorized", username)
-            stmt_str = "SELECT * FROM users where user_status = 'admin' AND user_name =%s;"
+            stmt_str = "SELECT * FROM users where user_status = 'admin' AND user_email=%s;"
             cursor.execute(stmt_str, [username])
             data = cursor.fetchall()
 
-            return (True, data)
+            return (True, len(data)!=0)
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
@@ -220,12 +220,12 @@ def is_student_authorized(username):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
-            print("access_database: is_admin_authorized", username)
-            stmt_str = "SELECT * FROM users where user_status = 'student' AND user_name =%s;"
+            print("access_database: is_student_authorized", username)
+            stmt_str = "SELECT * FROM users where user_status = 'student' AND user_email=%s;"
             cursor.execute(stmt_str, [username])
             data = cursor.fetchall()
 
-            return (True, data)
+            return (True, len(data)!=0)
     except Exception as error:
         err_msg = "A server error occurred. "
         err_msg += "Please contact the system administrator."
@@ -234,6 +234,26 @@ def is_student_authorized(username):
     finally:
         _put_connection(connection)
 
+def get_student_id(username):
+    connection = _get_connection()
+    try:
+        with connection.cursor() as cursor:
+            print("access_database: get_student_id", username)
+            stmt_str = "SELECT * FROM users WHERE user_status= 'student' AND user_email=%s;"
+            cursor.execute(stmt_str, [username])
+            data = cursor.fetchall()
+
+            if len(data) == 0:
+                raise Exception("username not in database")
+
+            return (True, data[0][0])
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
+    finally:
+        _put_connection(connection)
 
 
 def get_all_admins():
@@ -310,6 +330,9 @@ def get_student_programs(student_id):
     print("access_database.py: get_student programs (no database)")
     status, student_info = get_student_info(student_id)
     print(student_info)
+    if not status:
+        return status, student_info
+    
 
     data = {}
 

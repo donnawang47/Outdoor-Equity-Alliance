@@ -22,7 +22,7 @@ def login():
         scope=['openid', 'email', 'profile'],
     )
 
-    # print(’request_uri:’, request_uri, file=sys.stderr)
+    print('request_uri:', request_uri, file=sys.stderr)
 
     return flask.redirect(request_uri)
 
@@ -31,7 +31,7 @@ def callback():
 
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     
-    token_endpoint = (google_provider_cfg['token_endpoint'])
+    token_endpoint = google_provider_cfg['token_endpoint']
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
         authorization_response=flask.request.url,
@@ -39,9 +39,9 @@ def callback():
         code=code
     )
 
-    # print(’token_url:’, token_url, file=sys.stderr)
-    # print(’headers:’, headers, file=sys.stderr)
-    # print(’body:’, body, file=sys.stderr)
+    # print('token_url:', token_url, file=sys.stderr)
+    # print('headers:', headers, file=sys.stderr)
+    # print('body:', body, file=sys.stderr)
 
 
     #fetch tokens
@@ -52,7 +52,7 @@ def callback():
         auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
     )
 
-    #print(’token_response.json():’, token_response.json(),file=sys.stderr)
+    # print('token_response.json():', token_response.json(),file=sys.stderr)
 
     #parse tokens
     client.parse_request_body_response(json.dumps(token_response.json()))
@@ -70,7 +70,7 @@ def callback():
     flask.session['sub'] = userinfo_response.json()['sub']
     flask.session['name'] = userinfo_response.json()['name']
     flask.session['given_name'] = userinfo_response.json()['given_name']
-    flask.session['family_name'] = userinfo_response.json()['family_name']
+    #flask.session['family_name'] = userinfo_response.json()['family_name']
     flask.session['picture'] = userinfo_response.json()['picture']
     flask.session['email'] = userinfo_response.json()['email']
     flask.session['email_verified'] = userinfo_response.json()['email_verified']

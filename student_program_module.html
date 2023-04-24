@@ -26,7 +26,7 @@
             <center>
                 <h1>Outdoor Equity Alliance</h1>
             </center>
-            <h3 class="text-right">User {{studentid}}</h3>
+            <h3 class="text-right">User {{username}}</h3>
         </div>
 
         <h2><a href="{{"/student/program?programid=" + program['program_id']}}" class="text-decoration-none">Program {{program['program_name']}}</a></h2>
@@ -98,7 +98,7 @@
             function setup()
             {
                 if("{{module['content_type']}}" == "assessment")
-                    $('#complete_button').click(update_db);
+                    $('#complete_button').on('click',update_db);
             }
             $('document').ready(setup);
 

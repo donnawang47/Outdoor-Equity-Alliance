@@ -5,64 +5,72 @@ import modify_database
 import display_database
 import flask_wtf.csrf
 import flask_talisman
-#import auth
+import auth
 
-# export APP_SECRET_KEY=yourappsecretkey
-# export GOOGLE_CLIENT_ID=yourgoogleclientid
-# export GOOGLE_CLIENT_SECRET=yourgoogleclientsecret
+# export APP_SECRET_KEY=xxx
+# export GOOGLE_CLIENT_ID=658586292195-ct24h8p12spju4ib474k96g2g2pcalpi.apps.googleusercontent.com
+# export GOOGLE_CLIENT_SECRET=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
 
 app = flask.Flask(__name__, template_folder=".")
 
-# app.secret_key = os.environ['APP_SECRET_KEY']
-# flask_wtf.csrf.CSRFProtect(app)
-# flask_talisman.Talisman(app)
+app.secret_key = os.environ['APP_SECRET_KEY']
+#flask_wtf.csrf.CSRFProtect(app) -- need to check out post form?? i.e. new admin
+flask_talisman.Talisman(app)
 
 
 #routes for authetication
-# @app.route('/login', methods=['GET'])
-# def login():
-#     return auth.login()
+@app.route('/login', methods=['GET'])
+def login():
+    return auth.login()
 
-# @app.route('/login/callback', methods=['GET'])
-# def callback():
-#     return auth.callback()
+@app.route('/login/callback', methods=['GET'])
+def callback():
+    return auth.callback()
 
-# @app.route('/logoutapp', methods=['GET'])
-# def logoutapp():
-#     return auth.logoutapp()
+@app.route('/logoutapp', methods=['GET'])
+def logoutapp():
+    return auth.logoutapp()
 
-# @app.route('/logoutgoogle', methods=['GET'])
-# def logoutgoogle():
-#     return auth.logoutgoogle()
+@app.route('/logoutgoogle', methods=['GET'])
+def logoutgoogle():
+    return auth.logoutgoogle()
 
-def authorize(username):
+def authorize_admin(username):
 
     #74: def is_authorized(username):
     #in database.py file
 # 75:
 # 76: with sqlalchemy.orm.Session(_engine) as session:
-# 77: query = session.query(AuthorizedUser) \
-# 78: .filter(AuthorizedUser.username==username)
+# 77: query = session.query(AuthorizedUser).filter(AuthorizedUser.username==username)
 # 79: try:
 # 80: query.one()
 # 81: return True
 # 82: except sqlalchemy.exc.NoResultFound:
 # 83: return False
-    if not access_database.is_admin_authorized(username):
-        html_code = 'You are not authorized to use this application.'
-        response = flask.make_response(html_code)
-        flask.abort(response)
+    status, authorized = access_database.is_admin_authorized(username)
+    if status:
+        if not authorized:
+            html_code = 'You are not authorized to use this application.'
+            response = flask.make_response(html_code)
+            flask.abort(response)
 
-    if not access_database.is_student_authorized(username):
-        html_code = 'You are not authorized to use this application.'
-        response = flask.make_response(html_code)
-        flask.abort(response)
+def authorize_student(username):
+    status, authorized = access_database.is_student_authorized(username)
+    if status:
+        if not authorized:
+            html_code = 'You are not authorized to use this application.'
+            response = flask.make_response(html_code)
+            flask.abort(response)
 
 # temporary main page
 # not sure what it should be
 @app.route('/', methods=["GET"])
 @app.route('/index', methods=['GET'])
 def index():
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     html_code = flask.render_template('index.html')
     response = flask.make_response(html_code)
     return response
@@ -72,6 +80,10 @@ def index():
 # menu for programs page and students page
 @app.route('/admin', methods=['GET'])
 def admin_interface():
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     html_code = flask.render_template('admin_interface.html')
     response = flask.make_response(html_code)
     return response
@@ -80,6 +92,10 @@ def admin_interface():
 @app.route('/admin/admins', methods=['GET'])
 def admin_admins():
     #status, students = access_database.get_all_students()
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     status, admins = access_database.get_all_admins()
 
     if status:
@@ -93,11 +109,14 @@ def admin_admins():
 
 @app.route('/admin/students', methods=['GET'])
 def admin_students():
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     status, students = access_database.get_all_students()
-    status, admins = access_database.get_all_admins()
 
     if status:
-        html_code = flask.render_template('admin_students.html', students=students, admins=admins)
+        html_code = flask.render_template('admin_students.html', students=students, username=username)
     else:
         data = """ There was a server error while getting all students.
         Please contact system administrator."""
@@ -113,6 +132,10 @@ def errorResponse(data):
 
 @app.route('/admin/students/studentdetails', methods=['GET','POST'])
 def admin_studentdetails():
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     studentid = flask.request.args.get('studentid')
     print("studentid", studentid)
 
@@ -187,7 +210,8 @@ def admin_studentdetails():
     html_code = flask.render_template('admin_studentdetails.html',
                 studentid = studentid,
                 programs = student_programs,
-                enrolled_pgms = enrolled_pgms)
+                enrolled_pgms = enrolled_pgms,
+                username=username)
     response = flask.make_response(html_code)
     return response
 
@@ -278,17 +302,19 @@ def admin_new_user():
 
 @app.route('/admin/programs', methods=['GET'])
 def admin_programs():
-    # programslist is a tuple
-    # programslist[0] indicates whether data was retrieved successfully
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     status, data = access_database.get_programslist()
     if status:
         print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',
-                    programslist = data)
+                    programslist = data, username=username)
     else:
         print("Error: " + data)
         html_code= flask.render_template('error.html',
-                    err_msg = data)
+                    err_msg = data, username=username)
 
     response = flask.make_response(html_code)
     return response
@@ -524,6 +550,10 @@ def edit_module_seq():
 # DISPLAY LIST OF MODULES FOR SPECIFIC PROGRAM
 @app.route('/admin/programs/modules', methods=['GET'])
 def get_modules_of_program():
+
+    username = auth.authenticate()
+    authorize_admin(username)
+
     program_id = flask.request.args.get('program_id')
     print('modules page program id = ', program_id)
 
@@ -534,7 +564,7 @@ def get_modules_of_program():
         print("Got modules list for program")
         html_code = flask.render_template('admin_modules.html',
                                           program_name = data['program_name'], program_id = program_id,
-                                          moduleslist = data['modules'])
+                                          moduleslist = data['modules'], username=username)
     else:
         data = """ There was a server error while getting program details.
         Please contact system administrator."""
@@ -670,18 +700,17 @@ def delete_module():
     response = flask.make_response(html_code)
     return response
 
-
-def get_current_student():
-    return 2
-
 @app.route('/student', methods=['GET'])
 def student_interface():
-    studentid = get_current_student()
+    username = auth.authenticate()
+    authorize_student(username)
+
+    status, studentid = access_database.get_student_id(username)
     status, student_programs = access_database.get_student_programs(studentid)
     if status:
-        print("Student Interface: displaying programs list for " + str(studentid))
+        print("Student Interface: displaying programs list for " + str(username))
         html_code = flask.render_template('student_interface.html',
-                    programs = student_programs, studentid=studentid)
+                    programs = student_programs, studentid=studentid, username=username)
     else:
         data = """ There was a server error while getting student programs.
         Please contact system administrator."""
@@ -691,15 +720,18 @@ def student_interface():
 
 @app.route('/student/program', methods=['GET'])
 def student_program():
-    studentid = get_current_student()
+    username = auth.authenticate()
+    authorize_student(username)
+
+    status, studentid = access_database.get_student_id(username)
     programid = flask.request.args.get('programid')
     print(programid)
     status, programdata = access_database.get_program_details(programid)
     success, program_status = access_database.get_student_program_status(studentid, programid)
     if status and success:
-        print("Student Interface: displaying program info " + programid + " for " + str(studentid))
+        print("Student Interface: displaying program info " + programid + " for " + str(username))
         html_code = flask.render_template('student_program.html',
-                    program = programdata, availability=program_status, studentid=studentid)
+                    program = programdata, availability=program_status, studentid=studentid, username=username)
     elif(not status):
         data = """ There was a server error while getting program details.
         Please contact system administrator."""
@@ -714,7 +746,11 @@ def student_program():
 
 @app.route('/student/program/module', methods=['GET'])
 def student_program_module():
-    studentid= get_current_student()
+
+    username = auth.authenticate()
+    authorize_student(username)
+
+    status, studentid= access_database.get_student_id(username)
     moduleid = flask.request.args.get('moduleid')
     print(moduleid)
     status, moduledata = access_database.get_module(moduleid)
@@ -722,9 +758,9 @@ def student_program_module():
     if status and program_status == 'enrolled':
         status, programdata = access_database.get_program_details(moduledata['program_id'])
         if status:
-            print("Student Interface: displaying module info " + moduleid + " for " + str(studentid))
+            print("Student Interface: displaying module info " + moduleid + " for " + str(username))
             html_code = flask.render_template('student_program_module.html',
-                        module = moduledata, program=programdata, studentid=studentid)
+                        module = moduledata, program=programdata, studentid=studentid, username=username)
         else:
             data = """ There was a server error while getting program details.
             Please contact system administrator."""
@@ -746,6 +782,7 @@ def student_complete_module():
         data = """ There was a server error while updating assessment status.
         Please contact system administrator."""
         html_code = flask.render_template('error_student.html', err_msg= data)
+
     return flask.make_response(html_code)
 
 
