@@ -37,7 +37,7 @@
         <strong>Name:</strong> {{module['module_name']}}<br>
         <strong>Type:</strong> {{module['content_type']}}<br>
         <strong>Link: </strong> {{module['content_link']}}<br>
-        
+
         {% if module['content_type'] == "text" %}
             <iframe src="{{module['content_link']}}" width="1000" height="800"></iframe>
         {% elif module['content_type'] == "assessment" %}
@@ -49,31 +49,31 @@
         <!--set conditions for no prev/no next based on index-->
         <!-- module index starts at 1, thus, instead of module['module_index']-1 doing module['module_index']-2-->
         {% if module['module_index']-2 >= 0 %}
-            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']-2]['module_id']}}" class="btn btn-primary col-sm-4">Previous {{program['modules'][module['module_index']-2]['module_id']}}</a>
+            <a href="{{'/student/program/module?studentid=%s&moduleid=%s' %(studentid,program['modules'][module['module_index']-2]['module_id'])}}" class="btn btn-primary col-sm-4">Previous {{program['modules'][module['module_index']-2]['module_id']}}</a>
         {% else %}
             <!--want to add spacing not working rn-->
             <span class="col-sm-4"></span>
         {% endif %}
-        
+
         <!-- module index starts at 1, thus, instead of module['module_index']+1 doing module['module_index']-->
         {% if module['module_index'] < program['modules']|length %}
-            <a href="{{"/student/program/module?moduleid=" + program['modules'][module['module_index']]['module_id']}}" class="btn btn-primary col-sm-4" id="complete_button">Next {{program['modules'][module['module_index']]['module_id']}}</a>
+            <a href="{{'/student/program/module?studentid=%s&moduleid=%s' %(studentid, program['modules'][module['module_index']]['module_id'])}}" class="btn btn-primary col-sm-4" >Next {{program['modules'][module['module_index']]['module_id']}}</a>
         {% elif module['module_index'] == program['modules']|length %}
-        <a href="{{"/student/program?programid=" + program['program_id']}}" class="btn btn-primary col-sm-4" id="complete_button">Finish</a> 
+        <a href="{{"/student/program?programid=" + program['program_id']}}" class="btn btn-primary col-sm-4" id="complete_button">Finish</a>
         {% endif %}
 
         <!--need a return to program-->
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
         </script>
-    
+
         <script>
-    
+
             'use strict';
 
             function handleResponse(response)
             {
-                
+
             }
 
             let request = null;

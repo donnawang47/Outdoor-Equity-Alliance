@@ -10,7 +10,7 @@ _database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg
 
 # _database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
-conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
+# conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
 def _get_connection():
     try:
@@ -413,17 +413,18 @@ def delete_module(module_id):
             content_type = cursor.fetchall()
 
             print("getting content type...")
-            print("content_type = ", content_type[0][0])
+            print("content_type = ", content_type)
 
             # determine if module id corresponds to assessment.
             # if so, delete its assessment column from students table.
             if content_type[0][0] == 'assessment':
+                print("is assessment")
 
-                    cursor.execute('BEGIN;')
-                    statement = "ALTER TABLE users DROP COLUMN "
-                    statement += str(module_id)
-                    cursor.execute(statement)
-                    cursor.execute('COMMIT;')
+                cursor.execute('BEGIN;')
+                statement = "ALTER TABLE users DROP COLUMN "
+                statement += str(module_id)
+                cursor.execute(statement)
+                cursor.execute('COMMIT;')
 
             # delete row with specified module id from programs table
             statement = "DELETE FROM modules WHERE module_id = %s"
@@ -641,11 +642,11 @@ def isModuleNameDuplicate(newName):
 
 # write functionality to deal with duplicate entries!
 def main():
-   valid, num = modules_max()
-   print('max index = ', num)
+#    valid, num = modules_max()
+#    print('max index = ', num)
 
     # ----------------------------------------------------------------
-     # delete_module('m6')
+    delete_module('m10')
     # delete_program('p5')
     # change_module_idx('m3', 1)
     # change_module_idx('m2', 2)

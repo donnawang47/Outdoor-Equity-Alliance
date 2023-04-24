@@ -1,5 +1,6 @@
 import os
 import flask
+from flask import request
 import access_database
 import modify_database
 import display_database
@@ -139,14 +140,16 @@ def admin_studentdetails():
     studentid = flask.request.args.get('studentid')
     print("studentid", studentid)
 
+    # updating status
     if flask.request.args.get('updateStatus') == 'true':
         id = flask.request.args.get('id')
         category = flask.request.args.get('category')
         print("id", id)
         if flask.request.method == 'POST':
-            if category == 'program':
-                pgm_status = flask.request.form['pgm_status']
-                status, msg = modify_database.update_program_status(studentid, id, pgm_status)
+            if category == 'pgm':
+                pgm_progress = flask.request.form['pgm_progress']
+                print("pgm_progress", pgm_progress)
+                status, msg = modify_database.update_program_status(studentid, id, pgm_progress)
                 if not status:
                     data = """ There was a server error while updating
                     program status. Please contact system administrator."""
@@ -162,14 +165,14 @@ def admin_studentdetails():
                     errorResponse(data)
                 print("oea updating module status:", msg)
 
-    status, student_programs = access_database.get_student_programs(studentid)
+    #status, student_programs = access_database.get_student_programs(studentid)
     status2, student_info = access_database.get_student_info(studentid)
 
-    if not status:
-        data = """There was a server error while getting student programs.
-        Please contact system administrator."""
-        errorResponse(data)
-    elif not status2:
+    # if not status:
+    #     data = """There was a server error while getting student programs.
+    #     Please contact system administrator."""
+    #     errorResponse(data)
+    if not status2:
         data = """ There was a server error while getting student information.
         Please contact system administrator."""
         errorResponse(data)
@@ -177,67 +180,49 @@ def admin_studentdetails():
     print("oea: get student programs done")
     # can only get student progress on enrolled programs?
     # need to change to enrolled
-    enrolled = student_programs['Enrolled'] # program ids
+    enrolled = student_info['Enrolled Programs'] # program ids
     print(enrolled)
     enrolled_pgms = {} # pgm_id : status
-    for pgm_id in enrolled:
-        pgm = {}
-        success, pgm_status = access_database.get_student_program_progress(studentid, pgm_id)
+    for pgm in enrolled:
+        success, pgm_progress = access_database.get_student_program_progress(studentid, pgm['program_id'])
         if not success:
             data = """ There was a server error while getting student program progress.
         Please contact system administrator."""
             errorResponse(data)
 
-        print("pgm_status" + pgm_status)
-        pgm['pgm_status'] = pgm_status
-        status, data = access_database.get_program_details(pgm_id)
-        if not status:
-            data = """ There was a server error while getting program details.
-            Please contact system administrator."""
-            errorResponse(data)
+        print("pgm_progress" + pgm_progress)
+        pgm['pgm_progress'] = pgm_progress
+        #status, data = access_database.get_program_details(pgm_id)
+        # if not status:
+        #     data = """ There was a server error while getting program details.
+        #     Please contact system administrator."""
+        #     errorResponse(data)
 
         assessments = []
-        for mod in data['modules']:
+        # finds assessment modules for each pgm
+        for mod in pgm['modules']:
             print(mod)
             if mod['content_type'] == 'assessment':
-                assessments.append((mod['module_id'], student_info[mod['module_id']]))
+                if student_info[mod['module_id']] == 1:
+                    mod['module_progress'] = "complete"
+                else:
+                    mod['module_progress'] = "incomplete"
+                print("ASSESSMENT INFO:", mod)
+                assessments.append(mod)
+                #assessments.append((mod['module_id'], student_info[mod['module_id']]))
         pgm['assessments'] = assessments
-        enrolled_pgms[pgm_id] = pgm
+        #enrolled_pgms[pgm_id] = pgm
 
-    print("oea.py, enrolled_pgms:", enrolled_pgms)
+    #print("oea.py, enrolled_pgms:", enrolled_pgms)
 
     print("Student Interface: displaying programs list")
     html_code = flask.render_template('admin_studentdetails.html',
                 studentid = studentid,
-                programs = student_programs,
-                enrolled_pgms = enrolled_pgms,
-                username=username)
+                student_info = student_info,
+                enrolled_pgms = student_info['Enrolled Programs'])
     response = flask.make_response(html_code)
     return response
 
-# doesnt produce new page
-@app.route('/admin/students/studentdetails/updatePgmStatus', methods=['GET','POST'])
-def admin_updatePgmStatus():
-    print("updating program status")
-    studentid = flask.request.args.get('studentid')
-    print("studentid", studentid)
-    pgm_id = flask.request.args.get('pgm_id')
-    print("pgm_id", pgm_id)
-
-    if flask.request.method == 'POST':
-        pgm_status = flask.request.form['pgm_status']
-        status, msg = modify_database.update_program_status(studentid, pgm_id, pgm_status)
-        if not status:
-            data = """ There was a server error while updating program status.
-            Please contact system administrator."""
-            html_code = flask.render_template('error.html', err_msg = data)
-
-        print("oea updating program status:", msg)
-        html_code = flask.render_template('admin_edit_pgm_status_btn.html')
-    else:
-        html_code = flask.render_template('error.html', err_msg = "error has occurred")
-    response = flask.make_response(html_code)
-    return response
 
 
 @app.route('/admin/admins/new_admin', methods=['GET','POST'])
@@ -368,6 +353,14 @@ def admin_create_module():
         # modules_params
         md_params = {}
         status, md_params["module_id"] = modify_database.create_module_id()
+
+        if not status:
+            data = """ There was a server error while creating module id.
+            Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
+            response = flask.make_response(html_code)
+            return response
+
         md_params["program_id"] = program_id
         md_params["module_name"] = flask.request.form['module_name']
         md_params["content_link"] = flask.request.form['content_link']
@@ -375,7 +368,7 @@ def admin_create_module():
         md_params["module_index"] = flask.request.form['index']
 
         success, msg = modify_database.insert_module(md_params)
-        if status and success:
+        if success:
             print(msg)
             success, data = access_database.get_program_details(program_id)
             if success: # return back to programs page
@@ -384,17 +377,14 @@ def admin_create_module():
             else:
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
-        elif(not status):
-            data = """ There was a server error while creating module id.
-        Please contact system administrator."""
-            html_code = flask.render_template('error.html', err_msg = data)
-        elif(not success):
+
+        else:
             data = """ There was a server error while inserting module.
         Please contact system administrator."""
             html_code = flask.render_template('error.html', err_msg = data)
-    else:
-        program_name = flask.request.args.get('program_name')
-        html_code = flask.render_template('admin_create_module.html', program_name)
+    # else:
+    #     program_name = flask.request.args.get('program_name')
+    #     html_code = flask.render_template('admin_create_module.html', program_name)
 
     response = flask.make_response(html_code)
     return response
@@ -730,6 +720,7 @@ def student_program():
     success, program_status = access_database.get_student_program_status(studentid, programid)
     if status and success:
         print("Student Interface: displaying program info " + programid + " for " + str(username))
+        print(programdata)
         html_code = flask.render_template('student_program.html',
                     program = programdata, availability=program_status, studentid=studentid, username=username)
     elif(not status):
@@ -752,8 +743,25 @@ def student_program_module():
 
     status, studentid= access_database.get_student_id(username)
     moduleid = flask.request.args.get('moduleid')
-    print(moduleid)
+    print("moduleid", moduleid)
+
+    # for security: need to validate studentid and moduleid before accessing db
+
+    print("current link", request.full_path)
     status, moduledata = access_database.get_module(moduleid)
+    # get first incomplete assessment
+    # if this module seq is greater than the completed assessment
+    # it should be locked
+    success, min_idx = access_database.get_locked_module_index(studentid, moduledata['program_id']) #handle error
+    print("last incomplete quiz is module at index", min_idx)
+    print(moduledata['module_index'])
+    if moduledata['module_index'] > min_idx:
+        print("curr_idx greater than min_idx")
+        html_code = flask.render_template('error.html',
+                    err_msg = "You do not have access to this module.")
+        response = flask.make_response(html_code)
+        return response
+
     success, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
     if status and program_status == 'enrolled':
         status, programdata = access_database.get_program_details(moduledata['program_id'])

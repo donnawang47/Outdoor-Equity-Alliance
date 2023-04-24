@@ -22,13 +22,15 @@
         <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
             <table class = "table">
                 <!-- row 1, containing names of each column -->
-                <tr>
-                    <th align = "left">ID</th>
-                    <th align = "left">Name</th>
-                    <!-- <th align = "left">Description</th> -->
-                    <th align = "left">Availability</th>
-                </tr>
-
+                <thead>
+                    <tr>
+                        <th align = "left">Program ID</th>
+                        <th align = "left">Program Name</th>
+                        <!-- <th align = "left">Description</th> -->
+                        <th align = "left">Availability</th>
+                    </tr>
+                </thead>
+                <tbody>
                         <!-- rows of programslist -->
                         <!-- each row only displays program name -->
                 {% if programslist|length != 0: %}
@@ -73,6 +75,9 @@
                             </td>
                         </tr>
                     {% endfor %}
+                </tbody>
+                {% else %}
+                No existing programs.
                 {% endif %}
 
             </table>

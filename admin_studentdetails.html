@@ -3,6 +3,16 @@
 <html>
     <head>
         <title>Outdoor Equity Alliance: Admin Interface</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+        <style>
+            .hiddenRow {
+                padding: 0 !important;
+            }
+        </style>
     </head>
 
     <body>
@@ -15,80 +25,187 @@
         <h2>Student ID: {{studentid}}</h2>
 
         <h3>Enrolled Programs</h3>
+        {% if student_info['Enrolled Programs']|length != 0: %}
 
-        {% for pgm in programs['Enrolled']: %}
-            {{pgm}} status: {{enrolled_pgms[pgm]['pgm_status']}}<br>
-            {% for assessment in enrolled_pgms[pgm]['assessments'] %}
-                assessment {{assessment[0]}}, status 
-                {% if assessment[1] == 1 %}
-                    complete
-                {% else %}
-                    incomplete
-                {% endif %}
-                <span id = "edit_{{assessment[0]}}StatusSpan">
-                    <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
-                    <button type = "button" onclick = "editModuleStatus( '{{assessment[0]}}')" >Edit Module Status</button>
-                </span>
-                <br>
-                <form id = "update_{{assessment[0]}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=module&studentid=%s&id=%s' %(studentid, assessment[0])}}" method='POST' style = "display: none">
-                    <p>Please select module status for the student:</p>
-                    <input type="radio" id = "{{assessment[0]}}_comp" name="mod_status" value="1">
-                    <label for="{{assessment[0]}}_comp">Mark complete</label><br>
-        
-                    <input type="radio" id="{{assessment[0]}}_inc" name="mod_status" value="0">
-                    <label for="{{assessment[0]}}_inc">Mark incomplete</label><br>
-        
-                    <button type="submit" form="update_{{assessment[0]}}Status" value="Submit">Submit</button>
-                </form>
-            {% endfor %}
-        {% endfor %}
+
+        <table class = "table">
+            <thead>
+                <tr>
+                    <th align = "left">Program ID</th>
+                    <th align = "left">Program Name</th>
+                    <th align = "left">Student Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pgm in student_info['Enrolled Programs']: %}
+                <tr data-toggle="collapse" data-target="#view_{{pgm['program_id']}}">
+                    <td align= 'left'>
+                        {{pgm['program_id']}}
+                    </td>
+                    <td>
+                        {{pgm['program_name']}}
+                    </td>
+                    <td>
+                        {{pgm['pgm_progress']}}
+                    </td>
+                    <td>
+                        <button type = "button" class="btn btn-info btn-sm">
+                            <span class="glyphicon glyphicon-info-sign"></span> View Assessments
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="hiddenRow">
+                        <div class="collapse" id="view_{{pgm['program_id']}}">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    {% include 'admin_studentdetails_assessments.html' %}
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+
+        {% else %}
+            Student not enrolled in any programs yet.
+        {% endif %}
 
         <h3>Available Programs</h3>
-        {% for pgm in programs['Available']: %}
-        {{pgm}}
-        <span id = "edit_{{pgm}}StatusSpan">
-            <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
-            <button type = "button" onclick = "editProgramStatus( '{{pgm}}')" >Edit Program Status</button>
-        </span>
-        <br>
-        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=pgm&studentid=%s&id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
-            <p>Please select program status for the student:</p>
-            <input type="radio" id = "{{pgm}}_available" name="pgm_status" value="available">
-            <label for="{{pgm}}_available">Make available (unlock)</label><br>
+        {% if student_info['Available Programs']|length != 0: %}
 
-            <input type="radio" id="{{pgm}}_locked" name="pgm_status" value="locked">
-            <label for="{{pgm}}_locked">Lock program</label><br>
+        <table class = "table">
+            <thead>
+                <tr>
+                    <th align = "left">Program ID</th>
+                    <th align = "left">Program Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pgm in student_info['Available Programs']: %}
+                    <tr>
+                        <td>
+                            {{pgm['program_id']}}
+                        </td>
+                        <td>
+                            {{pgm['program_name']}}
+                        </td>
+                        <td>
+                            <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{pgm['program_id']}}Status"> <span class="glyphicon glyphicon-edit"></span> Edit Program Status</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="hiddenRow">
+                            <div class="collapse" id="edit_{{pgm['program_id']}}Status">
+                                <div class="panel panel-default">
+                                    <form id = "update_{{pgm['program_id']}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=pgm&studentid=%s&id=%s' %(studentid, pgm['program_id'])}}" method='POST' >
+                                        <p>Please select program status for the student:</p>
+                                        <input type="radio" id = "{{pgm['program_id']}}_available" name="pgm_progress" value="available" checked>
+                                        <label for="{{pgm['program_id']}}_available">Make available (unlock)</label><br>
 
-            <input type="radio" id="{{pgm}}_enrolled" name="pgm_status" value="enrolled">
-            <label for="{{pgm}}_enrolled">Enroll student</label> <br>
+                                        <input type="radio" id="{{pgm['program_id']}}_locked" name="pgm_progress" value="locked">
+                                        <label for="{{pgm['program_id']}}_locked">Lock program</label><br>
 
-            <button type="submit" form="update_{{pgm}}Status" value="Submit">Submit</button>
-        </form>
-    {% endfor %}
+                                        <input type="radio" id="{{pgm['program_id']}}_enrolled" name="pgm_progress" value="enrolled">
+                                        <label for="{{pgm['program_id']}}_enrolled">Enroll student</label> <br>
+
+                                        <button type="submit" form="update_{{pgm['program_id']}}Status" value="Submit">Submit</button>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+        {% else %}
+            No available programs yet.
+        {% endif %}
 
     <!-- to unlock program for studentid -->
     <h3>Locked Programs</h3>
-    {% for pgm in programs['Locked']: %}
-        {{pgm}}
-        <span id = "edit_{{pgm}}StatusSpan">
-            <!-- <button type = "button" id = "editStatusBtn" onclick = "editStatus( '{{pgm}}', '{{studentid}}')" >Edit Program Status</button> -->
-            <button type = "button" onclick = "editProgramStatus( '{{pgm}}')">Edit Program Status</button>
-        </span>
-        <br>
-        <form id = "update_{{pgm}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=pgm&studentid=%s&id=%s' %(studentid, pgm)}}" method='POST' style = "display: none">
-            <p>Please select program status for the student:</p>
-            <input type="radio" id = "{{pgm}}_available" name="pgm_status" value="available">
-            <label for="{{pgm}}_available">Make available (unlock)</label><br>
+    {% if student_info['Available Programs']|length != 0: %}
+    <table class = "table">
 
-            <input type="radio" id="{{pgm}}_locked" name="pgm_status" value="locked">
-            <label for="{{pgm}}_locked">Lock program</label><br>
+        <thead>
+            <tr>
+                <th align = "left">Program ID</th>
+                <th align = "left">Program Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pgm in student_info['Locked Programs']: %}
+            <tr>
+                <td>
+                    {{pgm['program_id']}}
+                </td>
+                <td>
+                    {{pgm['program_name']}}
+                </td>
+                <td>
+                    <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{pgm['program_id']}}Status"><span class="glyphicon glyphicon-edit"></span>Edit Program Status</button>
 
-            <input type="radio" id="{{pgm}}_enrolled" name="pgm_status" value="enrolled">
-            <label for="{{pgm}}_enrolled">Enroll student</label> <br>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="12" class="hiddenRow">
+                    <div class="collapse" id="edit_{{pgm['program_id']}}Status">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <form id = "update_{{pgm['program_id']}}Status" action="{{'/admin/students/studentdetails?updateStatus=true&category=pgm&studentid=%s&id=%s' %(studentid, pgm['program_id'])}}" method='POST'>
+                                    <p>Please select program status for the student:</p>
+                                    <input type="radio" id = "{{pgm['program_id']}}_available" name="pgm_progress" value="available">
+                                    <label for="{{pgm['program_id']}}_available">Make available (unlock)</label><br>
 
-            <button type="submit" form="update_{{pgm}}Status" value="Submit">Submit</button>
-        </form>
-    {% endfor %}
+                                    <input type="radio" id="{{pgm['program_id']}}_locked" name="pgm_progress" value="locked" checked>
+                                    <label for="{{pgm['program_id']}}_locked">Lock program</label><br>
+
+                                    <input type="radio" id="{{pgm['program_id']}}_enrolled" name="pgm_progress" value="enrolled">
+                                    <label for="{{pgm['program_id']}}_enrolled">Enroll student</label> <br>
+
+                                    <button type="submit" form="update_{{pgm['program_id']}}Status" value="Submit">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+
+            </tr>
+
+
+            {% endfor %}
+
+        </tbody>
+
+
+    </table>
+
+    {% else %}
+        No locked programs yet.
+    {% endif %}
+
+
 
     <a href="/admin/students">Back to users</a>
 
@@ -101,86 +218,22 @@
     <script>
         'use strict';
 
-        // display pgm status options
-        // function editStatus(pgm, studentid){
-        //     console.log("edit button pressed");
-        //     console.log("pgm:" + pgm);
-
-
-        //     let html_str = ' Unlock <input type = "checkbox" id = "' + pgm + '"> \
-        //     <button type = "button" id = "saveBtn" onclick = "saveStatus( \'' + pgm + '\', \'' + studentid + '\')" >save</button> ';
-        //     console.log(html_str);
-        //     $('#editStatusSpan').html(html_str);
-        // }
 
         let request = null;
-        // function saveStatus(pgm_id, studentid){
-        //     console.log("saving status")
-        //     // modify database -- change status of pgm to unlocked
-        //     let pgm_status = 'locked';
-        //     let id = "\'#" + pgm_id + "\'";
-        //     // console.log($(id).val());
-        //     if ($('#' + pgm_id).is(":checked")) {
-        //         pgm_status = 'available';
-        //         console.log("unlock checked");
-        //     }
-        //     pgm_status = encodeURIComponent(pgm_status)
-        //     console.log(pgm_status);
-        //     console.log("pgm_id:" + pgm_id);
-        //     console.log("studentid:" + studentid);
-        //     let encode_studentid = encodeURIComponent(studentid);
-        //     let encode_pgm_id = encodeURIComponent(pgm_id);
 
-        //     let url = '/admin/students/studentdetails/updatePgmStatus?studentid=' + encode_studentid + '&pgm_id=' + encode_pgm_id + '&pgm_status=' + pgm_status;
-        //     console.log(url);
-
-        //     request = $.ajax({
-        //         type: 'GET',
-        //         url: url,
-        //         success: changedStatus
-        //     });
-
-        //     // change html again
-        // }
-        // function saveStatus(){
-        //     console.log("saving status")
-        //     // modify database -- change status of pgm to unlocked
-
-
-        //     let url = $('#updatePgmStatus').attr('action');
-        //     console.log(url);
-
-        //     request = $.ajax({
-        //         type: 'GET',
-        //         url: url,
-        //         success: changedStatus
-        //     });
-
-        //     // change html again
-        // }
-        // function changedStatus(response) {
-        //     $('#editStatusSpan').html(response);
-        // }
 
         function editModuleStatus(module){
             let element_id = "#update_" + module + "Status";
-            // update_{{pgm}}Status
+
             $(element_id).show();
         }
 
         function editProgramStatus(pgm){
             let element_id = "#update_" + pgm + "Status";
-            // update_{{pgm}}Status
+
             $(element_id).show();
         }
 
-        // function setup() {
-        //     $( "#editStatusBtn" ).on("click", function() {
-        //         $( "#updatePgmStatus" ).show();
-        //         });
-        //     // $("#updatePgmStatus").on("submit", saveStatus);
-        // }
-        // $('document').ready(setup);
 
 
     </script>
