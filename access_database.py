@@ -14,7 +14,6 @@ import queue
 
 _database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
-conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
 def _get_connection():
     try:
