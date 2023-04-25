@@ -815,8 +815,13 @@ def student_program():
     if status and success:
         print("Student Interface: displaying program info " + programid + " for " + str(username))
         print(programdata)
-        html_code = flask.render_template('student_program.html',
-                    program = programdata, availability=program_status, studentid=studentid, username=username)
+        if program_status == 'enrolled':
+            html_code = flask.render_template('student_program.html',
+                        program = programdata, availability=program_status, studentid=studentid, username=username)
+        elif program_status == 'available':
+            html_code = flask.render_template('student_available_program.html',
+                        program = programdata, availability=program_status, studentid=studentid, username=username)
+
         if program_status == 'locked':
             html_code = flask.render_template('student_locked_program.html',
                     program = programdata, availability=program_status, studentid=studentid, username=username)
