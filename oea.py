@@ -4,7 +4,7 @@ from flask import request
 import access_database
 import modify_database
 import display_database
-import flask_wtf.csrf
+# import flask_wtf.csrf
 import flask_talisman
 import auth
 

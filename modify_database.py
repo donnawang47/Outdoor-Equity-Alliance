@@ -176,23 +176,28 @@ def modules_max():
     finally:
             _put_connection(connection)
 
-
 # use this function to create assessment_id as well
 def create_module_id():
     connection = _get_connection()
     try:
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
-
-            stmt_str = """SELECT module_id FROM modules ORDER BY
-            module_id DESC limit 1 """
+            # \d = represents character
+            # '\d+\ = represents any charcter (one or more occurrences)
+            # ::INTEGER = cast id to integers before sorting.
+            stmt_str = """SELECT substring(module_id FROM '\d+')
+            from modules ORDER BY substring(module_id FROM '\d+')::INTEGER
+            DESC limit 1 """
             cursor.execute(stmt_str)
             data = cursor.fetchall()
             # print("create module_id: ", count)
             num = 1
             if len(data) != 0:
+                print('data = ', data)
                 id = data[0][0]
-                num = int(id[1]) + 1
+                print('id = ', id)
+                num = int(id) + 1
+                print('num = ', num)
             module_id = 'm' + str(num)
             print("create module id:", module_id)
             connection.commit()
@@ -212,17 +217,17 @@ def create_program_id():
         # with psycopg2.connect(DATABASE_URL) as connection:
             with connection.cursor() as cursor:
                 # stmt_str = "SELECT COUNT(*) FROM programs"
-                stmt_str = """SELECT program_id FROM programs ORDER BY
-                program_id DESC LIMIT 1"""
+                stmt_str = """SELECT substring(program_id FROM '\d+')
+            from programs ORDER BY substring(program_id FROM '\d+')::INTEGER
+            DESC LIMIT 1"""
                 cursor.execute(stmt_str)
-                print('stmt_str =', stmt_str)
                 data = cursor.fetchall()
                 num = 1
                 if len(data) != 0:
                     print('count =', data[0][0])
                     # print("program id", count[0][0])
                     id = data[0][0]
-                    num = int(id[1]) + 1
+                    num = int(id) + 1
                 print('num = ', num)
                 program_id = 'p' + str(num)
                 # print("create program id:", program_id)
@@ -418,6 +423,7 @@ def delete_module(module_id):
             # determine if module id corresponds to assessment.
             # if so, delete its assessment column from students table.
             if content_type[0][0] == 'assessment':
+                print('content-type =', content_type[0][0])
                 print("is assessment")
 
                 cursor.execute('BEGIN;')
@@ -646,7 +652,7 @@ def main():
 #    print('max index = ', num)
 
     # ----------------------------------------------------------------
-    delete_module('m10')
+    # delete_module('m10')
     # delete_program('p5')
     # change_module_idx('m3', 1)
     # change_module_idx('m2', 2)
@@ -662,8 +668,8 @@ def main():
 
     # # create new program: Tree Ambassador 101
     # print("program id: create program id")
-    # program1_id = create_program_id()
-    # print("program1 id:", program1_id)
+    program1_id = create_program_id()
+    print("program1 id:", program1_id)
     # program1_data = {"program_id": program1_id,
     #                 "program_name": "Tree Ambassador 101",
     #                 "description": "Description",
@@ -675,8 +681,8 @@ def main():
     # print("main: insert program1")
 
     # # # insert module 1 of tree ambassador 101
-    # module1_id = create_module_id()
-    # print("module1 id: ", module1_id)
+    module1_id = create_module_id()
+    print("module1 id: ", module1_id)
     # module1_name = 'M1 Instructions'
     # module1_content_type = "text"
     # module1_content_link = 'https://docs.google.com/document/d/1PP-GiTqVcvJYpqVUxQ_bXSsru6H200l39RovL0AhYgw/edit?usp=sharing'

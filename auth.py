@@ -30,7 +30,7 @@ def callback():
     code = flask.request.args.get('code')
 
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
-    
+
     token_endpoint = google_provider_cfg['token_endpoint']
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
@@ -65,7 +65,7 @@ def callback():
     if not userinfo_response.json().get('email_verified'):
         message = 'User email not available or not verified by Google.'
         return message, 400
-    
+
     #save profile data
     flask.session['sub'] = userinfo_response.json()['sub']
     flask.session['name'] = userinfo_response.json()['name']

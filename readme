@@ -27,4 +27,33 @@ UID:
 https://docs.python.org/3/library/uuid.html
 
 Confirmation dialog for delete button
-https://stackoverflow.com/questions/10520899/form-action-with-javascript 
+https://stackoverflow.com/questions/10520899/form-action-with-javascript
+
+
+
+For Windows, equivalent of 'export' is --> $env:SPOTIFY_CLIENT_ID="XXXX"
+https://stackoverflow.com/questions/26368306/export-is-not-recognized-as-an-internal-or-external-command#comment131798691_57251862
+
+
+Take substring of id before selecting it in PostgreSQL
+https://www.postgresql.org/docs/current/functions-string.html#FUNCTIONS-STRING-SQL
+
+
+Liz's commands:
+
+ C:/Users/lizga/.virtualenvs/cos333/Scripts/Activate.ps1
+
+- C:\Users\lizga\.virtualenvs\cos333\Scripts\activate.bat
+
+
+-  $env:APP_SECRET_KEY="xxx"
+
+- $env:GOOGLE_CLIENT_ID="658586292195-ct24h8p12spju4ib474k96g2g2pcalpi.apps.googleusercontent.com"
+
+- $env:GOOGLE_CLIENT_SECRET="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"
+
+psql 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+
+- https://localhost:5000/
+
+
