@@ -2,7 +2,7 @@
 <strong>Module Id: </strong> {{module['module_id']}} <br>
 
 <strong>Module Name: </strong> {{module['module_name']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_module_name">
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_name">
     <span class="glyphicon glyphicon-pencil"></span>
 </button>
 <br>
@@ -11,7 +11,7 @@
 <!-- Trigger the modal with a button -->
 <div class="container">
     <!-- Modal -->
-    <div class="modal fade" id="change_module_name" role="dialog">
+    <div class="modal fade" id="change_{{module['module_id']}}_name" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg">
 
             <!-- Modal content-->
@@ -52,7 +52,7 @@
 
 <!-- edit module link -->
 <strong>Content Link: </strong> {{module['content_link']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_content_link">
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_content_link">
     <span class="glyphicon glyphicon-pencil"></span>
 </button>
 <br>
@@ -61,7 +61,7 @@
 <!-- Trigger the modal with a button -->
 <div class="container">
     <!-- Modal -->
-    <div class="modal fade" id="change_content_link" role="dialog">
+    <div class="modal fade" id="change_{{module['module_id']}}_content_link" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg">
 
             <!-- Modal content-->
@@ -73,7 +73,7 @@
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/modules/edit/link?module_id=%s&program_id=%s' %(module['module_id'], pgm_data['program_id'])}}" method='POST'>
                         <strong>Current Link:</strong>
-                        {{module['module_link']}}
+                        {{module['content_link']}}
                         <br>
                         <table>
                             <tr>
