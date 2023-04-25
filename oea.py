@@ -176,7 +176,7 @@ def admin_studentdetails():
     if not status2:
         data = """ There was a server error while getting student information.
         Please contact system administrator."""
-        errorResponse(data)
+        return errorResponse(data)
 
     print("oea: get student programs done")
     # can only get student progress on enrolled programs?
@@ -318,16 +318,19 @@ def admin_programs():
 
 @app.route('/admin/programs/create_program', methods=['GET','POST'])
 def admin_create_program():
+    print("creating program...")
     if flask.request.method == 'POST':
         pgm_params = {}
         pgm_params["program_name"] = flask.request.form['pgm_name']
         # create program_id
         isDuplicate = modify_database.isProgramNameDuplicate(pgm_params["program_name"])  #todo: duplicate
+        print("is pgm name duplicate?", isDuplicate)
         status, pgm_params["program_id"] = modify_database.create_program_id()
         pgm_params["description"] = flask.request.form['pgm_descrip']
         pgm_params["program_availability"] = flask.request.form['pgm_avail']
 
         success, message = modify_database.insert_program(pgm_params)
+        print("done modifying:", message)
         #status, programslist = access_database.get_programslist()
 
         if success and status and not isDuplicate:
@@ -627,7 +630,7 @@ def edit_module_name():
     if not modify_database.existingModuleID(module_id):
         print('inside check function of nonexistant module id')
         message = "Invalid module id. Please contact system administrator."
-        errorResponse(message)
+        return errorResponse(message)
 
     elif module_id == "":
         print("module_id is none")
@@ -638,7 +641,7 @@ def edit_module_name():
     if not modify_database.existingProgramID(program_id):
             print('inside invalid program id check')
             message = "Invalid program id. Please contact system administrator."
-            errorResponse(message)
+            return errorResponse(message)
 
     elif flask.request.method == 'POST':
         new_module_name = flask.request.form['new_module_name']
@@ -791,7 +794,7 @@ def student_interface():
     if status:
         print("Student Interface: displaying programs list for " + str(username))
         html_code = flask.render_template('student_interface.html',
-                    student_info = student_info, studentid=studentid, username=username)
+                    student_info = student_info, studentid=studentid, username=student_info['user_name'])
     else:
         data = """ There was a server error while getting student programs.
         Please contact system administrator."""
@@ -814,6 +817,10 @@ def student_program():
         print(programdata)
         html_code = flask.render_template('student_program.html',
                     program = programdata, availability=program_status, studentid=studentid, username=username)
+        if program_status == 'locked':
+            html_code = flask.render_template('student_locked_program.html',
+                    program = programdata, availability=program_status, studentid=studentid, username=username)
+
     elif(not status):
         data = """ There was a server error while getting program details.
         Please contact system administrator."""

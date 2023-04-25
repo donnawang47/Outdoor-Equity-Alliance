@@ -64,6 +64,7 @@ def insert_module(data):
         _put_connection(connection)
 
 def insert_program(data):
+    print("modify_database.py: insert_program:", data)
     connection = _get_connection()
     try:
         #with CONN as connection:
@@ -82,6 +83,7 @@ def insert_program(data):
             """
             param = [data['program_id'], data['program_name'], data['description'], data['program_availability']]
             cursor.execute(statement, param)
+            print("executed:", statement)
 
 
             # modify students table to include new program column
@@ -89,14 +91,17 @@ def insert_program(data):
             pgm_status = 'locked'
             if data['program_availability'] == 'all':
                 pgm_status= 'available'
-            elif data['program_availability'] == 'enroll':
-                    pgm_status = 'enrolled'
+            # elif data['program_availability'] == 'enroll':
+            #         pgm_status = 'enrolled'
+            print("pgm_status", pgm_status)
 
 
             stmt_str = "ALTER TABLE users "
-            stmt_str += "ADD " + data['program_id']
+            stmt_str += "ADD COLUMN " + data['program_id']
             stmt_str += " TEXT DEFAULT %s;"
+            print(stmt_str)
             cursor.execute(stmt_str, [pgm_status])
+            print("executed:", stmt_str)
             cursor.execute('COMMIT;')
 
             #connection.commit()
@@ -632,6 +637,7 @@ def existingModuleID(givenid):
             ids = cursor.fetchall()
 
             for id in ids:
+                print(id)
                 if givenid == id[0]:
                     return True
 
