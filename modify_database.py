@@ -95,14 +95,32 @@ def insert_program(data):
             #         pgm_status = 'enrolled'
             print("pgm_status", pgm_status)
 
-
             stmt_str = "ALTER TABLE users "
             stmt_str += "ADD COLUMN " + data['program_id']
             stmt_str += " TEXT DEFAULT %s;"
-            print(stmt_str)
             cursor.execute(stmt_str, [pgm_status])
             print("executed:", stmt_str)
+
+
+            # stmt_str = "ALTER TABLE users "
+            # stmt_str += "ADD COLUMN " + data['program_id'] + " TEXT;"
+            # cursor.execute(stmt_str)
+            # print("executed:", stmt_str)
+
+            # stmt_str = "UPDATE users SET " + data['program_id'] + " =%s;"
+            # cursor.execute(stmt_str, [pgm_status])
+            # print("executed:", stmt_str)
+
+            # stmt_str = "ALTER TABLE users "
+            # stmt_str += "ALTER COLUMN " + data['program_id'] + " SET DEFAULT %s;"
+            # cursor.execute(stmt_str, [pgm_status])
+            # print("executed:", stmt_str)
+
             cursor.execute('COMMIT;')
+
+
+            # print(stmt_str)
+
 
             #connection.commit()
 
