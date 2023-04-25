@@ -127,6 +127,7 @@ def admin_students():
 
 # display error html page
 def errorResponse(data):
+    print('REACHED ERROR RESPONSE FUNCTION' + '\n')
     html_code = flask.render_template('error.html', err_msg = data)
     response = flask.make_response(html_code)
     return response
@@ -184,10 +185,17 @@ def admin_studentdetails():
     print(enrolled)
     enrolled_pgms = {} # pgm_id : status
     for pgm in enrolled:
-        success, pgm_progress = access_database.get_student_program_progress(studentid, pgm['program_id'])
+        program_id = pgm['program_id']
+
+        if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+        success, pgm_progress = access_database.get_student_program_progress(studentid, program_id)
+
         if not success:
             data = """ There was a server error while getting student program progress.
-        Please contact system administrator."""
+            Please contact system administrator."""
             errorResponse(data)
 
         print("pgm_progress" + pgm_progress)
@@ -203,7 +211,11 @@ def admin_studentdetails():
         for mod in pgm['modules']:
             print(mod)
             if mod['content_type'] == 'assessment':
-                if student_info[mod['module_id']] == 1:
+                module_id = mod['module_id']
+                if not modify_database.existingModuleID(module_id):
+                    message = "Invalid module id. Please contact system administrator."
+                    errorResponse(message)
+                elif student_info[module_id] == 1:
                     mod['module_progress'] = "complete"
                 else:
                     mod['module_progress'] = "incomplete"
@@ -349,7 +361,12 @@ def admin_create_program():
 @app.route("/admin/programs/edit/add_module", methods=['GET', 'POST'])
 def admin_create_module():
     program_id = flask.request.args.get('program_id')
-    if flask.request.method == 'POST':
+
+    if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    elif flask.request.method == 'POST':
         # modules_params
         md_params = {}
         status, md_params["module_id"] = modify_database.create_module_id()
@@ -394,6 +411,10 @@ def admin_edit_program():
     pgm_id = flask.request.args.get('program_id')
     print('program id: ', id)
 
+    if not modify_database.existingProgramID(pgm_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
     success, data = access_database.get_program_details(pgm_id)
     if success:
         print("data retrieved:",data)
@@ -416,12 +437,22 @@ def edit_program_name():
     pgm_id = flask.request.args.get('program_id')
     print('program id: ', id)
 
-    if flask.request.method == 'POST':
+    if not modify_database.existingProgramID(pgm_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    elif flask.request.method == 'POST':
         # get new name from text input field
         new_program_name = flask.request.form['new_program_name']
         print('Got new program name! :', new_program_name)
 
-        success, message = modify_database.change_program_name(pgm_id, new_program_name)
+        if modify_database.existingProgramID(pgm_id):
+            success, message = modify_database.change_program_name(pgm_id, new_program_name)
+        else:
+            data = """ Invalid program id.
+        Please contact system administrator."""
+            html_code = flask.render_template('error.html',
+                                err_msg = data)
 
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
@@ -447,12 +478,22 @@ def edit_program_desc():
     pgm_id = flask.request.args.get('program_id')
     print('program id: ', pgm_id)
 
-    if flask.request.method == 'POST':
+    if not modify_database.existingProgramID(pgm_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    elif flask.request.method == 'POST':
         # get new desc from text input field
         new_program_desc = flask.request.form['new_pgm_desc']
         print('Got new program desc! :', new_program_desc)
 
-        success, message = modify_database.change_program_desc(pgm_id, new_program_desc)
+        if modify_database.existingProgramID(pgm_id):
+            success, message = modify_database.change_program_desc(pgm_id, new_program_desc)
+        else:
+            data = """ Invalid program id.
+        Please contact system administrator."""
+            html_code = flask.render_template('error.html',
+                                err_msg = data)
 
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
@@ -478,7 +519,11 @@ def edit_program_avail():
     pgm_id = flask.request.args.get('program_id')
     print('program id: ', pgm_id)
 
-    if flask.request.method == 'POST':
+    if not modify_database.existingProgramID(pgm_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    elif flask.request.method == 'POST':
         # get new desc from text input field
         new_program_avail = flask.request.form['new_pgm_avail']
         print('Got new program avail! :', new_program_avail)
@@ -506,15 +551,23 @@ def edit_program_avail():
 
 @app.route('/admin/programs/edit/module_seq', methods=['GET', 'POST'])
 def edit_module_seq():
-    print("oea.py: edit_module_seq")
+    print("Currently in oea.py: edit_module_seq" + '\n')
     pgm_id = flask.request.args.get('program_id')
     print('modules page program id = ', pgm_id)
 
-    if flask.request.method == 'POST':
+    if not modify_database.existingProgramID(pgm_id):
+        data = """ There was a server error while getting program details.
+                Please contact system administrator."""
+        html_code = flask.render_template('error.html',
+                        err_msg = data)
+
+    elif flask.request.method == 'POST':
         # num_modules = flask.request.form['num_modules']
         for name, val in flask.request.form.items():
-            print(name, val)
+            print('name = ', name)
+            print('val = ', val)
             status, msg = modify_database.change_module_idx(name, val)
+            print('status of changing idx = ', status)
 
             if not status:
                 data = """ There was a server error while creating program id.
@@ -526,7 +579,7 @@ def edit_module_seq():
             # call database function to update
     success, data = access_database.get_program_details(pgm_id)
     if success:
-        print("data retrieved:",data)
+        print("data retrieved:", data)
         html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
     else:
         data = """ There was a server error while getting program details.
@@ -547,6 +600,10 @@ def get_modules_of_program():
     program_id = flask.request.args.get('program_id')
     print('modules page program id = ', program_id)
 
+    if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
     status, data = access_database.get_program_details(program_id)
     print('modules list: ', data['modules'])
 
@@ -566,13 +623,24 @@ def get_modules_of_program():
 @app.route('/admin/programs/modules/edit/name', methods=['GET', 'POST'])
 def edit_module_name():
     module_id = flask.request.args.get('module_id')
-    if module_id == "":
+
+    if not modify_database.existingModuleID(module_id):
+        print('inside check function of nonexistant module id')
+        message = "Invalid module id. Please contact system administrator."
+        errorResponse(message)
+
+    elif module_id == "":
         print("module_id is none")
     print('GET get MODULE_ID', module_id)
     program_id = flask.request.args.get('program_id')
     print('program_id = ', program_id)
 
-    if flask.request.method == 'POST':
+    if not modify_database.existingProgramID(program_id):
+            print('inside invalid program id check')
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    elif flask.request.method == 'POST':
         new_module_name = flask.request.form['new_module_name']
         print('post get new module name: ', new_module_name)
 
@@ -602,11 +670,20 @@ def edit_module_name():
 def edit_module_link():
     print('entering editing link function...')
     module_id = flask.request.args.get('module_id')
+
+    if not modify_database.existingModuleID(module_id):
+        message = "Invalid module id. Please contact system administrator."
+        errorResponse(message)
+
     print('module id = ', module_id)
     program_id  = flask.request.args.get('program_id')
     print('program_id = ', program_id)
 
-    if flask.request.method == 'POST':
+    if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    elif flask.request.method == 'POST':
         new_module_link = flask.request.form['new_module_link']
         print('new_module_link = ', new_module_link)
 
@@ -638,6 +715,10 @@ def edit_module_link():
 @app.route('/admin/programs/delete/program', methods=['POST'])
 def delete_program():
     program_id = flask.request.args.get('program_id')
+    if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
     print('program_id = ', program_id)
     success, message = modify_database.delete_program(program_id)
 
@@ -665,8 +746,18 @@ def delete_program():
 def delete_module():
     module_id = flask.request.args.get('module_id')
     print('module_id', module_id)
+
+    if not modify_database.existingModuleID(module_id):
+        message = "Invalid module id. Please contact system administrator."
+        errorResponse(message)
+
     program_id = flask.request.args.get('program_id')
     print('program_id', program_id)
+
+    if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
     success, message = modify_database.delete_module(module_id)
     print("deleting module success = ", success)
 
@@ -752,7 +843,13 @@ def student_program_module():
     # get first incomplete assessment
     # if this module seq is greater than the completed assessment
     # it should be locked
-    success, min_idx = access_database.get_locked_module_index(studentid, moduledata['program_id']) #handle error
+
+    program_id = moduledata['program_id']
+    if not modify_database.existingProgramID(program_id):
+            message = "Invalid program id. Please contact system administrator."
+            errorResponse(message)
+
+    success, min_idx = access_database.get_locked_module_index(studentid, program_id) #handle error
     print("last incomplete quiz is module at index", min_idx)
     print(moduledata['module_index'])
     if moduledata['module_index'] > min_idx:
@@ -762,9 +859,9 @@ def student_program_module():
         response = flask.make_response(html_code)
         return response
 
-    success, program_status = access_database.get_student_program_status(studentid, moduledata['program_id'])
+    success, program_status = access_database.get_student_program_status(studentid, program_id)
     if status and program_status == 'enrolled':
-        status, programdata = access_database.get_program_details(moduledata['program_id'])
+        status, programdata = access_database.get_program_details(program_id)
         if status:
             print("Student Interface: displaying module info " + moduleid + " for " + str(username))
             html_code = flask.render_template('student_program_module.html',
@@ -776,7 +873,7 @@ def student_program_module():
     elif(not status or not success):
         data = """ There was a server error while getting student program status.
         Please contact system administrator."""
-        html_code = flask.render_template('error_student.html', err_msg="Program " + moduledata['program_id'] + " is " + program_status + " please enroll or contact the admin to gain access.")
+        html_code = flask.render_template('error_student.html', err_msg="Program " + program_id + " is " + program_status + " please enroll or contact the admin to gain access.")
     response = flask.make_response(html_code)
     return response
 
@@ -804,3 +901,13 @@ def student_enroll_program():
         Please contact system administrator."""
         html_code = flask.render_template('error_student.html', err_msg= data)
     return flask.make_response(html_code)
+
+
+# def main():
+
+
+
+
+
+# if __name__ == '__main__':
+#     main()

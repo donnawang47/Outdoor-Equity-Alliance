@@ -593,6 +593,58 @@ def change_module_idx(module_id, new_idx):
     finally:
         _put_connection(connection)
 
+
+def existingProgramID(givenid):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+            statement = "SELECT program_id FROM programs"
+            cursor.execute(statement)
+
+            ids = cursor.fetchall()
+
+            # print('ids of programs =', ids)
+
+            for id in ids:
+                # print('id =', id[0])
+                if givenid == id[0]:
+                    return True
+
+            return False
+
+    except Exception as error:
+        err_msg = "A server error occurred while veriying if program id exists. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
+def existingModuleID(givenid):
+    connection = _get_connection()
+    try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
+        with connection.cursor() as cursor:
+            statement = "SELECT module_id FROM modules"
+            cursor.execute(statement)
+
+            ids = cursor.fetchall()
+
+            for id in ids:
+                if givenid == id[0]:
+                    return True
+
+            return False
+
+    except Exception as error:
+        err_msg = "A server error occurred while verifying if module id exists. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, error)
+    finally:
+        _put_connection(connection)
+
 # compares passed program name to all program names in database to
 # check if there are duplicates
 def isProgramNameDuplicate(newName):
@@ -648,6 +700,39 @@ def isModuleNameDuplicate(newName):
 
 # write functionality to deal with duplicate entries!
 def main():
+    # id = 'p1'
+    # print(id)
+    # print('is p1 valid =', existingProgramID(id))
+
+    # id = 'p6'
+    # print(id)
+    # print('is p6 valid =', existingProgramID(id))
+
+    # # wrong ids
+    # id = 'p33'
+    # print('is p33 valid =', existingProgramID(id))
+
+    # id = 'p100'
+    # print('is p100 valid =', existingProgramID(id))
+
+
+
+    id = 'm1'
+    print(id)
+    print('is m1 valid =', existingModuleID(id))
+
+    id = 'm6'
+    print(id)
+    print('is m6 valid =', existingModuleID(id))
+
+    # wrong ids
+    id = 'm33'
+    print('is m33 valid =', existingModuleID(id))
+
+    id = 'm100'
+    print('is m100 valid =', existingModuleID(id))
+
+
 #    valid, num = modules_max()
 #    print('max index = ', num)
 
@@ -668,8 +753,8 @@ def main():
 
     # # create new program: Tree Ambassador 101
     # print("program id: create program id")
-    program1_id = create_program_id()
-    print("program1 id:", program1_id)
+    # program1_id = create_program_id()
+    # print("program1 id:", program1_id)
     # program1_data = {"program_id": program1_id,
     #                 "program_name": "Tree Ambassador 101",
     #                 "description": "Description",
@@ -681,8 +766,8 @@ def main():
     # print("main: insert program1")
 
     # # # insert module 1 of tree ambassador 101
-    module1_id = create_module_id()
-    print("module1 id: ", module1_id)
+    # module1_id = create_module_id()
+    # print("module1 id: ", module1_id)
     # module1_name = 'M1 Instructions'
     # module1_content_type = "text"
     # module1_content_link = 'https://docs.google.com/document/d/1PP-GiTqVcvJYpqVUxQ_bXSsru6H200l39RovL0AhYgw/edit?usp=sharing'
