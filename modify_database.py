@@ -3,10 +3,10 @@ import queue
 import sys
 import os
 
-# _database_url = os.getenv('DATABASE_URL')
+_database_url = os.getenv('DATABASE_URL')
 
 # this always works
-_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+# _database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 
 # _database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()

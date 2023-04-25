@@ -10,9 +10,9 @@ import queue
 # for windows cmd: set DATABASE_URL=postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea
 
 # this always works i think
-_database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+# _database_url = 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 
-# _database_url = os.getenv('DATABASE_URL')
+_database_url = os.getenv('DATABASE_URL')
 _connection_pool = queue.Queue()
 conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
 
@@ -358,7 +358,7 @@ def get_student_programs(student_id):
     print(student_info)
     if not status:
         return status, student_info
-    
+
 
     data = {}
 
