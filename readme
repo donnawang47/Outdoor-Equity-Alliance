@@ -52,6 +52,8 @@ $env:GOOGLE_CLIENT_ID="658586292195-ct24h8p12spju4ib474k96g2g2pcalpi.apps.google
 
 $env:GOOGLE_CLIENT_SECRET="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"
 
+$env:DATABASE_URL="postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea"
+
 psql 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
 
 - https://localhost:5000/
