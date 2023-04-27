@@ -181,6 +181,26 @@ def insert_admin(data):
     finally:
         _put_connection(connection)
 
+
+def delete_user(user_id):
+    connection = _get_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('BEGIN')
+            statement = "DELETE FROM users WHERE user_id=%s;"
+            cursor.execute(statement, [user_id])
+            cursor.execute('COMMIT')
+            return(True, "successfully deleted user")
+
+    except Exception as error:
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
+    finally:
+        _put_connection(connection)
+
+
 # use this function to create assessment_id as well
 def create_module_index():
     connection = _get_connection()
@@ -442,7 +462,7 @@ def delete_program(program_id):
         return (False, err_msg)
     finally:
         _put_connection(connection)
- 
+
 
 def delete_module(module_id):
     connection = _get_connection()
@@ -774,6 +794,7 @@ def isModuleNameDuplicate(newName):
 
 # write functionality to deal with duplicate entries!
 def main():
+    # delete_user(7)
 
 
     # index = create_module_index()
