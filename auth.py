@@ -4,6 +4,7 @@ import json
 import requests
 import flask
 import oauthlib.oauth2
+import access_database
 
 GOOGLE_DISCOVERY_URL = ('https://accounts.google.com/.well-known/openid-configuration')
 GOOGLE_CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']
@@ -75,7 +76,17 @@ def callback():
     flask.session['email'] = userinfo_response.json()['email']
     flask.session['email_verified'] = userinfo_response.json()['email_verified']
     flask.session['locale'] = userinfo_response.json()['locale']
+    username = flask.session['email']
+    success, isAdmin = access_database.is_admin_authorized(username)
+    if success and isAdmin:
+        print("is admin")
+        return flask.redirect(flask.url_for('admin_interface'))
+    success, isStudent = access_database.is_student_authorized(username)
+    if success and isStudent:
+        print("is student")
+        return flask.redirect(flask.url_for('student_interface'))
 
+    print("not authorized")
     return flask.redirect(flask.url_for('index'))
 
 def logoutapp():

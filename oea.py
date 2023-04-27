@@ -69,8 +69,8 @@ def authorize_student(username):
 @app.route('/index', methods=['GET'])
 def index():
 
-    username = auth.authenticate()
-    authorize_admin(username)
+    # username = auth.authenticate()
+    # authorize_admin(username)
 
     html_code = flask.render_template('index.html')
     response = flask.make_response(html_code)
@@ -808,9 +808,17 @@ def student_program():
     username = auth.authenticate()
     authorize_student(username)
 
+    # need to change this
     status, studentid = access_database.get_student_id(username)
     programid = flask.request.args.get('programid')
     print(programid)
+
+    success, min_idx = access_database.get_locked_module_index(studentid, programid) #handle error
+    print("last incomplete quiz is module at index", min_idx)
+    # if moduledata['module_index'] > min_idx:
+
+
+
     status, programdata = access_database.get_program_details(programid)
     success, program_status = access_database.get_student_program_status(studentid, programid)
     if status and success:
@@ -818,7 +826,7 @@ def student_program():
         print(programdata)
         if program_status == 'enrolled':
             html_code = flask.render_template('student_program.html',
-                        program = programdata, availability=program_status, studentid=studentid, username=username)
+                        program = programdata, availability=program_status, studentid=studentid, username=username, mod_min_idx = min_idx)
         elif program_status == 'available':
             html_code = flask.render_template('student_available_program.html',
                         program = programdata, availability=program_status, studentid=studentid, username=username)
@@ -844,6 +852,7 @@ def student_program_module():
 
     username = auth.authenticate()
     authorize_student(username)
+    print("in student_program_module()")
 
     status, studentid= access_database.get_student_id(username)
     moduleid = flask.request.args.get('moduleid')
@@ -864,7 +873,7 @@ def student_program_module():
 
     success, min_idx = access_database.get_locked_module_index(studentid, program_id) #handle error
     print("last incomplete quiz is module at index", min_idx)
-    print(moduledata['module_index'])
+    print("curr mod idx:",moduledata['module_index'])
     if moduledata['module_index'] > min_idx:
         print("curr_idx greater than min_idx")
         html_code = flask.render_template('error.html',

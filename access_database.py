@@ -68,7 +68,7 @@ def get_program_details(program_id):
     try:
         # with CONN as connection:
         with connection.cursor() as cursor:
-            print("In access_database.py: get_program_details")
+            print("In access_database.py: get_program_details", program_id)
             # print("in get pgm modules", program_id)
             stmt_str = "SELECT * FROM programs WHERE "
             stmt_str += "program_id=%s"
@@ -107,6 +107,7 @@ def get_program_details(program_id):
                 modules_row['content_type'] = row[7]
                 modules_row['content_link'] = row[8]
                 modules_row['module_index'] = row[9]
+                print("modules row:", modules_row)
                 modules.append(modules_row)
 
                 #sort modules via index
@@ -435,13 +436,13 @@ def get_locked_module_index(studentid, programid):
     success, module_info = get_program_details(programid)
     print("get_student_pgm_prog get pgm modules done")
     modules = module_info['modules']
+    print("len(modules)",len(modules))
     # get min incomplete asssessment
     min_incomplete_idx = len(modules)
     print("total modules", min_incomplete_idx)
     if success:
         for module in modules:
             module_id = module['module_id']
-
             curr_idx = module['module_index']
             print("id:", module_id, "; type:", module['content_type'], "; curr_idx:", curr_idx )
             if module['content_type'] == 'assessment' and  curr_idx < min_incomplete_idx:
@@ -452,7 +453,7 @@ def get_locked_module_index(studentid, programid):
                 if complete == 0:
                     min_incomplete_idx = curr_idx
                     print("min_incomplete_idx", min_incomplete_idx)
-
+        print("done: min_incomplete_idx", min_incomplete_idx)
         return (True, min_incomplete_idx)
     return (False, "error")
 
@@ -476,11 +477,13 @@ def get_student_program_progress(studentid, programid):
             # get student completion of module_id
         print("for loop done:", assessment_ids)
         progress = "no assessment module for this program yet"
+        print("GET_STUD_PROG_PROG: assessments", assessment_ids)
         if len(assessment_ids) != 0:
-            success, completed_modules = get_student_module_completion(studentid, assessment_ids)
+            success, num_completed_modules = get_student_module_completion(studentid, assessment_ids)
+            print("GET_STUD_PROG_PROG: num of comp mod", num_completed_modules)
             if success:
                 pgm_size = len(assessment_ids)
-                progress = str(completed_modules) + "/" + str(pgm_size)
+                progress = str(num_completed_modules) + "/" + str(pgm_size)
                 print("student progress", progress)
         return (True, progress)
     return (False, "error")
@@ -492,6 +495,7 @@ def get_student_assessment_status(studentid, assessmentid):
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
             #print(module_ids[0])
+            print("studentid", studentid)
             print("access_database.py: get_student_assessment_status:", studentid, assessmentid)
             stmt_str = "SELECT " + assessmentid + " FROM users WHERE "
             stmt_str += "user_id = %s"
