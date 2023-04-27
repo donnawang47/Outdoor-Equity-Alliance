@@ -236,6 +236,34 @@ def admin_studentdetails():
     return response
 
 
+@app.route('/admin/students/delete', methods=['POST'])
+def delete_student():
+    student_id = flask.request.form['student_id']
+    # if not modify_database.existingProgramID(program_id):
+    #         message = "Invalid student id. Please contact system administrator."
+    #         return errorResponse(message)
+
+    print('student_id = ', student_id)
+    success, message = modify_database.delete_user(student_id)
+
+    if success:
+        status, students = access_database.get_all_students()
+        if status:
+            html_code = flask.render_template('admin_students.html', students=students)
+        else:
+            data = """ There was a server error while getting all students.
+            Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
+        response = flask.make_response(html_code)
+        return response
+    else:
+        data = """ There was a server error while deleting student.
+        Please contact system administrator."""
+        html_code = flask.render_template('error.html',
+                            err_msg = data)
+    response = flask.make_response(html_code)
+    return response
+
 
 @app.route('/admin/admins/new_admin', methods=['GET','POST'])
 def admin_new_admin():
@@ -268,8 +296,38 @@ def admin_new_admin():
     response = flask.make_response(html_code)
     return response
 
+
+@app.route('/admin/admins/delete', methods=['POST'])
+def delete_admin():
+    student_id = flask.request.form['admin_id']
+    # if not modify_database.existingProgramID(program_id):
+    #         message = "Invalid student id. Please contact system administrator."
+    #         return errorResponse(message)
+
+    print('student_id = ', student_id)
+    success, message = modify_database.delete_user(student_id)
+
+    if success:
+        status, students = access_database.get_all_students()
+        if status:
+            html_code = flask.render_template('admin_students.html', students=students)
+        else:
+            data = """ There was a server error while getting all students.
+            Please contact system administrator."""
+            html_code = flask.render_template('error.html', err_msg = data)
+        response = flask.make_response(html_code)
+        return response
+    else:
+        data = """ There was a server error while deleting student.
+        Please contact system administrator."""
+        html_code = flask.render_template('error.html',
+                            err_msg = data)
+    response = flask.make_response(html_code)
+    return response
+
+
 @app.route('/admin/students/new_student', methods=['GET','POST'])
-def admin_new_user():
+def admin_new_student():
     if flask.request.method == 'POST':
 
         user_status = "student"

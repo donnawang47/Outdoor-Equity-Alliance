@@ -98,14 +98,14 @@
 
         <script>
             function isConfirmed (form) {
-            if(confirm('Are you sure you want to delete?')) {
-                return true;
+                if(confirm('Are you sure you want to delete?')) {
+                    return true;
+                }
+                else {
+                    // alert('Cancelled deletion.');
+                    return false;
+                }
             }
-            else {
-                // alert('Cancelled deletion.');
-                return false;
-            }
-        }
 
 
         </script>

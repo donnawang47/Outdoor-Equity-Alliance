@@ -111,6 +111,15 @@
                 <td align = "left"> {{admin['admin_id']}}</td>
                 <td align = "left"> {{admin['admin_name']}}</td>
                 <td align = "left"> {{admin['admin_email']}}</td>
+                <td align = right>
+                    <form action="/admin/admins/delete" method = 'POST' onsubmit="return isConfirmed(this);">
+                        <input type="hidden" name="admin_id" value="{{admin['admin_id']}}">
+                        <input type="submit" value="Delete">
+                    <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
+                    <button class="pure-button button-warning confirm" type="submit"
+                    formaction="config" formmethod="post"> Confirm </button> -->
+                    </form>
+                </td>
             </tr>
             {% endfor %}
             <!-- clicking on student id will direct to page containing
@@ -137,6 +146,15 @@
                 let element_id = "#update_" + module + "Status";
                 // update_{{pgm}}Status
                 $(element_id).show();
+            }
+            function isConfirmed (form) {
+                if(confirm('Are you sure you want to delete?')) {
+                    return true;
+                }
+                else {
+                    // alert('Cancelled deletion.');
+                    return false;
+                }
             }
         </script>
 
