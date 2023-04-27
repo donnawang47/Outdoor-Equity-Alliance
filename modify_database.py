@@ -181,23 +181,39 @@ def insert_admin(data):
     finally:
         _put_connection(connection)
 
-# returns the highest index
-def modules_max():
+# use this function to create assessment_id as well
+def create_module_index():
     connection = _get_connection()
     try:
+        # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
-            statement = "SELECT count(*) FROM modules"
-            cursor.execute(statement)
+
+            stmt_str = """SELECT module_index from modules ORDER BY
+            module_index DESC limit 1 """
+            cursor.execute(stmt_str)
             data = cursor.fetchall()
-            return (True, data[0][0])
+            # print("create module_id: ", count)
+            num = 1
+            if len(data) != 0:
+                print('data = ', data)
+                id = data[0][0]
+                print('id = ', id)
+                num = int(id) + 1
+                print('num = ', num)
+            module_id = num
+            print("created index = ", num)
+            connection.commit()
+            return (True, module_id)
+
 
     except Exception as error:
-            err_msg = "A server error occurred. "
-            err_msg += "Please contact the system administrator."
-            print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-            return (False, err_msg)
+        err_msg = "A server error occurred. "
+        err_msg += "Please contact the system administrator."
+        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
+        return (False, err_msg)
     finally:
-            _put_connection(connection)
+        _put_connection(connection)
+
 
 # use this function to create assessment_id as well
 def create_module_id():
@@ -225,6 +241,7 @@ def create_module_id():
             print("create module id:", module_id)
             connection.commit()
             return (True, module_id)
+
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -425,7 +442,7 @@ def delete_program(program_id):
         return (False, err_msg)
     finally:
         _put_connection(connection)
-
+ 
 
 def delete_module(module_id):
     connection = _get_connection()
@@ -433,7 +450,23 @@ def delete_module(module_id):
         # with psycopg2.connect(DATABASE_URL) as connection:
         with connection.cursor() as cursor:
             print("modify_database.py: delete_module", module_id)
-            # fetch content type with module_id
+
+
+            # save index of to be deleted module (will have to decrement
+            # all indices after that index)
+            statement = "SELECT module_index FROM modules WHERE module_id = %s"
+            cursor.execute(statement, [module_id])
+            fetchIndex = cursor.fetchall()
+            index = fetchIndex[0][0]
+            print('index = ', index)
+
+            statement = "SELECT count(*) FROM modules"
+            cursor.execute(statement)
+            data = cursor.fetchall()
+            rows_num = data[0][0]
+            print('rows_num = ', rows_num)
+
+             # fetch content type with module_id
             statement = "SELECT content_type FROM modules WHERE "
             statement += "module_id = %s"
             #statement += str(module_id)
@@ -453,13 +486,30 @@ def delete_module(module_id):
                 statement = "ALTER TABLE users DROP COLUMN "
                 statement += str(module_id)
                 cursor.execute(statement)
-                cursor.execute('COMMIT;')
+                # cursor.execute('COMMIT;')
 
             # delete row with specified module id from programs table
             statement = "DELETE FROM modules WHERE module_id = %s"
             # statement += str(module_id)
             cursor.execute(statement, [module_id])
+
+        # # OFFSET = skip that many rows before beginning to return rows
+        #     statement = """SELECT module_index from modules ORDER BY
+        #     module_index LIMIT rowCount OFFSET firstHalf"""
+
+            last_half = rows_num - index
+
+            for i in range(1, last_half + 1):
+                print('i = ', i)
+                current_index = index + i
+                print('current_index = ', current_index)
+                statement = """ UPDATE modules SET module_index = %s
+                WHERE module_index = %s;"""
+                cursor.execute(statement, [current_index-1, current_index])
+
+            cursor.execute('COMMIT;')
             return(True, "module successfully deleted")
+
 
     except Exception as error:
         err_msg = "A server error occurred. "
@@ -724,6 +774,11 @@ def isModuleNameDuplicate(newName):
 
 # write functionality to deal with duplicate entries!
 def main():
+
+
+    # index = create_module_index()
+    # print('created index = ', index)
+
     # id = 'p1'
     # print(id)
     # print('is p1 valid =', existingProgramID(id))
@@ -741,20 +796,20 @@ def main():
 
 
 
-    id = 'm1'
-    print(id)
-    print('is m1 valid =', existingModuleID(id))
+    # id = 'm1'
+    # print(id)
+    # print('is m1 valid =', existingModuleID(id))
 
-    id = 'm6'
-    print(id)
-    print('is m6 valid =', existingModuleID(id))
+    # id = 'm6'
+    # print(id)
+    # print('is m6 valid =', existingModuleID(id))
 
-    # wrong ids
-    id = 'm33'
-    print('is m33 valid =', existingModuleID(id))
+    # # wrong ids
+    # id = 'm33'
+    # print('is m33 valid =', existingModuleID(id))
 
-    id = 'm100'
-    print('is m100 valid =', existingModuleID(id))
+    # id = 'm100'
+    # print('is m100 valid =', existingModuleID(id))
 
 
 #    valid, num = modules_max()
@@ -974,8 +1029,7 @@ def main():
 
     # # delete module 2 of program 1 (assessment)
     # delete_module(module2_id)
-
-
+    print()
 
 if __name__ == '__main__':
     main()
