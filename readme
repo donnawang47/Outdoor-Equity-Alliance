@@ -38,6 +38,9 @@ https://stackoverflow.com/questions/26368306/export-is-not-recognized-as-an-inte
 Take substring of id before selecting it in PostgreSQL
 https://www.postgresql.org/docs/current/functions-string.html#FUNCTIONS-STRING-SQL
 
+limit and offset for selecting rows in postgreSQL
+https://www.postgresql.org/docs/current/queries-limit.html 
+
 
 Liz's commands:
 

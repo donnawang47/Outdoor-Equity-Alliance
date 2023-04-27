@@ -85,7 +85,7 @@ def get_program_details(program_id):
             data['program_name'] = table[0][1]
             data['description'] = table[0][2]
             data['program_availability'] = table[0][3]
-            print('Program info', data)
+            # print('Program info', data)
 
             # get program modules
             stmt_str = "SELECT * FROM programs, modules WHERE "
@@ -95,7 +95,7 @@ def get_program_details(program_id):
 
             cursor.execute(stmt_str, [program_id])
             table = cursor.fetchall()
-            print("Modules of program", table)
+            # print("Modules of program", table)
 
             # # list of dictionaries of modules within program
             modules = []

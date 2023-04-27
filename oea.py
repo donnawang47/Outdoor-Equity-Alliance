@@ -126,9 +126,9 @@ def admin_students():
     return response
 
 # display error html page
-def errorResponse(data):
+def errorResponse(message):
     print('REACHED ERROR RESPONSE FUNCTION' + '\n')
-    html_code = flask.render_template('error.html', err_msg = data)
+    html_code = flask.render_template('error.html', err_msg = message)
     response = flask.make_response(html_code)
     return response
 
@@ -385,7 +385,13 @@ def admin_create_module():
         md_params["module_name"] = flask.request.form['module_name']
         md_params["content_link"] = flask.request.form['content_link']
         md_params["content_type"] = flask.request.form['content_type']
-        md_params["module_index"] = flask.request.form['index']
+         # md_params["module_index"] = flask.request.form['index']
+
+        success, md_params["module_index"] = \
+                                modify_database.create_module_index()
+        if not success:
+            message = "A server error occurred while creating index for new module. Please contact system administrator."
+            return errorResponse(message)
 
         success, msg = modify_database.insert_module(md_params)
         if success:
