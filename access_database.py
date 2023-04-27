@@ -113,7 +113,7 @@ def get_program_details(program_id):
             modules = sorted(modules, key=lambda x:x['module_index'])
             data['modules'] = modules
             # print('modules', modules)
-            print("data", data)
+            # print("data", data)
             # print("success access_database.py: get_program_modules")
             return (True, data)
 

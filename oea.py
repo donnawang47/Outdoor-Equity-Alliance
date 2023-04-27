@@ -389,12 +389,13 @@ def admin_create_module():
 
         success, msg = modify_database.insert_module(md_params)
         if success:
-            print(msg)
+
             success, data = access_database.get_program_details(program_id)
             if success: # return back to programs page
                 print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
+                print("ERROR:", msg)
                 html_code = flask.render_template('error.html',
                                 err_msg = data)
 
@@ -460,7 +461,7 @@ def edit_program_name():
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
             if status:
-                print("data retrieved:",data)
+                #print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
                 data = """ There was a server error while getting program details.
@@ -501,7 +502,7 @@ def edit_program_desc():
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
             if status:
-                print("data retrieved:",data)
+                #print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
                 data = """ There was a server error while getting program details.
@@ -536,7 +537,7 @@ def edit_program_avail():
         if success: # if successfully changed program name
             status, data = access_database.get_program_details(pgm_id)
             if status:
-                print("data retrieved:",data)
+                #print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
                 data = """ There was a server error while getting program details.
@@ -582,7 +583,7 @@ def edit_module_seq():
             # call database function to update
     success, data = access_database.get_program_details(pgm_id)
     if success:
-        print("data retrieved:", data)
+        #print("data retrieved:", data)
         html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
     else:
         data = """ There was a server error while getting program details.
@@ -652,7 +653,7 @@ def edit_module_name():
             print('PROGRAM ID FOR MOD = ', program_id)
             success, data = access_database.get_program_details(program_id)
             if success:
-                print("data retrieved:",data)
+                #print("data retrieved:",data)
                 html_code = flask.render_template('admin_programdetails.html', pgm_data = data, moduleslist = data['modules'])
             else:
                 data = """ There was a server error while getting program details.
@@ -720,7 +721,7 @@ def delete_program():
     program_id = flask.request.args.get('program_id')
     if not modify_database.existingProgramID(program_id):
             message = "Invalid program id. Please contact system administrator."
-            errorResponse(message)
+            return errorResponse(message)
 
     print('program_id = ', program_id)
     success, message = modify_database.delete_program(program_id)
@@ -752,14 +753,14 @@ def delete_module():
 
     if not modify_database.existingModuleID(module_id):
         message = "Invalid module id. Please contact system administrator."
-        errorResponse(message)
+        return errorResponse(message)
 
     program_id = flask.request.args.get('program_id')
     print('program_id', program_id)
 
     if not modify_database.existingProgramID(program_id):
             message = "Invalid program id. Please contact system administrator."
-            errorResponse(message)
+            return errorResponse(message)
 
     success, message = modify_database.delete_module(module_id)
     print("deleting module success = ", success)
