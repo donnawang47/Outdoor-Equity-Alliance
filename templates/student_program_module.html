@@ -41,7 +41,8 @@
         {% if module['content_type'] == "text" %}
             <iframe src="{{module['content_link']}}" width="1000" height="800"></iframe>
         {% elif module['content_type'] == "assessment" %}
-            <iframe src="{{module['content_link']}}" width="1000" height="800"></iframe>
+            <!-- <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSemFfCBRMP5inLh-yBV-4GFS28HMaI1VLwtXjTbE2_9B4kOEg/viewform?embedded=true" width="640" height="380" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe> -->
+            <iframe src="{{'%s?embedded=true' %(module['content_link'])}}" width="1000" height="800"></iframe>
         {% endif %}
 
         <br>
