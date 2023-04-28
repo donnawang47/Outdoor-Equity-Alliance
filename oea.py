@@ -368,12 +368,8 @@ def admin_create_program():
     if flask.request.method == 'POST':
         pgm_params = {}
         pgm_params["program_name"] = flask.request.form['pgm_name']
-        # create program_id
         is_duplicate = database.is_program_name_duplicate(pgm_params["program_name"])
         print("is pgm name duplicate?", is_duplicate)
-
-        # status, pgm_params["program_id"] = database.create_program_id()
-        # print('did creation of program id work? ', status)
 
         pgm_params["program_description"] = flask.request.form['pgm_descrip']
         pgm_params["program_availability"] = flask.request.form['pgm_avail']
@@ -399,121 +395,69 @@ def admin_create_program():
     return response
 
 
-@app.route('/admin/programs/delete/program', methods=['POST'])
+@app.route('/admin/programs/delete', methods=['POST'])
 def delete_program():
-    program_id = flask.request.args.get('program_id')
+    program_id = flask.request.form['program_id']
 
-    # if not modify_database.existingProgramID(program_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
+    status, message = database.delete_program(program_id)
 
-    print('program_id = ', program_id)
-    success, message = database.delete_program(program_id)
-    print("success in deleting program?", success)
-
-    if success:
-        print("Admin Interface: displaying programs list")
+    if status:
         return flask.redirect(flask.url_for('admin_programs'))
     else:
-        html_code = flask.render_template('error.html',
-                            err_msg = message)
+        err_msg = "There was a server error while deleting program. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/programs/edit/name', methods=['GET', 'POST'])
+@app.route('/admin/programs/edit/name', methods=['POST'])
 def edit_program_name():
 
-    pgm_id = flask.request.args.get('program_id')
-    print('program id: ', pgm_id)
+    program_id = flask.request.form['program_id']
+    new_program_name = flask.request.form['new_program_name']
 
-    # if not modify_database.existingProgramID(pgm_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
+    status, message = database.update_program_name(program_id, new_program_name)
 
-    if flask.request.method == 'POST':
-        # get new name from text input field
-        new_program_name = flask.request.form['new_program_name']
-        print('Got new program name! :', new_program_name)
-
-        is_duplicate = database.is_program_name_duplicate(new_program_name)
-        print("is program name duplicate? = ", is_duplicate)
-
-        # if modify_database.existingProgramID(pgm_id):
-        success, message = database.update_program_name(pgm_id, new_program_name)
-        print('success of changing name = ', success)
-
-        if success and not is_duplicate: # if successfully changed program name
-            return flask.redirect(flask.url_for('admin_programs'))
-        elif is_duplicate:
-            err_msg = "Duplicate program name. Please click the back button \
-                on the top left corner and input a unique program name."
-            html_code = flask.render_template('error.html',
-                                err_msg = err_msg)
-        else:
-            err_msg = "There was a server error while changing program name. \
-            Please contact system administrator."
-            html_code = flask.render_template('error.html',
-                                err_msg = err_msg)
-
+    if status:
+        return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
+    else:
+        err_msg = "There was a server error while changing program name. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
 
 
-@app.route('/admin/programs/edit/description', methods=['GET', 'POST'])
+@app.route('/admin/programs/edit/description', methods=['POST'])
 def edit_program_desc():
-    pgm_id = flask.request.args.get('program_id')
-    print('program id: ', pgm_id)
+    program_id = flask.request.form['program_id']
+    new_program_description = flask.request.form['new_program_description']
 
-    # if not database.existingProgramID(pgm_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
+    status, message = database.update_program_description(program_id, new_program_description)
 
-    if flask.request.method == 'POST':
-        # get new desc from text input field
-        new_program_desc = flask.request.form['new_pgm_desc']
-        print('Got new program desc! :', new_program_desc)
-
-        # if database.existingProgramID(pgm_id):
-        success, message = database.update_program_description(pgm_id, new_program_desc)
-        print('success of changing description = ', success)
-
-        if success:
-            return flask.redirect(flask.url_for('admin_programs'))
-        else:
-            data = """ There was a server error while changing program description.
-            Please contact system administrator."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
+    if status:
+        return flask.redirect(flask.url_for('admin_edit_program', program_id = program_id))
+    else:
+        err_msg = "There was a server error while changing program description. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
 
 
-@app.route('/admin/programs/edit/availability', methods=['GET', 'POST'])
-def edit_program_avail():
-    pgm_id = flask.request.args.get('program_id')
-    print('program id: ', pgm_id)
+@app.route('/admin/programs/edit/availability', methods=['POST'])
+def edit_program_availability():
+    program_id = flask.request.form['program_id']
+    new_program_availability = flask.request.form['new_program_availability']
+    #print('Got new program avail! :', new_program_availability)
 
-    # if not database.existingProgramID(pgm_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
+    status, message = database.update_program_availability(program_id, new_program_availability)
+    #print('success of changing availability = ', success)
 
-    if flask.request.method == 'POST':
-        # get new desc from text input field
-        new_program_avail = flask.request.form['new_pgm_avail']
-        print('Got new program avail! :', new_program_avail)
-
-        success, message = database.update_program_availability(pgm_id, new_program_avail)
-        print('success of changing availability = ', success)
-
-        if success: # if successfully changed program name
-            return flask.redirect(flask.url_for('admin_programs'))
-        else:
-            data = """ There was a server error while changing program availability.
-        Please contact system administrator."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
+    if status: # if successfully changed program name
+        return flask.redirect(flask.url_for('admin_edit_program', program_id = program_id))
+    else:
+        err_msg = "There was a server error while changing program availability. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
@@ -617,45 +561,27 @@ def delete_module():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/programs/modules/edit/name', methods=['GET', 'POST'])
+@app.route('/admin/programs/modules/edit/name', methods=['POST'])
 def edit_module_name():
-    module_id = flask.request.args.get('module_id')
+    module_id = flask.request.form['module_id']
+    program_id = flask.request.form['program_id']
+    new_module_name = flask.request.form['new_module_name']
 
-    # if not modify_database.existingModuleID(module_id):
-    #     print('inside check function of nonexistant module id')
-    #     message = "Invalid module id. Please contact system administrator."
-    #     return errorResponse(message)
 
-    # elif module_id == "":
-    #     print("module_id is none")
-    # print('GET get MODULE_ID', module_id)
-    program_id = flask.request.args.get('program_id')
-    # print('program_id = ', program_id)
+    is_duplicate = database.is_module_name_duplicate(new_module_name)
 
-    # if not modify_database.existingProgramID(program_id):
-    #         print('inside invalid program id check')
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
+    status, message = database.update_module_name(module_id, new_module_name)
 
-    if flask.request.method == 'POST':
-        new_module_name = flask.request.form['new_module_name']
-        print('post get new module name: ', new_module_name)
-
-        is_duplicate = database.is_module_name_duplicate(new_module_name)
-
-        success, message = database.update_module_name(module_id, new_module_name )
-
-        if success and not is_duplicate: # if successfully changed module name
-            return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
-        elif is_duplicate:
-            message = """ Duplicate module name. Please click the back button
-            on the top left corner and input a unique module name."""
-            html_code = flask.render_template('error.html', err_msg = message)
-        else:
-            data = """ There was a server error while changing module name.
-        Please contact system administrator."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
+    # if successfully changed module name
+    if status and not is_duplicate:
+        return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
+    elif is_duplicate:
+        err_msg = """ Duplicate module name. Please click the back button
+        on the top left corner and input a unique module name."""
+        html_code = flask.render_template('error.html', err_msg = err_msg)
+    else:
+        err_msg = "There was a server error while changing module name. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
@@ -737,7 +663,15 @@ def edit_module_seq():
     for name, val in flask.request.form.items():
         if name[0] != 'm': continue
         status, message = database.update_module_index(name, val)
-        if not status: return errorResponse("updating module index")
+        if not status:
+            # return errorResponse("updating module index")
+            data = """ There was a server error while updating module link.
+            Please contact system administrator."""
+            html_code = flask.render_template('error.html',
+                                err_msg = data)
+            response = flask.make_response(html_code)
+            return response
+
 
 
     return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))

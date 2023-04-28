@@ -67,7 +67,8 @@
                             </td>
 
                             <td align = right>
-                                <form action="{{'/admin/programs/delete/program?program_id=%s' %program['program_id']}}" method = 'POST' onsubmit="return isConfirmed(this);"> <input type="submit" value="Delete">
+                                <form action="{{'/admin/programs/delete'}}" method = 'POST' onsubmit="return isConfirmed(this);"> <input type="submit" value="Delete">
+                                    <input type="hidden" name="program_id" value="{{program['program_id']}}">
                                 <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
                                 <button class="pure-button button-warning confirm" type="submit"
                                 formaction="config" formmethod="post"> Confirm </button> -->

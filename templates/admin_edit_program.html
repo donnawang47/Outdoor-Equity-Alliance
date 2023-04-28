@@ -20,10 +20,12 @@
                     <h4 class="modal-title">Change Program Name</h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action="{{'/admin/programs/edit/name?program_id=%s' %pgm_data['program_id']}}" method='POST'>
+                    <form action="{{'/admin/programs/edit/name'}}" method='POST'>
                         <strong>Current Name:</strong>
                         {{pgm_data['program_name']}}
                         <br>
+
+                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
                         <table>
                             <tr>
                                 <td align= "right"> <strong>New Name: </strong></td>
@@ -69,12 +71,16 @@
                     <h4 class="modal-title">Change Program Description</h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action="{{'/admin/programs/edit/description?program_id=%s' %pgm_data['program_id']}}" method='POST'>
+                    <form action="{{'/admin/programs/edit/description'}}" method='POST'>
+
+                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+
                         <strong>Current Description:</strong>
                         {{pgm_data['description']}}
                         <br>
+
                         <strong>New Description: </strong>
-                        <textarea class="form-control" rows="5" name="new_pgm_desc"></textarea>
+                        <textarea class="form-control" rows="5" name="new_program_description"></textarea>
                         <input type="submit" value="Save">
                     </form>
                 </div>
@@ -107,17 +113,18 @@
                     <h4 class="modal-title">Change Program Availability</h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action="{{'/admin/programs/edit/availability?program_id=%s' %pgm_data['program_id']}}" method='POST'>
+                    <form action="{{'/admin/programs/edit/availability'}}" method='POST'>
+                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
                         <strong>Current Description:</strong>
                         {{pgm_data['program_availability']}}
                         <br>
                         <strong>Update Availability: </strong>
 
                         <div class="radio">
-                            <label><input type="radio" name="new_pgm_avail" value = "all" checked>Available to <em>all</em></label>
+                            <label><input type="radio" name="new_program_availability" value = "all" checked>Available to <em>all</em></label>
                           </div>
                           <div class="radio">
-                            <label><input type="radio" name="new_pgm_avail" value = "none">Available to <em>none</em></label>
+                            <label><input type="radio" name="new_program_availability" value = "none">Available to <em>none</em></label>
                           </div>
 
                         <input type="submit" value="Save">
