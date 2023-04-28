@@ -18,15 +18,16 @@
                     <h4 class="modal-title">Create Program</h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action = "/admin/programs/create_program" method = "POST">
-                        <!-- program name -->
-                        Program Name: <input type = "text" name = "pgm_name"> <br>
+                    <form action = "/admin/programs/create" method = "POST">
 
-                        Program Description: <input type = "text" name = "pgm_descrip"> <br>
+                        <!-- program name -->
+                        Program Name: <input type = "text" name = "program_name"> <br>
+
+                        Program Description: <input type = "text" name = "program_description"> <br>
 
                         <!-- indicate availability of program -->
                         <!-- should use check boxes -->
-                        Program Availability: <input type = "text" name = "pgm_avail"> <br>
+                        Program Availability: <input type = "text" name = "program_availability"> <br>
 
                         <!-- submit form -->
                         <input type="submit" value="Submit">

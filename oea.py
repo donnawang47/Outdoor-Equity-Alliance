@@ -189,7 +189,7 @@ def admin_students():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/students/add_student', methods=['POST'])
+@app.route('/admin/students/add', methods=['POST'])
 def add_student():
 
     user_info = {}
@@ -296,7 +296,7 @@ def admin_admins():
     response = flask.make_response(html_code)
     return response
 
-@app.route('/admin/admins/add_admin', methods=['POST'])
+@app.route('/admin/admins/add', methods=['POST'])
 def add_admin():
 
     user_info = {}
@@ -332,15 +332,14 @@ def admin_programs():
     username = auth.authenticate()
     authorize_admin(username)
 
-    status, data = database.get_all_programs()
+    status, all_programs = database.get_all_programs()
     if status:
-        print("Admin Interface: displaying programs list")
         html_code = flask.render_template('admin_programs.html',
-                    programslist = data, username=username)
+                    programslist = all_programs, username=username)
     else:
-        print("Error: " + data)
+        err_msg = "There was a server error while getting info about all programs. Please contact system administrator."
         html_code= flask.render_template('error.html',
-                    err_msg = data, username=username)
+                    err_msg = err_msg, username=username)
 
     response = flask.make_response(html_code)
     return response
@@ -348,7 +347,7 @@ def admin_programs():
 @app.route('/admin/programs/edit', methods=['GET'])
 def admin_edit_program():
     program_id = flask.request.args.get('program_id')
-    print('program id: ', program_id)
+    #print('program id: ', program_id)
 
     status, program_info = database.get_program_info(program_id)
 
@@ -363,43 +362,27 @@ def admin_edit_program():
     response = flask.make_response(html_code)
     return response
 
-# return flask.redirect(flask.url_for('admin_programs'))
-
-@app.route('/admin/programs/create_program', methods=['GET','POST'])
+@app.route('/admin/programs/create', methods=['POST'])
 def admin_create_program():
-    print("creating program...")
-    if flask.request.method == 'POST':
-        pgm_params = {}
-        pgm_params["program_name"] = flask.request.form['pgm_name']
-        is_duplicate = database.is_program_name_duplicate(pgm_params["program_name"])
-        print("is pgm name duplicate?", is_duplicate)
+    program_info = {}
+    program_info["program_name"] = flask.request.form['program_name']
+    program_info["program_description"] = flask.request.form['program_description']
+    program_info["program_availability"] = flask.request.form['program_availability']
 
-        pgm_params["program_description"] = flask.request.form['pgm_descrip']
-        pgm_params["program_availability"] = flask.request.form['pgm_avail']
+    status, message = database.insert_program(program_info)
 
-        success, program_id = database.insert_program(pgm_params)
-        print('success of insert program = ', success)
-
-        if success and not is_duplicate:
-            print("new program inserted = ", program_id)
-            return flask.redirect(flask.url_for('admin_programs'))
-        elif is_duplicate:
-            data = """ Duplicate program name. Please click the back button \
-                on the top left corner and input a unique program name."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
-        else:
-            data = """ There was a server error while inserting program.
-        Please contact system administrator."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
+    if status:
+        return flask.redirect(flask.url_for('admin_programs'))
+    else:
+        err_msg = "There was a server error while inserting program. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
 
 
 @app.route('/admin/programs/delete', methods=['POST'])
-def delete_program():
+def admin_delete_program():
     program_id = flask.request.form['program_id']
 
     status, message = database.delete_program(program_id)
@@ -413,7 +396,7 @@ def delete_program():
     return response
 
 @app.route('/admin/programs/edit/name', methods=['POST'])
-def edit_program_name():
+def admin_edit_program_name():
 
     program_id = flask.request.form['program_id']
     new_program_name = flask.request.form['new_program_name']
@@ -431,7 +414,7 @@ def edit_program_name():
 
 
 @app.route('/admin/programs/edit/description', methods=['POST'])
-def edit_program_desc():
+def admin_edit_program_description():
     program_id = flask.request.form['program_id']
     new_program_description = flask.request.form['new_program_description']
 
@@ -448,7 +431,7 @@ def edit_program_desc():
 
 
 @app.route('/admin/programs/edit/availability', methods=['POST'])
-def edit_program_availability():
+def admin_edit_program_availability():
     program_id = flask.request.form['program_id']
     new_program_availability = flask.request.form['new_program_availability']
     #print('Got new program avail! :', new_program_availability)
