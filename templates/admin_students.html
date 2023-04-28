@@ -59,7 +59,7 @@
                             <h4 class="modal-title">Add New Student</h4>
                         </div>
                         <div class="modal-body container-fluid">
-                            <form action="{{'/admin/students/new_student'}}" method='POST'>
+                            <form action="{{'/admin/students/add_student'}}" method='POST'>
 
                                 <table >
                                     <tr>
@@ -101,34 +101,29 @@
         <table class = "table">
             <!-- row 1, containing names of each column -->
             <tr>
-                <th align = "left"> StudentId</th>
                 <th align = "left"> Name</th>
                 <th align = "left"> Email</th>
             </tr>
 
             {% for student in students: %}
             <tr>
-                <td align = "left"> <a href="
-                    {{'/admin/students/studentdetails?studentid=%s' % student['student_id']}} "
-                    > {{student['student_id']}}</a>
+
+                <td align = "left"> {{student['user_name']}}</td>
+                <td align = "left"> {{student['user_email']}}</td>
+
+                <td>
+                    <a href="
+                    {{'/admin/students/student_details?student_email=%s' % student['user_email']}} " class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-pencil"></span> View Student </a>
                 </td>
-                <td align = "left"> {{student['student_name']}}</td>
-                <td align = "left"> {{student['student_email']}}</td>
 
                 <td align = right>
                     <form action="/admin/students/delete" method = 'POST' onsubmit="return isConfirmed(this);">
-                        <input type="hidden" name="student_id" value="{{student['student_id']}}">
+                        <input type="hidden" name="student_id" value="{{student['user_id']}}">
                         <input type="submit" value="Delete">
-                    <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
-                    <button class="pure-button button-warning confirm" type="submit"
-                    formaction="config" formmethod="post"> Confirm </button> -->
                     </form>
                 </td>
             </tr>
             {% endfor %}
-            <!-- clicking on student id will direct to page containing
-            information about enrollment status and assessments status
-            for that specific student -->
 
 
 

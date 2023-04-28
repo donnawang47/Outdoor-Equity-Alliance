@@ -33,11 +33,7 @@
 
         <a href="/admin">Back to main interface</a>
 
-
-
         <h2> Admins </h2>
-
-
 
         <hr>
 
@@ -60,7 +56,7 @@
                             <h4 class="modal-title">Add New Admin</h4>
                         </div>
                         <div class="modal-body container-fluid">
-                            <form action="{{'/admin/admins/new_admin'}}" method='POST'>
+                            <form action="{{'/admin/admins/add_admin'}}" method='POST'>
 
                                 <table >
                                     <tr>
@@ -99,35 +95,23 @@
         <hr>
 
         <table class = "table">
-            <!-- row 1, containing names of each column -->
             <tr>
-                <th align = "left"> Admin Id</th>
                 <th align = "left"> Name</th>
                 <th align = "left"> Email</th>
             </tr>
-
             {% for admin in admins: %}
             <tr>
-                <td align = "left"> {{admin['admin_id']}}</td>
-                <td align = "left"> {{admin['admin_name']}}</td>
-                <td align = "left"> {{admin['admin_email']}}</td>
+                <td align = "left"> {{admin['user_name']}}</td>
+                <td align = "left"> {{admin['user_email']}}</td>
                 <td align = right>
                     <form action="/admin/admins/delete" method = 'POST' onsubmit="return isConfirmed(this);">
-                        <input type="hidden" name="admin_id" value="{{admin['admin_id']}}">
+                        <input type="hidden" name="user_id" value="{{admin['user_id']}}">
                         <input type="submit" value="Delete">
-                    <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
-                    <button class="pure-button button-warning confirm" type="submit"
-                    formaction="config" formmethod="post"> Confirm </button> -->
+
                     </form>
                 </td>
             </tr>
             {% endfor %}
-            <!-- clicking on student id will direct to page containing
-            information about enrollment status and assessments status
-            for that specific student -->
-
-
-
         </table>
 
         <hr>
@@ -142,17 +126,11 @@
 
             let request = null;
 
-            function newAdmin(){
-                let element_id = "#update_" + module + "Status";
-                // update_{{pgm}}Status
-                $(element_id).show();
-            }
             function isConfirmed (form) {
-                if(confirm('Are you sure you want to delete?')) {
+                if (confirm('Are you sure you want to delete?')) {
                     return true;
                 }
                 else {
-                    // alert('Cancelled deletion.');
                     return false;
                 }
             }

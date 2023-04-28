@@ -4,7 +4,7 @@ import json
 import requests
 import flask
 import oauthlib.oauth2
-import access_database
+import database
 
 GOOGLE_DISCOVERY_URL = ('https://accounts.google.com/.well-known/openid-configuration')
 GOOGLE_CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']
@@ -40,11 +40,6 @@ def callback():
         code=code
     )
 
-    # print('token_url:', token_url, file=sys.stderr)
-    # print('headers:', headers, file=sys.stderr)
-    # print('body:', body, file=sys.stderr)
-
-
     #fetch tokens
     token_response = requests.post(
         token_url,
@@ -52,8 +47,6 @@ def callback():
         data=body,
         auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
     )
-
-    # print('token_response.json():', token_response.json(),file=sys.stderr)
 
     #parse tokens
     client.parse_request_body_response(json.dumps(token_response.json()))
@@ -71,17 +64,18 @@ def callback():
     flask.session['sub'] = userinfo_response.json()['sub']
     flask.session['name'] = userinfo_response.json()['name']
     flask.session['given_name'] = userinfo_response.json()['given_name']
-    #flask.session['family_name'] = userinfo_response.json()['family_name']
     flask.session['picture'] = userinfo_response.json()['picture']
     flask.session['email'] = userinfo_response.json()['email']
     flask.session['email_verified'] = userinfo_response.json()['email_verified']
     flask.session['locale'] = userinfo_response.json()['locale']
+
+
     username = flask.session['email']
-    success, isAdmin = access_database.is_admin_authorized(username)
+    success, isAdmin = database.is_admin_authorized(username)
     if success and isAdmin:
         print("is admin")
         return flask.redirect(flask.url_for('admin_interface'))
-    success, isStudent = access_database.is_student_authorized(username)
+    success, isStudent = database.is_student_authorized(username)
     if success and isStudent:
         print("is student")
         return flask.redirect(flask.url_for('student_interface'))
@@ -89,16 +83,11 @@ def callback():
     print("not authorized")
     return flask.redirect(flask.url_for('index'))
 
-def logoutapp():
+def logout():
     flask.session.clear()
     html_code = flask.render_template('loggedout.html')
     response = flask.make_response(html_code)
     return response
-
-
-def logoutgoogle():
-    flask.session.clear()
-    flask.abort(flask.redirect('https://mail.google.com/mail/u/0/?logout&hl=en'))
 
 def authenticate():
     if 'email' not in flask.session:

@@ -32,7 +32,7 @@
                 <h1>Outdoor Equity Alliance</h1>
                 <h2><a href="\student">Main</a> </h2>
             </center>
-            <h3 class="text-right">User {{username}}</h3>
+            <h3 class="text-right">User {{student['user_name']}}</h3>
         </div>
 
         <hr>
@@ -43,49 +43,31 @@
 
 
         <!--send notif to admin side-->
-        <h4> <a href = "{{'/student/program?programid=%s' %program['program_id']}}" class="btn btn-primary" id="enroll-button">Enroll</a> </h4>
+        <!-- <h4> <a href = "{{'/student/program?programid=%s' %program['program_id']}}" class="btn btn-primary" id="enroll-button">Enroll</a> </h4> -->
 
-
+        <form action="/student/program/enroll_program" method = 'POST' onsubmit="return isConfirmed(this);">
+            <input type="hidden" name="student_id" value="{{student['user_id']}}">
+            <input type="hidden" name="program_id" value="{{program['program_id']}}">
+            <input type="submit" value="Enroll">
+        </form>
 
         <hr>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
-        </script>
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
         <script>
-
             'use strict';
-
-            function handleResponse(response)
-            {
-
-            }
 
             let request = null;
 
-            function update_db()
-            {
-                let url = '/enrollpgm?studentid=' + "{{studentid}}"+'&programid='+"{{program['program_id']}}"
-
-                if (request != null)
-                request.abort();
-
-                request = $.ajax(
-                    {
-                    type: 'GET',
-                    url: url,
-                    success: handleResponse
-                    }
-                );
-
+            function isConfirmed (form) {
+                if (confirm('Are you sure you want to enroll?')) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-
-            function setup()
-            {
-                $('#enroll-button').click(update_db);
-            }
-            $('document').ready(setup);
-
         </script>
 
 

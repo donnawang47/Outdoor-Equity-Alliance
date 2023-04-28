@@ -29,7 +29,7 @@
         <div class="container-fluid, header">
             <center>
                 <h1>Outdoor Equity Alliance</h1>
-                <h2>Welcome {{username}}</h2>
+                <h2>Welcome {{student['user_name']}}</h2>
             </center>
         </div>
 
@@ -37,7 +37,7 @@
         <hr>
 
         <h3>Enrolled Programs</h3>
-        {% if student_info['Enrolled Programs']|length != 0: %}
+        {% if student['enrolled_programs']|length != 0: %}
 
         <table class = "table">
             <thead>
@@ -46,13 +46,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for pgm in student_info['Enrolled Programs']: %}
-                <tr data-toggle="collapse" data-target="#view_{{pgm['program_id']}}">
+                {% for program in student['enrolled_programs']: %}
+                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
                     <td>
-                        {{pgm['program_name']}}
+                        {{program['program_name']}}
                     </td>
                     <td>
-                        <a href="{{'/student/program?programid=%s' %pgm['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
+                        <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
                     </td>
                 </tr>
 
@@ -63,11 +63,11 @@
         </table>
 
         {% else %}
-            No locked programs yet.
+            No enrolled programs yet.
         {% endif %}
 
         <h3>Available Programs</h3>
-        {% if student_info['Available Programs']|length != 0: %}
+        {% if student['available_programs']|length != 0: %}
 
         <table class = "table">
             <thead>
@@ -76,13 +76,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for pgm in student_info['Available Programs']: %}
-                <tr data-toggle="collapse" data-target="#view_{{pgm['program_id']}}">
+                {% for program in student['available_programs']: %}
+                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
                     <td>
-                        {{pgm['program_name']}}
+                        {{program['program_name']}}
                     </td>
                     <td>
-                        <a href="{{'/student/program?programid=%s' %pgm['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
+                        <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
                     </td>
                 </tr>
 
@@ -93,13 +93,12 @@
         </table>
 
         {% else %}
-            No locked programs yet.
+            No available programs yet.
         {% endif %}
 
 
         <h3>Locked Programs</h3>
-        {% if student_info['Locked Programs']|length != 0: %}
-
+        {% if student['locked_programs']|length != 0: %}
         <table class = "table">
             <thead>
                 <tr>
@@ -107,22 +106,18 @@
                 </tr>
             </thead>
             <tbody>
-                {% for pgm in student_info['Locked Programs']: %}
-                <tr data-toggle="collapse" data-target="#view_{{pgm['program_id']}}">
+                {% for program in student['locked_programs']: %}
+                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
                     <td>
-                        {{pgm['program_name']}}
+                        {{program['program_name']}}
                     </td>
                     <td>
-                        <a href="{{'/student/program?programid=%s' %pgm['program_id']}}" role="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View Description</a>
+                        <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
                     </td>
                 </tr>
-
                 {% endfor %}
-
             </tbody>
-
         </table>
-
         {% else %}
             No locked programs yet.
         {% endif %}

@@ -1,5 +1,3 @@
-
-
 Creating tables in database
 - https://www.sqlitetutorial.net/sqlite-python/creating-tables/
 
@@ -39,7 +37,7 @@ Take substring of id before selecting it in PostgreSQL
 https://www.postgresql.org/docs/current/functions-string.html#FUNCTIONS-STRING-SQL
 
 limit and offset for selecting rows in postgreSQL
-https://www.postgresql.org/docs/current/queries-limit.html 
+https://www.postgresql.org/docs/current/queries-limit.html
 
 
 Liz's commands:
@@ -58,6 +56,8 @@ $env:GOOGLE_CLIENT_SECRET="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"
 $env:DATABASE_URL="postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea"
 
 psql 'postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea'
+
+cd Desktop\college\COS\COS333\OEA2
 
 - https://localhost:5000/
 

@@ -1,0 +1,65 @@
+{% if program['program_assessments']|length != 0: %}
+<table class = "table">
+    <thead>
+        <tr>
+            <th align = "left">Assessment Name</th>
+            <th align = "left">Student Completion</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for assessment in program['program_assessments']: %}
+        <tr >
+            <td>
+                {{assessment['module_name']}}
+            </td>
+            <td>
+                {{assessment['user_assessment_status']}}
+            </td>
+            <td> <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{assessment['module_id']}}Status"> <span class="glyphicon glyphicon-edit"></span> Edit Module Progress </button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="12" class="hiddenRow">
+                <div class="collapse" id="edit_{{assessment['module_id']}}Status">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <form id = "update_{{assessment['module_id']}}Status" action="/admin/students/student_details/update_module_status" method='POST' >
+                                <p>Please select program status for the student:</p>
+                                <input type="hidden" name="student_id" value="{{student['user_id']}}">
+                                <input type="hidden" name="student_email" value="{{student['user_email']}}">
+                                <input type="hidden" name="assessment_id" value="{{assessment['module_id']}}">
+
+                                {% if assessment['user_assessment_status'] == 1 %}
+                                <input type="radio" id = "{{assessment['module_id']}}_complete" name="user_assessment_status" value="1" checked>
+                                <label for="{{assessment['module_id']}}_complete">Mark complete</label><br>
+                                <input type="radio" id="{{assessment['module_id']}}_incomplete" name="user_assessment_status" value="0">
+                                <label for="{{assessment['module_id']}}_incomplete">Mark incomplete</label><br>
+                                {% else %}
+                                <input type="radio" id = "{{assessment['module_id']}}_complete" name="user_assessment_status" value="1">
+                                <label for="{{assessment['module_id']}}_complete">Mark complete</label><br>
+                                <input type="radio" id="{{assessment['module_id']}}_incomplete" name="user_assessment_status" value="0" checked>
+                                <label for="{{assessment['module_id']}}_incomplete">Mark incomplete</label><br>
+                                {% endif %}
+
+
+                                <button type="submit" form="update_{{assessment['module_id']}}Status" value="Submit">Submit</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+    No program assessments within this program.
+{% endif %}

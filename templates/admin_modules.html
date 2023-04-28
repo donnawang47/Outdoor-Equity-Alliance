@@ -25,7 +25,7 @@
 
     <body>
         <h1> Outdoor Equity Alliance: Admin Interface </h1>
-        <h2> Modules for {{program_name}} </h2>
+        <h2> Program {{program['program_name']}} Modules</h2>
 
         <hr>
 
@@ -33,42 +33,30 @@
         <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
             <table>
                 <tr>
-                    <th align = "left">ID</th>
+                    <!-- <th align = "left">Module ID</th> -->
                     <th align = "left">Name</th>
                     <th align = "left">Content Type</th>
                     <th align = "left">Link</th>
-                    <th align = "left">module_index</th>
+                    <th align = "left">Module Index</th>
                 </tr>
                 <!-- row 1, containing names of each column -->
 
                         <!-- rows of programslist -->
                         <!-- each row only displays program name -->
-                {% if moduleslist|length != 0: %}
-                    {% for module in moduleslist: %}
+                {% if program['modules']|length != 0: %}
+                    {% for module in program['modules']: %}
 
                         <tr>
-                            <!-- col 1 is row["ClsId"] -->
                             <!-- <form action="/admin/edit/program/name" method="POST"> -->
-                            <td align= 'left'>
-                            {{module['module_id']}}
-                            </td>
-                            <!-- </form> -->
-                            <td align = 'left'>
-                                {{module['module_name']}}
-                            </td>
-                            <td align = 'left'>
-                                {{module['content_type']}}
-                            </td>
-                            <td align = 'left'>
-                                {{module['content_link']}}
-                            </td>
-                            <td align = 'left'>
-                                {{module['module_index']}}
-                            </td>
+                            <!-- <td align= 'left'>{{module['module_id']}}</td> -->
+                            <td align = 'left'>{{module['module_name']}}</td>
+                            <td align = 'left'>{{module['content_type']}}</td>
+                            <td align = 'left'>{{module['content_link']}}</td>
+                            <td align = 'left'>{{module['module_index']}}</td>
                             <td align="right">
 
                             <!-- send arguments to the editing page -->
-                            <!-- send arguments to the editing page -->
+
 
                             <!-- <form method='GET'> -->
 

@@ -28,13 +28,7 @@
 
     <body>
         <h1> Outdoor Equity Alliance: Admin Interface </h1>
-
-        <!-- back to prev page -->
-        <a href="/admin/programs">Back to Programs</a>
-
         <h2> Program Details </h2>
-
-        <strong>Program Id:</strong> {{pgm_data['program_id']}} <br>
 
         {% include 'admin_edit_program.html' %}
 
@@ -70,7 +64,9 @@
                             <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
                         </div>
                         <div class="modal-body container-fluid">
-                            <form role="form" method="POST" action="{{'/admin/programs/edit/module_seq?program_id=%s' %pgm_data['program_id']}}">
+                            <form role="form" method="POST" action="/admin/programs/edit/module_seq">
+                                <input type = "hidden" name="program_id" value = "{{pgm_data['program_id']}}">
+
                                 <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
                                 <table id="module_idx_table" class = "table table-hover">
                                     <thead>
@@ -97,9 +93,9 @@
                                     {% endif %}
                                     </tbody>
                                 </table>
-                                    <div class="row">
-                                        <button type="submit" class="btn btn-default">Save Changes</button>
-                                    </div>
+                                <div class="row">
+                                    <button type="submit" class="btn btn-default">Save Changes</button>
+                                </div>
 
                             </form>
                         </div>
@@ -200,6 +196,8 @@
 
         <!-- delete program button here -->
 
+        <!-- back to prev page -->
+        <a href="/admin/programs">Back to Programs</a>
 
 
     </body>

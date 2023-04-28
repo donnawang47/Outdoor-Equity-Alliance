@@ -21,7 +21,9 @@
                     <h4 class="modal-title">Change Module Name</h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action="{{'/admin/programs/modules/edit/name?module_id=%s&program_id=%s' %(module['module_id'], pgm_data['program_id'])}}" method='POST'>
+                    <form action="/admin/programs/modules/edit/name" method='POST'>
+                        <input type="hidden" name="module_id" value="{{module['module_id']}}">
+                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
                         <strong>Current Name:</strong>
                         {{module['module_name']}}
                         <br>
@@ -48,7 +50,7 @@
 </div>
 
 <strong>Module Index: </strong> {{module['module_index']}} <br>
-<strong>Content Type: </strong> {{module['content_type']}} <br>
+<!-- <strong>Content Type: </strong> {{module['content_type']}} <br> -->
 
 <!-- edit module link -->
 <strong>Content Link: </strong> {{module['content_link']}}
@@ -71,7 +73,10 @@
                     <h4 class="modal-title">Change Content Link</h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action="{{'/admin/programs/modules/edit/link?module_id=%s&program_id=%s' %(module['module_id'], pgm_data['program_id'])}}" method='POST'>
+                    <form action="/admin/programs/modules/edit/link" method='POST'>
+                        <input type="hidden" name="module_id" value="{{module['module_id']}}">
+                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+
                         <strong>Current Link:</strong>
                         {{module['content_link']}}
                         <br>
@@ -97,3 +102,49 @@
     </div>
 </div>
 
+
+<!-- BUTTON: edit module content type -->
+<strong>Content Type: </strong> {{module['content_type']}}
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_content_type">
+    <span class="glyphicon glyphicon-pencil"></span>
+</button>
+<br>
+
+<!-- modal for changing module content_type -->
+<!-- Trigger the modal with a button -->
+<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="change_{{module['module_id']}}_content_type" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Change Content Type</h4>
+                </div>
+                <div class="modal-body container-fluid">
+                    <form action="/admin/programs/modules/edit/content_type" method='POST'>
+                       <label><strong>Current Content Type:</strong> {{module['content_type']}} <br></label>
+
+                        <input type="hidden" name="module_id" value="{{module['module_id']}}">
+                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+
+                        <div class="radio">
+                            <label><input type="radio" name="new_content_type" value = "text" checked>Available to <em>text</em></label>
+                          </div>
+                          <div class="radio">
+                            <label><input type="radio" name="new_content_type" value = "assessment">Available to <em>assessment</em></label>
+                          </div>
+                        <input type="submit" value="Save">
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
