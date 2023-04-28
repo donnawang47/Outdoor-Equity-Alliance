@@ -139,6 +139,12 @@ def delete_user(user_id):
             statement = "DELETE FROM users WHERE user_id=%s;"
             cursor.execute(statement, [user_id])
 
+            statement = "DELETE FROM program_status WHERE user_id=%s;"
+            cursor.execute(statement, [user_id])
+
+            statement = "DELETE FROM assessment_status WHERE user_id=%s;"
+            cursor.execute(statement, [user_id])
+
             cursor.execute('COMMIT')
 
             return(True, "successfully deleted user")
@@ -933,14 +939,16 @@ def get_locked_index(user_id, program_id):
     try:
         with connection.cursor() as cursor:
 
-            statement = "SELECT MIN(module_index) FROM modules, assessment_status WHERE user_assessment_status='0' AND content_type='assessment' AND user_id=%s AND program_id=%s AND assessment_status.module_id=modules.module_id;"
+            statement = "SELECT MIN(module_index) FROM modules, assessment_status WHERE user_assessment_status='0' AND content_type='assessment' AND assessment_status.user_id=%s AND modules.program_id=%s AND assessment_status.module_id=modules.module_id;"
             cursor.execute(statement, [user_id, program_id])
             table = cursor.fetchall()
 
-            if len(table) == 0: #no incomplete assessment found
+            if table[0][0] is None: #no incomplete assessment found
                 module_index = 10000
             else:
                 module_index = table[0][0]
+
+            print("locked_index", module_index)
 
             return (True, module_index)
 

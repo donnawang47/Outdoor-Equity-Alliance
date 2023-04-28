@@ -92,10 +92,13 @@ def student_interface():
 
 @app.route('/student/program', methods=['GET'])
 def student_program():
+    print("student program")
     username = auth.authenticate()
     authorize_student(username)
 
     program_id = flask.request.args.get('program_id')
+
+    print(program_id)
 
     status, student_info = database.get_student_info(username)
     if not status: return error_response("student info")
@@ -106,18 +109,18 @@ def student_program():
     status, program_info = database.get_program_info(program_id)
     if not status: return error_response("program info")
 
-
     if student_program_status == 'enrolled':
         status, locked_index = database.get_locked_index(student_info['user_id'], program_id)
         if not status: return error_response("enrolled program locked index")
+        print("locked_index",locked_index)
         html_code = flask.render_template('student_enrolled_program.html',
-                    program = program_info, student = student_info, username=username, locked_index=locked_index)
+        program = program_info, student = student_info, locked_index = locked_index, username=username)
     elif student_program_status == 'available':
         html_code = flask.render_template('student_available_program.html',
-                    program = program_info, student=student_info, username=username)
+        program = program_info, student=student_info, username=username)
     elif student_program_status == 'locked':
         html_code = flask.render_template('student_locked_program.html',
-                program = program_info, student=student_info, username=username)
+        program = program_info, student=student_info, username=username)
 
     response = flask.make_response(html_code)
     return response
