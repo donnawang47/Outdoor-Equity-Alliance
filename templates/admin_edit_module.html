@@ -23,7 +23,7 @@
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/name" method='POST'>
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
-                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
                         <strong>Current Name:</strong>
                         {{module['module_name']}}
                         <br>
@@ -75,7 +75,7 @@
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/link" method='POST'>
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
-                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
                         <strong>Current Link:</strong>
                         {{module['content_link']}}
@@ -84,7 +84,7 @@
                             <tr>
                                 <td align= "right"> <strong>New Link: </strong></td>
                                 <td align="right"> <input type="text"
-                                    name="new_module_link"></td>
+                                    name="new_content_link"></td>
                                 <td align="left">
                                     <input type="submit" value="Save">
                                 </td>
@@ -128,7 +128,7 @@
                        <label><strong>Current Content Type:</strong> {{module['content_type']}} <br></label>
 
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
-                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
                         <div class="radio">
                             <label><input type="radio" name="new_content_type" value = "text" checked>Available to <em>text</em></label>

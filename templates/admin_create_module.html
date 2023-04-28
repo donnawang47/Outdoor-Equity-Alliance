@@ -18,8 +18,8 @@
                     <h4 class="modal-title">Insert Module </h4>
                 </div>
                 <div class="modal-body container-fluid">
-                    <form action="{{'/admin/programs/edit/add_module?program_id=%s' %pgm_data['program_id']}}" method='POST'>
-
+                    <form action="{{'/admin/programs/edit/add_module'}}" method='POST'>
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
                         <table >
                             <tr>
                                 <td align= "right"> Module Name : </td>
@@ -42,13 +42,6 @@
                                     name = "content_link"> <br>
                                 </td>
                             </tr>
-                            <!-- <tr>
-                                <td align= "right"> Index : </td>
-                                <td align="left">
-                                    <input type = "text"
-                                    name = "index"> <br>
-                                </td>
-                            </tr> -->
                             <tr>
                                 <td align = "right"></td>
                                 <td align = "left"><input type="submit"

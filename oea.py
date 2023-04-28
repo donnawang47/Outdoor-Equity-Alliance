@@ -353,7 +353,7 @@ def admin_edit_program():
 
     if status:
         html_code = flask.render_template('admin_programdetails.html',
-                            pgm_data = program_info,
+                            program = program_info,
                             moduleslist = program_info['modules'])
     else:
         err_msg = "There was a server error while getting program info. Please contact system administrator."
@@ -364,12 +364,12 @@ def admin_edit_program():
 
 @app.route('/admin/programs/create', methods=['POST'])
 def admin_create_program():
-    program_info = {}
-    program_info["program_name"] = flask.request.form['program_name']
-    program_info["program_description"] = flask.request.form['program_description']
-    program_info["program_availability"] = flask.request.form['program_availability']
+    program_data = {}
+    program_data["program_name"] = flask.request.form['program_name']
+    program_data["program_description"] = flask.request.form['program_description']
+    program_data["program_availability"] = flask.request.form['program_availability']
 
-    status, message = database.insert_program(program_info)
+    status, message = database.insert_program(program_data)
 
     if status:
         return flask.redirect(flask.url_for('admin_programs'))
@@ -458,14 +458,8 @@ def admin_program_modules():
     authorize_admin(username)
 
     program_id = flask.request.args.get('program_id')
-    print('modules page program id = ', program_id)
-
-    # if not modify_database.existingProgramID(program_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
 
     status, program_info = database.get_program_info(program_id)
-    print('status of getting program info = ', status)
 
     if status:
         html_code = flask.render_template('admin_edit_program.html',
@@ -477,94 +471,56 @@ def admin_program_modules():
     response = flask.make_response(html_code)
     return response
 
-@app.route("/admin/programs/edit/add_module", methods=['GET', 'POST'])
+@app.route("/admin/programs/edit/add_module", methods=['POST'])
 def admin_create_module():
-    program_id = flask.request.args.get('program_id')
-    print('program_id in create module function = ', program_id)
+    program_id = flask.request.form['program_id']
 
-    # if not database.existingProgramID(program_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
+    module_data = {}
+    module_data["program_id"] = program_id
+    module_data["module_name"] = flask.request.form['module_name']
+    module_data["content_link"] = flask.request.form['content_link']
+    module_data["content_type"] = flask.request.form['content_type']
 
-    if flask.request.method == 'POST':
-        # modules_params
-        md_params = {}
+    status, module_id = database.insert_module(module_data)
 
-        md_params["program_id"] = program_id
-        md_params["module_name"] = flask.request.form['module_name']
-        md_params["content_link"] = flask.request.form['content_link']
-        md_params["content_type"] = flask.request.form['content_type']
-
-        is_duplicate = database.is_module_name_duplicate(md_params['module_name'])
-        print('is module name duplicate = ', is_duplicate)
-
-        success, module_id = database.insert_module(md_params)
-        md_params["module_id"] = module_id
-
-        print('success of inserting module = ', success)
-
-        if success and not is_duplicate:
-            return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
-        elif is_duplicate:
-            message = """ Duplicate module name. Please click the back button
-            on the top left corner and input a unique module name."""
-            html_code = flask.render_template('error.html', err_msg = message)
-        else:
-            data = """ There was a server error while inserting module.
-            Please contact system administrator."""
-            html_code = flask.render_template('error.html', err_msg = data)
+    if status:
+        return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
+    else:
+        err_msg = "There was a server error while inserting module. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
 
 
 @app.route('/admin/programs/modules/delete', methods=['POST'])
-def delete_module():
-    module_id = flask.request.args.get('module_id')
-    print('module_id', module_id)
+def admin_delete_module():
+    module_id = flask.request.form['module_id']
+    program_id = flask.request.form['program_id']
+    # program_id = flask.request.args.get('program_id')
+    # print('program_id', program_id)
 
-    # if not database.existingModuleID(module_id):
-    #     message = "Invalid module id. Please contact system administrator."
-    #     return errorResponse(message)
+    status, message = database.delete_module(module_id)
 
-    program_id = flask.request.args.get('program_id')
-    print('program_id', program_id)
-
-    # if not database.existingProgramID(program_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
-
-    success, message = database.delete_module(module_id)
-    print("deleting module success = ", success)
-
-    if success:
+    if status:
         return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
     else:
-        data = """ There was a server error while deleting module.
-        Please contact system administrator."""
-        html_code = flask.render_template('error.html',
-                            err_msg = data)
+        err_msg = "There was a server error while deleting module. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
     response = flask.make_response(html_code)
     return response
 
 @app.route('/admin/programs/modules/edit/name', methods=['POST'])
-def edit_module_name():
+def admin_edit_module_name():
     module_id = flask.request.form['module_id']
     program_id = flask.request.form['program_id']
     new_module_name = flask.request.form['new_module_name']
 
-
-    is_duplicate = database.is_module_name_duplicate(new_module_name)
-
     status, message = database.update_module_name(module_id, new_module_name)
 
     # if successfully changed module name
-    if status and not is_duplicate:
+    if status :
         return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
-    elif is_duplicate:
-        err_msg = """ Duplicate module name. Please click the back button
-        on the top left corner and input a unique module name."""
-        html_code = flask.render_template('error.html', err_msg = err_msg)
     else:
         err_msg = "There was a server error while changing module name. Please contact system administrator."
         html_code = flask.render_template('error.html', err_msg = err_msg)
@@ -575,30 +531,21 @@ def edit_module_name():
 
 #! edit content_type of module
 @app.route('/admin/programs/modules/edit/content_type', methods= ['POST'])
-def edit_module_content_type():
+def admin_edit_module_content_type():
     # module_id = flask.request.args.get('module_id')
 
     # program_id  = flask.request.args.get('program_id')
     # print('program_id = ', program_id)
+    program_id = flask.request.form['program_id']
+    module_id = flask.request.form['module_id']
+    new_content_type = flask.request.form['new_content_type']
 
-    if flask.request.method == 'POST':
-        new_type = flask.request.form['new_content_type']
-        print('new content type = ', new_type)
-
-        program_id = flask.request.form['program_id']
-        print('program_id ', program_id)
-
-        module_id = flask.request.form['module_id']
-        print('module_id ', module_id)
-
-        success, message = database.update_module_content_type(module_id, new_type)
-        print('success of updating module content type = ', success)
-        if success:
-            return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
-        else:
-            err_msg = "There was a server error while updating module content type. Please contact system administrator."
-            html_code = flask.render_template('error.html',
-                                err_msg = err_msg)
+    status, message = database.update_module_content_type(module_id, new_content_type)
+    if status:
+        return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
+    else:
+        err_msg = "There was a server error while updating module content type. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
@@ -606,36 +553,17 @@ def edit_module_content_type():
 
 
 @app.route('/admin/programs/modules/edit/link', methods=['GET','POST'])
-def edit_module_link():
-    print('entering editing link function...')
+def admin_edit_module_content_link():
+    program_id = flask.request.form['program_id']
+    module_id = flask.request.form['module_id']
+    new_content_link = flask.request.form['new_content_link']
 
-    # if not modify_database.existingModuleID(module_id):
-    #     message = "Invalid module id. Please contact system administrator."
-    #     return errorResponse(message)
-
-    # if not modify_database.existingProgramID(program_id):
-    #         message = "Invalid program id. Please contact system administrator."
-    #         return errorResponse(message)
-
-    if flask.request.method == 'POST':
-        program_id = flask.request.form['program_id']
-        print('program_id ', program_id)
-
-        module_id = flask.request.form['module_id']
-        print('module_id ', module_id)
-
-        new_module_link = flask.request.form['new_module_link']
-        print('new_module_link = ', new_module_link)
-
-        success, message = database.update_module_content_link( module_id, new_module_link)
-        print('success of updating module link = ', success)
-        if success:
-            return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
-        else:
-            data = """ There was a server error while updating module link.
-            Please contact system administrator."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
+    status, message = database.update_module_content_link( module_id, new_content_link)
+    if status:
+        return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
+    else:
+        err_msg = "There was a server error while updating module link. Please contact system administrator."
+        html_code = flask.render_template('error.html', err_msg = err_msg)
 
     response = flask.make_response(html_code)
     return response
@@ -650,14 +578,10 @@ def edit_module_seq():
         if name[0] != 'm': continue
         status, message = database.update_module_index(name, val)
         if not status:
-            # return errorResponse("updating module index")
-            data = """ There was a server error while updating module link.
-            Please contact system administrator."""
-            html_code = flask.render_template('error.html',
-                                err_msg = data)
+            err_msg = "There was a server error while updating module link. Please contact system administrator."
+            html_code = flask.render_template('error.html', err_msg = err_msg)
             response = flask.make_response(html_code)
             return response
-
 
 
     return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))

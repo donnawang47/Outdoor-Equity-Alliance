@@ -65,7 +65,7 @@
                         </div>
                         <div class="modal-body container-fluid">
                             <form role="form" method="POST" action="/admin/programs/edit/module_seq">
-                                <input type = "hidden" name="program_id" value = "{{pgm_data['program_id']}}">
+                                <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
 
                                 <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
                                 <table id="module_idx_table" class = "table table-hover">
@@ -151,10 +151,11 @@
 
                     <td>
                         <form class="deleteButton"
-                        action="{{'/admin/programs/modules/delete?module_id=%s&program_id=%s'
-                        %(module['module_id'], pgm_data['program_id'])}}"
+                        action="{{'/admin/programs/modules/delete'}}"
                         method = 'POST'
                         onsubmit="return isConfirmed(this);">
+                        <input type = "hidden" name="module_id" value = "{{module['module_id']}}">
+                        <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
                         <input type="submit" value="Delete">
                         </form>
 

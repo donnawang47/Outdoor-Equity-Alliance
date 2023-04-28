@@ -1,6 +1,6 @@
 <!-------------------------------------------------------->
 <strong>Program Name: </strong>
-{{pgm_data['program_name']}}
+{{program['program_name']}}
 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_name">
     <span class="glyphicon glyphicon-pencil"></span> Edit
 </button>
@@ -22,10 +22,10 @@
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/name'}}" method='POST'>
                         <strong>Current Name:</strong>
-                        {{pgm_data['program_name']}}
+                        {{program['program_name']}}
                         <br>
 
-                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
                         <table>
                             <tr>
                                 <td align= "right"> <strong>New Name: </strong></td>
@@ -51,7 +51,7 @@
 <!--------------------------------------------------------->
 
 <strong>Program Description: </strong>
-{{pgm_data['description']}}
+{{program['description']}}
 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_desc">
     <span class="glyphicon glyphicon-pencil"></span> Edit
 </button>
@@ -73,10 +73,10 @@
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/description'}}" method='POST'>
 
-                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
                         <strong>Current Description:</strong>
-                        {{pgm_data['description']}}
+                        {{program['description']}}
                         <br>
 
                         <strong>New Description: </strong>
@@ -96,7 +96,7 @@
 
 <!-------------------------------------------------------->
 <strong>Program Availability: </strong>
-{{pgm_data['program_availability']}}
+{{program['program_availability']}}
 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_avail">
     <span class="glyphicon glyphicon-pencil"></span> Edit
 </button>
@@ -114,9 +114,9 @@
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/availability'}}" method='POST'>
-                        <input type="hidden" name="program_id" value="{{pgm_data['program_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
                         <strong>Current Description:</strong>
-                        {{pgm_data['program_availability']}}
+                        {{program['program_availability']}}
                         <br>
                         <strong>Update Availability: </strong>
 
