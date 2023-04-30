@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <title> Outdoor Equity Alliance: Admin Interface</title>
@@ -9,10 +8,31 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
+        <style>
+            body {
+                margin: 2%;
+            }
+
+            h1 {
+                color: green;
+                text-align: center;
+            }
+
+            h2 {
+                font-weight: 100;
+            }
+
+
+        </style>
 
     </head>
 
     <body>
+        <div id="back-button">
+            <a class="btn btn-danger" href="/admin" role="button"> Back to admin interface</a>
+        </div>
+
+        <div>
         <h1> Outdoor Equity Alliance: Admin Interface </h1>
         <h2> Programs </h2>
 
@@ -93,7 +113,6 @@
 
         <br>
 
-        <a href="/admin">Back to admin interface</a>
 
         <script>
             function isConfirmed (form) {

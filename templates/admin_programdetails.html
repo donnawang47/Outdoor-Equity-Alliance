@@ -3,6 +3,7 @@
 <html>
     <head>
         <title> Outdoor Equity Alliance: Admin Interface</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
         <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
@@ -22,11 +23,29 @@
             .hiddenRow {
                 padding: 0 !important;
             }
+
+            body {
+                margin: 2%;
+            }
+
+            h1 {
+                color: green;
+                text-align: center;
+            }
+
+            #save-changes-button {
+                padding-left: 2%
+            }
+
         </style>
 
     </head>
 
     <body>
+        <!-- back to prev page -->
+        <a class="btn btn-danger" href="/admin/programs" role="button">
+            Back to Programs</a>
+        
         <h1> Outdoor Equity Alliance: Admin Interface </h1>
         <h2> Program Details </h2>
 
@@ -93,7 +112,7 @@
                                     {% endif %}
                                     </tbody>
                                 </table>
-                                <div class="row">
+                                <div id="save-changes-button" class="row">
                                     <button type="submit" class="btn btn-default">Save Changes</button>
                                 </div>
 
@@ -197,8 +216,6 @@
 
         <!-- delete program button here -->
 
-        <!-- back to prev page -->
-        <a href="/admin/programs">Back to Programs</a>
 
 
     </body>

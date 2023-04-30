@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
     <head>
         <title> Outdoor Equity Alliance</title>
@@ -12,23 +13,86 @@
                 text-align: center;
             }
 
+            h1 {
+                color: green;
+                text-align: center;
+            }
+
+            ul {
+                list-style-type: none;
+                margin:0;
+                padding: 0;
+                overflow: hidden;
+                background-color:rgb(198, 240, 218);
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            }
+
+            li {
+                float: right;
+                margin-right: 5%;
+            }
+
+            li a {
+                display: block;
+                color: black;
+                text-align: center;
+                padding: 60px 20px;
+                text-decoration: none;
+            }
+
+            li a:hover {
+                background-color:rgb(63, 225, 125);
+                color:black
+            }
+
+            /* .active {
+                background-color: rgb(63, 225, 125);
+            } */
+
+            .logo {
+                float: left;
+            }
+
         </style>
     </head>
 
-    <h1 class=" container-fluid, header"> Welcome to Outdoor Equity Alliance!</h1>
-
     <body>
-        <!-- temporary index page -->
-        <a class="links" href="/student">Student Login </a>
+        <img src="OEA logo.png" width="512" height="284" alt="Outdoor Equity Alliance logo" data-height-percentage="56" />
 
+
+        <nav>
+            <div class="logo">
+                <!-- <img src="OEAlogo.png" width="512" height="284" alt="Outdoor Equity Alliance logo" data-height-percentage="56" > -->
+            </div>
+            <ul>
+                <li><a href="https://outdoorequityalliance.org/about/"> About </a></li>
+                <li><a href="https://outdoorequityalliance.org/programs/"> Programs </a></li>
+                <li><a href="https://outdoorequityalliance.org/oea-news/"> OEA News </a></li>
+                <li><a href="https://outdoorequityalliance.org/contact-us/"> Contact </a></li>
+                <li> </li>
+            </ul>
+        </nav>
+
+        <br><br> 
+        <h1 class=" container-fluid, header">
+                                    Welcome to Outdoor Equity Alliance!</h1>
+        <br>
         <hr>
 
-        <a class="links" href="/admin">Admin Login</a>
+        <div class = "links">
 
+            <a class="btn btn-outline-success" href="/student">Student Login </a>
+
+            <hr>
+
+            <a class="btn btn-outline-success" href="/admin">Admin Login</a>
+
+            <hr>
+
+            <a class="btn btn-outline-danger" href="logout" role="button">Log out </a>
+
+        </div>
+        <hr>
     </body>
-
-    <hr>
-    <a href="logout">Log out of the app</a>
-
 
 </html>
