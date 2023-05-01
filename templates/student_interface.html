@@ -11,14 +11,31 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
         <style>
+            #welcome-message {
+                color: rgb(217, 245, 209);
+                font-weight: bolder;
+            }
+
+            #title {
+                font-weight: bolder;
+            }
+
+            h3 {
+                font-weight: bolder;
+            }
             .header {
-                background-color:darkseagreen;
+                background-color:rgb(102, 158, 102);
                 text-align: center;
                 color:rgb(13, 34, 20);
+                padding: 20px;
             }
 
             .links {
                 text-align: center;
+            }
+
+            #content {
+                margin: 2%;
             }
 
         </style>
@@ -28,99 +45,102 @@
 
         <div class="container-fluid, header">
             <center>
-                <h1>Outdoor Equity Alliance</h1>
-                <h2>Welcome {{student['user_name']}}</h2>
+                <h1 id="title">Outdoor Equity Alliance: Student Interface</h1>
+                <h2 id="welcome-message"> Welcome {{student['user_name']}}!</h2>
             </center>
         </div>
 
 
         <hr>
+        <div id="content">
 
-        <h3>Enrolled Programs</h3>
-        {% if student['enrolled_programs']|length != 0: %}
+            <h3>Enrolled Programs</h3>
+            {% if student['enrolled_programs']|length != 0: %}
 
-        <table class = "table">
-            <thead>
-                <tr>
-                    <th align = "left">Program Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for program in student['enrolled_programs']: %}
-                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-                    <td>
-                        {{program['program_name']}}
-                    </td>
-                    <td>
-                        <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
-                    </td>
-                </tr>
+            <table class = "table">
+                <thead>
+                    <tr>
+                        <th align = "left">Program Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in student['enrolled_programs']: %}
+                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
+                        <td>
+                            {{program['program_name']}}
+                        </td>
+                        <td>
+                            <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
+                        </td>
+                    </tr>
 
-                {% endfor %}
+                    {% endfor %}
 
-            </tbody>
+                </tbody>
 
-        </table>
+            </table>
 
-        {% else %}
-            No enrolled programs yet.
-        {% endif %}
+            {% else %}
+                No enrolled programs yet.
+            {% endif %}
 
-        <h3>Available Programs</h3>
-        {% if student['available_programs']|length != 0: %}
+            <h3>Available Programs</h3>
+            {% if student['available_programs']|length != 0: %}
 
-        <table class = "table">
-            <thead>
-                <tr>
-                    <th align = "left">Program Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for program in student['available_programs']: %}
-                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-                    <td>
-                        {{program['program_name']}}
-                    </td>
-                    <td>
-                        <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
-                    </td>
-                </tr>
+            <table class = "table">
+                <thead>
+                    <tr>
+                        <th align = "left">Program Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in student['available_programs']: %}
+                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
+                        <td>
+                            {{program['program_name']}}
+                        </td>
+                        <td>
+                            <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
+                        </td>
+                    </tr>
 
-                {% endfor %}
+                    {% endfor %}
 
-            </tbody>
+                </tbody>
 
-        </table>
+            </table>
 
-        {% else %}
-            No available programs yet.
-        {% endif %}
+            {% else %}
+                No available programs yet.
+            {% endif %}
 
 
-        <h3>Locked Programs</h3>
-        {% if student['locked_programs']|length != 0: %}
-        <table class = "table">
-            <thead>
-                <tr>
-                    <th align = "left">Program Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for program in student['locked_programs']: %}
-                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-                    <td>
-                        {{program['program_name']}}
-                    </td>
-                    <td>
-                        <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            No locked programs yet.
-        {% endif %}
+            <h3>Locked Programs</h3>
+            {% if student['locked_programs']|length != 0: %}
+            <table class = "table">
+                <thead>
+                    <tr>
+                        <th align = "left">Program Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in student['locked_programs']: %}
+                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
+                        <td>
+                            {{program['program_name']}}
+                        </td>
+                        <td>
+                            <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                No locked programs yet.
+            {% endif %}
+
+        </div>
 
 
     </body>

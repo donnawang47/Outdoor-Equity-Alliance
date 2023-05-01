@@ -24,17 +24,29 @@
                 padding: 0 !important;
             }
 
-            body {
-                margin: 2%;
+            .header {
+                background-color:darkseagreen;
+                color:rgb(13, 34, 20);
+                padding-bottom: 2%
             }
 
             h1 {
-                color: green;
+                color: darkgreen;
                 text-align: center;
+                font-weight: bolder;
             }
 
             #save-changes-button {
                 padding-left: 2%
+            }
+
+            #content {
+                margin: 2%;
+            }
+
+            #back-button {
+                padding-left: 2%;
+                padding-top: 2%;
             }
 
         </style>
@@ -43,176 +55,179 @@
 
     <body>
         <!-- back to prev page -->
-        <a class="btn btn-danger" href="/admin/programs" role="button">
-            Back to Programs</a>
-        
-        <h1> Outdoor Equity Alliance: Admin Interface </h1>
-        <h2> Program Details </h2>
-
-        {% include 'admin_edit_program.html' %}
-
-        <hr>
-        <!------------------------------------------------------>
-        <h2> Program Modules </h2>
-
-        <!-- change module sequence -->
-
-        <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#change_module_idx">
-            <span class="glyphicon glyphicon-edit"></span> Edit Module Sequence
-        </button>
-
-
-        <!-- form for module sequence-->
-
-        <!--ref: https://stackoverflow.com/questions/44091397/pop-up-a-form-when-a-button-is-clicked -->
-        <!--ref: https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_modal&stacked=h -->
-
-        <!-- modal for changing sequence -->
-        <!-- Trigger the modal with a button -->
-        <div class="container">
-
-
-            <!-- Modal -->
-            <div class="modal fade" id="change_module_idx" role="dialog">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
-                        </div>
-                        <div class="modal-body container-fluid">
-                            <form role="form" method="POST" action="/admin/programs/edit/module_seq">
-                                <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
-
-                                <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
-                                <table id="module_idx_table" class = "table table-hover">
-                                    <thead>
-                                        <tr>
-                                          <th>Index</th>
-                                          <th>Module Name</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                    {% if moduleslist|length != 0: %}
-                                        {% for module in moduleslist: %}
-                                            <tr>
-                                                <td>
-                                                    {{module['module_index']}}
-                                                </td>
-                                                <td>
-                                                <label for="{{module['module_id']}}">{{module['module_name']}}</label>
-                                                <input type="hidden" name="{{module['module_id']}}" id="{{module['module_id']}}" value="{{module['module_index']}}">
-                                                </td>
-                                            </tr>
-
-                                        {% endfor %}
-                                    {% endif %}
-                                    </tbody>
-                                </table>
-                                <div id="save-changes-button" class="row">
-                                    <button type="submit" class="btn btn-default">Save Changes</button>
-                                </div>
-
-                            </form>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="container-fluid, header">
+            <div id="back-button"><a class="btn btn-danger" href="/admin/programs" role="button"> Back to programs list</a> </div>
+            <h1> Admin Interface: Program Details </h1>
         </div>
 
+        <div id="content">
+            <h2> Program Information </h2>
 
-        <hr>
+            {% include 'admin_edit_program.html' %}
 
-        <!-- display list of program modules -->
-        <!-- <div class = "container"> -->
-        {% if moduleslist|length != 0: %}
-            <table class = "table">
-                <thead>
-                    <tr>
-                        <th align = "left">Index</th>
-                        <th align = "left">ID</th>
-                        <th align = "left">Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for module in moduleslist: %}
-                <!-- ref for collapsible things -->
-                <!-- https://www.w3schools.com/bootstrap/bootstrap_collapse.asp -->
-                <!-- https://codepen.io/n3k1t/pen/OJMGgyq-->
-                <!-- https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_panels_group&stacked=h -->
-                <tr data-toggle="collapse" data-target="#view_{{module['module_id']}}" >
-                    <!-- col 1 is row["ClsId"] -->
-                    <!-- <form action="/admin/edit/program/name" method="POST"> -->
-                    <td align = 'left'>
-                        {{module['module_index']}}
-                    </td>
-                    <td align= 'left'>
-                    {{module['module_id']}}
-                    </td>
-                    <!-- </form> -->
-                    <td align = 'left'>
-                        {{module['module_name']}}
-                    </td>
+            <hr>
+            <!------------------------------------------------------>
+            <h2> Program Modules </h2>
 
-                    <td>
-                    <button type = "button" class="btn btn-info btn-sm">
-                        <span class="glyphicon glyphicon-info-sign"></span> View Info
-                    </button>
-                    </td>
+            <!-- change module sequence -->
 
-                    <td>
-                        <form class="deleteButton"
-                        action="{{'/admin/programs/modules/delete'}}"
-                        method = 'POST'
-                        onsubmit="return isConfirmed(this);">
-                        <input type = "hidden" name="module_id" value = "{{module['module_id']}}">
-                        <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
-                        <input type="submit" value="Delete">
-                        </form>
+            <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#change_module_idx">
+                <span class="glyphicon glyphicon-edit"></span> Edit Module Sequence
+            </button>
 
-                    </td>
 
-                    <!-- <td><button class="btn btn-basic" type="button"  data-toggle="collapse" data-target="#view_{{module['module_id']}}" >expand</button></td> -->
+            <!-- form for module sequence-->
 
-                </tr>
-                <tr>
-                    <td colspan="12" class="hiddenRow">
-                        <div class="collapse" id="view_{{module['module_id']}}">
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    {% include 'admin_edit_module.html' %}
-                                </div>
+            <!--ref: https://stackoverflow.com/questions/44091397/pop-up-a-form-when-a-button-is-clicked -->
+            <!--ref: https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_modal&stacked=h -->
+
+            <!-- modal for changing sequence -->
+            <!-- Trigger the modal with a button -->
+            <div class="container">
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="change_module_idx" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
+                            </div>
+                            <div class="modal-body container-fluid">
+                                <form role="form" method="POST" action="/admin/programs/edit/module_seq">
+                                    <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
+
+                                    <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
+                                    <table id="module_idx_table" class = "table table-hover">
+                                        <thead>
+                                            <tr>
+                                            <th>Index</th>
+                                            <th>Module Name</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        {% if moduleslist|length != 0: %}
+                                            {% for module in moduleslist: %}
+                                                <tr>
+                                                    <td>
+                                                        {{module['module_index']}}
+                                                    </td>
+                                                    <td>
+                                                    <label for="{{module['module_id']}}">{{module['module_name']}}</label>
+                                                    <input type="hidden" name="{{module['module_id']}}" id="{{module['module_id']}}" value="{{module['module_index']}}">
+                                                    </td>
+                                                </tr>
+
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                    <div id="save-changes-button" class="row">
+                                        <button type="submit" class="btn btn-default">Save Changes</button>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
+                    </div>
 
-                    </td>
-
-                </tr>
-                {% endfor %}
-            </tbody>
-            </table>
-        {% else %}
-        No modules exist in this program yet!
-        {% endif %}
-        <!-- </div> -->
-
-        <!-- add module button -->
-
-        <!-- <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#add_module">
-            <span class="glyphicon glyphicon-edit"></span> Add Module
-        </button> -->
-        {% include 'admin_create_module.html' %}
+                </div>
+            </div>
 
 
-        <hr>
+            <hr>
+
+            <!-- display list of program modules -->
+            <!-- <div class = "container"> -->
+            {% if moduleslist|length != 0: %}
+                <table class = "table">
+                    <thead>
+                        <tr>
+                            <th align = "left">Index</th>
+                            <th align = "left">ID</th>
+                            <th align = "left">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for module in moduleslist: %}
+                    <!-- ref for collapsible things -->
+                    <!-- https://www.w3schools.com/bootstrap/bootstrap_collapse.asp -->
+                    <!-- https://codepen.io/n3k1t/pen/OJMGgyq-->
+                    <!-- https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_panels_group&stacked=h -->
+                    <tr data-toggle="collapse" data-target="#view_{{module['module_id']}}" >
+                        <!-- col 1 is row["ClsId"] -->
+                        <!-- <form action="/admin/edit/program/name" method="POST"> -->
+                        <td align = 'left'>
+                            {{module['module_index']}}
+                        </td>
+                        <td align= 'left'>
+                        {{module['module_id']}}
+                        </td>
+                        <!-- </form> -->
+                        <td align = 'left'>
+                            {{module['module_name']}}
+                        </td>
+
+                        <td>
+                        <button type = "button" class="btn btn-info btn-sm">
+                            <span class="glyphicon glyphicon-info-sign"></span> View Info
+                        </button>
+                        </td>
+
+                        <td>
+                            <form class="deleteButton"
+                            action="{{'/admin/programs/modules/delete'}}"
+                            method = 'POST'
+                            onsubmit="return isConfirmed(this);">
+                            <input type = "hidden" name="module_id" value = "{{module['module_id']}}">
+                            <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
+                            <input type="submit" value="Delete">
+                            </form>
+
+                        </td>
+
+                        <!-- <td><button class="btn btn-basic" type="button"  data-toggle="collapse" data-target="#view_{{module['module_id']}}" >expand</button></td> -->
+
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="hiddenRow">
+                            <div class="collapse" id="view_{{module['module_id']}}">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        {% include 'admin_edit_module.html' %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            {% else %}
+            No modules exist in this program yet!
+            {% endif %}
+            <!-- </div> -->
+
+            <!-- add module button -->
+
+            <!-- <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#add_module">
+                <span class="glyphicon glyphicon-edit"></span> Add Module
+            </button> -->
+            {% include 'admin_create_module.html' %}
+
+
+            <hr>
+        </div>
 
         <!-- delete program button here -->
 

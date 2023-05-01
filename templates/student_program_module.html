@@ -12,10 +12,20 @@
             .header {
                 background-color:darkseagreen;
                 color:rgb(13, 34, 20);
+                padding: 3%;
             }
 
             .links {
                 text-align: center;
+            }
+
+            h1 {
+                color: darkgreen;
+                font-weight: bolder
+            }
+
+            #content {
+                margin: 2%;
             }
 
         </style>
@@ -25,45 +35,47 @@
         <div class="container-fluid, header">
             <center>
                 <h1>Outdoor Equity Alliance</h1>
+                <h3> User {{student['user_name']}}</h3>
             </center>
-            <h3 class="text-right">User {{student['user_name']}}</h3>
         </div>
 
-        <h2><a href="{{"/student/program?program_id=" + program['program_id']}}" class="text-decoration-none">Program {{program['program_name']}}</a></h2>
+        <div id="content">
+            <h2><a href="{{"/student/program?program_id=" + program['program_id']}}" class="text-decoration-none">Program {{program['program_name']}}</a></h2>
 
-        <hr>
+            <hr>
 
-        <h2> Module Information (module id {{module['module_id']}})</h2>
-        <strong>Name:</strong> {{module['module_name']}}<br>
-        <strong>Type:</strong> {{module['content_type']}}<br>
-        <strong>Link: </strong> {{module['content_link']}}<br>
+            <h2> Module Information (module id {{module['module_id']}})</h2>
+            <strong>Name:</strong> {{module['module_name']}}<br>
+            <strong>Type:</strong> {{module['content_type']}}<br>
+            <strong>Link: </strong> {{module['content_link']}}<br>
 
-        {% if module['content_type'] == "text" %}
-            <iframe src="{{module['content_link']}}" width="1000" height="800"></iframe>
-        {% elif module['content_type'] == "assessment" %}
-            <!-- <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSemFfCBRMP5inLh-yBV-4GFS28HMaI1VLwtXjTbE2_9B4kOEg/viewform?embedded=true" width="640" height="380" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe> -->
-            <iframe src="{{'%s?embedded=true' %(module['content_link'])}}" width="1000" height="800"></iframe>
-        {% endif %}
+            {% if module['content_type'] == "text" %}
+                <iframe src="{{module['content_link']}}" width="1000" height="800"></iframe>
+            {% elif module['content_type'] == "assessment" %}
+                <!-- <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSemFfCBRMP5inLh-yBV-4GFS28HMaI1VLwtXjTbE2_9B4kOEg/viewform?embedded=true" width="640" height="380" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe> -->
+                <iframe src="{{'%s?embedded=true' %(module['content_link'])}}" width="1000" height="800"></iframe>
+            {% endif %}
 
-        <br>
+            <br>
 
-        <!--set conditions for no prev/no next based on index-->
-        <!-- module index starts at 1, thus, instead of module['module_index']-1 doing module['module_index']-2-->
-        {% if module['module_index']-2 >= 0 %}
-            <a href="{{'/student/program/module?module_id=%s' %(program['modules'][module['module_index']-2]['module_id'])}}" class="btn btn-primary col-sm-4">Previous {{program['modules'][module['module_index']-2]['module_id']}}</a>
-        {% else %}
-            <!--want to add spacing not working rn-->
-            <span class="col-sm-4"></span>
-        {% endif %}
+            <!--set conditions for no prev/no next based on index-->
+            <!-- module index starts at 1, thus, instead of module['module_index']-1 doing module['module_index']-2-->
+            {% if module['module_index']-2 >= 0 %}
+                <a href="{{'/student/program/module?module_id=%s' %(program['modules'][module['module_index']-2]['module_id'])}}" class="btn btn-primary col-sm-4">Previous {{program['modules'][module['module_index']-2]['module_id']}}</a>
+            {% else %}
+                <!--want to add spacing not working rn-->
+                <span class="col-sm-4"></span>
+            {% endif %}
 
-        <!-- module index starts at 1, thus, instead of module['module_index']+1 doing module['module_index']-->
-        {% if module['module_index'] > locked_index %}
-            <a href="{{'/student/program/module?module_id=%s' %(program['modules'][module['module_index']]['module_id'])}}" class="btn btn-primary col-sm-4" >Next module locked until admin approval</a>
-        {% elif module['module_index'] < program['modules']|length %}
-            <a href="{{'/student/program/module?module_id=%s' %(program['modules'][module['module_index']]['module_id'])}}" class="btn btn-primary col-sm-4" >Next {{program['modules'][module['module_index']]['module_id']}}</a>
-        {% elif module['module_index'] == program['modules']|length %}
-            <a href="{{'/student/program?program_id=%s' %(program['program_id'])}}" class="btn btn-primary col-sm-4">Finish</a>
-        {% endif %}
+            <!-- module index starts at 1, thus, instead of module['module_index']+1 doing module['module_index']-->
+            {% if module['module_index'] > locked_index %}
+                <a href="{{'/student/program/module?module_id=%s' %(program['modules'][module['module_index']]['module_id'])}}" class="btn btn-primary col-sm-4" >Next module locked until admin approval</a>
+            {% elif module['module_index'] < program['modules']|length %}
+                <a href="{{'/student/program/module?module_id=%s' %(program['modules'][module['module_index']]['module_id'])}}" class="btn btn-primary col-sm-4" >Next {{program['modules'][module['module_index']]['module_id']}}</a>
+            {% elif module['module_index'] == program['modules']|length %}
+                <a href="{{'/student/program?program_id=%s' %(program['program_id'])}}" class="btn btn-primary col-sm-4">Finish</a>
+            {% endif %}
+        </div>
 
         <!--need a return to program-->
 

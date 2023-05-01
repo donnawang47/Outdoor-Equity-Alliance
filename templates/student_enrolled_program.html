@@ -16,10 +16,25 @@
             .header {
                 background-color:darkseagreen;
                 color:rgb(13, 34, 20);
+                padding-bottom: 2%
             }
 
             .links {
                 text-align: center;
+            }
+
+            h1 {
+                color: darkgreen;
+                font-weight: bolder;
+            }
+
+            #content {
+                margin: 2%;
+            }
+
+            #back-button {
+                padding-top: 2%;
+                padding-left: 2%;
             }
 
         </style>
@@ -28,49 +43,53 @@
     <body>
 
         <div class="container-fluid, header">
+            <div id="back-button" ><a class="btn btn-danger" href="\student" role="button">Back to main page</a> </div>
             <center>
                 <h1>Outdoor Equity Alliance</h1>
-                <h2><a href="\student">Main</a> </h2>
+                <h3> Welcome {{student['user_name']}}!</h3>
             </center>
-            <h3 class="text-right">Welcome {{student['user_name']}}</h3>
         </div>
 
         <hr>
 
-        <h2> Program Information (program id {{program['program_id']}})</h2>
-        <strong>Name:</strong> {{program['program_name']}}<br>
-        <strong>Description:</strong> {{program['program_description']}}<br>
+        <div id="content">
+
+            <h2> Program Information (program id {{program['program_id']}})</h2>
+            <strong>Name:</strong> {{program['program_name']}}<br>
+            <strong>Description:</strong> {{program['program_description']}}<br>
 
 
 
-        <hr>
-        <h3>List of Modules</h3>
-        {% if program['modules']|length != 0: %}
-        <table class = "table">
-            {% for module in program['modules']: %}
-            <tr>
-                <td align= 'left'>
-                    <strong>Module {{module['module_index']}}:</strong>
-                </td>
-                <td align = 'left'>
-                    {{module['module_name']}}
-                </td>
+            <hr>
+            <h3>List of Modules</h3>
+            {% if program['modules']|length != 0: %}
+            <table class = "table">
+                {% for module in program['modules']: %}
+                <tr>
+                    <td align= 'left'>
+                        <strong>Module {{module['module_index']}}:</strong>
+                    </td>
+                    <td align = 'left'>
+                        {{module['module_name']}}
+                    </td>
 
-                <!-- check if module locked -->
-                {% if module['module_index'] > locked_index %}
-                <td align="right">
-                    <a href = "{{'/student/program/module?module_id=%s' %(module['module_id'])}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-info-sign" disable></span> View</a>
-                </td>
-                {% else %}
-                <td align="right">
-                    <a href = "{{'/student/program/module?module_id=%s' %(module['module_id'])}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-info-sign"></span> View</a>
-                </td>
+                    <!-- check if module locked -->
+                    {% if module['module_index'] > locked_index %}
+                    <td align="right">
+                        <a href = "{{'/student/program/module?module_id=%s' %(module['module_id'])}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-info-sign" disable></span> View</a>
+                    </td>
+                    {% else %}
+                    <td align="right">
+                        <a href = "{{'/student/program/module?module_id=%s' %(module['module_id'])}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-info-sign"></span> View</a>
+                    </td>
 
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </table>
-        {% endif %}
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+
+        </div>
 
     </body>
 </html>

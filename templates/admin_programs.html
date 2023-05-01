@@ -9,17 +9,30 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
         <style>
-            body {
-                margin: 2%;
-            }
 
             h1 {
-                color: green;
+                color: darkgreen;
                 text-align: center;
+                font-weight: bolder;
             }
 
             h2 {
                 font-weight: 100;
+            }
+
+            .header {
+                background-color:darkseagreen;
+                color:rgb(13, 34, 20);
+                padding-bottom: 2%
+            }
+
+            #content {
+                margin: 2%;
+            }
+
+            #back-button {
+                padding-left: 2%;
+                padding-top: 2%;
             }
 
 
@@ -28,90 +41,95 @@
     </head>
 
     <body>
-        <div id="back-button">
-            <a class="btn btn-danger" href="/admin" role="button"> Back to admin interface</a>
+        <div class="container-fluid, header">
+            <div id="back-button">
+                <a class="btn btn-danger" href="/admin" role="button"> Back to admin interface</a>
+            </div>
+            <h1> Admin Interface: Programs List </h1>
+
         </div>
 
-        <div>
-        <h1> Outdoor Equity Alliance: Admin Interface </h1>
-        <h2> Programs </h2>
+        <div id="content">
 
-        <hr>
+            <h2> Programs </h2>
 
-        <!-- display list of existing programs -->
-        <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
-            <table class = "table">
-                <!-- row 1, containing names of each column -->
-                <thead>
-                    <tr>
-                        <th align = "left">Program ID</th>
-                        <th align = "left">Program Name</th>
-                        <!-- <th align = "left">Description</th> -->
-                        <th align = "left">Availability</th>
-                    </tr>
-                </thead>
-                <tbody>
-                        <!-- rows of programslist -->
-                        <!-- each row only displays program name -->
-                {% if programslist|length != 0: %}
-                    {% for program in programslist: %}
+            <hr>
+
+            <!-- display list of existing programs -->
+            <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
+                <table class = "table">
+                    <!-- row 1, containing names of each column -->
+                    <thead>
                         <tr>
-                            <!-- col 1 is row["ClsId"] -->
-                            <!-- <form action="/admin/edit/program/name" method="POST"> -->
-                            <td align= 'left'>
-                            {{program['program_id']}}
-                            </td>
-                            <!-- </form> -->
-                            <td align = 'left'>
-                                {{program['program_name']}}
-                                <!-- <a href="
-                                {{'/admin/programs/modules?program_id=%s&program_name=%s' %(program['program_id'],
-                                program['program_name'])}} "
-                                >
-                                {{program['program_name']}}
-                                </a> -->
-                            </td>
-                            <!-- <td align = 'left'>
-                                {{program['description']}}
-                            </td> -->
-                            <td align = 'left'>
-                                {{program['program_availability']}}
-                            </td>
-
-                            <!-- <td align="right">
-                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
-                            </td> -->
-
-                            <td align="right">
-                                <a href="{{'/admin/programs/edit?program_id=%s' %program['program_id']}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-pencil"></span> Edit </a>
-                            </td>
-
-                            <td align = right>
-                                <form action="{{'/admin/programs/delete'}}" method = 'POST' onsubmit="return isConfirmed(this);"> <input type="submit" value="Delete">
-                                    <input type="hidden" name="program_id" value="{{program['program_id']}}">
-                                <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
-                                <button class="pure-button button-warning confirm" type="submit"
-                                formaction="config" formmethod="post"> Confirm </button> -->
-                                </form>
-                            </td>
+                            <th align = "left">Program ID</th>
+                            <th align = "left">Program Name</th>
+                            <!-- <th align = "left">Description</th> -->
+                            <th align = "left">Availability</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-                {% else %}
-                No existing programs.
-                {% endif %}
+                    </thead>
+                    <tbody>
+                            <!-- rows of programslist -->
+                            <!-- each row only displays program name -->
+                    {% if programslist|length != 0: %}
+                        {% for program in programslist: %}
+                            <tr>
+                                <!-- col 1 is row["ClsId"] -->
+                                <!-- <form action="/admin/edit/program/name" method="POST"> -->
+                                <td align= 'left'>
+                                {{program['program_id']}}
+                                </td>
+                                <!-- </form> -->
+                                <td align = 'left'>
+                                    {{program['program_name']}}
+                                    <!-- <a href="
+                                    {{'/admin/programs/modules?program_id=%s&program_name=%s' %(program['program_id'],
+                                    program['program_name'])}} "
+                                    >
+                                    {{program['program_name']}}
+                                    </a> -->
+                                </td>
+                                <!-- <td align = 'left'>
+                                    {{program['description']}}
+                                </td> -->
+                                <td align = 'left'>
+                                    {{program['program_availability']}}
+                                </td>
 
-            </table>
-        <!-- </form> -->
+                                <!-- <td align="right">
+                                <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
+                                </td> -->
 
-        <hr>
+                                <td align="right">
+                                    <a href="{{'/admin/programs/edit?program_id=%s' %program['program_id']}}" class="btn btn-default btn-sm" role="button"> <span class="glyphicon glyphicon-pencil"></span> Edit </a>
+                                </td>
 
-        {% include 'admin_create_program.html'%}
+                                <td align = right>
+                                    <form action="{{'/admin/programs/delete'}}" method = 'POST' onsubmit="return isConfirmed(this);"> <input type="submit" value="Delete">
+                                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
+                                    <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
+                                    <button class="pure-button button-warning confirm" type="submit"
+                                    formaction="config" formmethod="post"> Confirm </button> -->
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% else %}
+                    No existing programs.
+                    {% endif %}
 
-        <!-- <a href="/admin/programs/create_program"> Create New Program</a> -->
+                </table>
+            <!-- </form> -->
+
+            <hr>
+
+            {% include 'admin_create_program.html'%}
+
+            <!-- <a href="/admin/programs/create_program"> Create New Program</a> -->
 
 
-        <br>
+            <br>
+        </div>
 
 
         <script>

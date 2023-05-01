@@ -14,101 +14,179 @@
                 font-weight: bolder;
             }
 
-            body {
-                margin: 2%;
-            }
-
             h1 {
-                color: green;
+                color: darkgreen;
                 text-align: center;
+                font-weight: bolder;
             }
 
             .hiddenRow {
                 padding: 0 !important;
             }
+
+            .header {
+                background-color:darkseagreen;
+                color:rgb(13, 34, 20);
+                padding-bottom: 2%
+            }
+
+            #content {
+                margin: 2%;
+            }
+
+            #back-button {
+                padding-left: 2%;
+                padding-top: 2%;
+            }
+
         </style>
     </head>
 
     <body>
+        <div class="container-fluid, header">
+            <div id="back-button"> <a class="btn btn-danger" href="/admin/students">Back to students list</a> </div>
+            <h1>Student Information</h1>
+        </div>
 
-        <a class="btn btn-danger" href="/admin/students">Back to students list</a>
+        <div id="content">
+
+            <h3>Enrolled Programs</h3>
+            {% if enrolled_programs|length != 0: %}
 
 
-        <h1>Student Information</h1>
-
-        <h3>Enrolled Programs</h3>
-        {% if enrolled_programs|length != 0: %}
-
-
-        <table class = "table">
-            <thead>
-                <tr>
-                    <th align = "left">Program Name</th>
-                    <th align = "left">Student Progress</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for program in enrolled_programs: %}
-                <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-
-                    <td>
-                        {{program['program_name']}}
-                    </td>
-                    <td>
-                        <!-- enrolled_programs[] -->
-                        {{program['program_progress']}}
-                    </td>
-                    <td>
-                        <button type = "button" class="btn btn-info btn-sm">
-                            <span class="glyphicon glyphicon-info-sign"></span> View Assessments
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="hiddenRow">
-                        <div class="collapse" id="view_{{program['program_id']}}">
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    {% include 'admin_studentdetails_assessments.html' %}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-        {% else %}
-            Student not enrolled in any programs yet.
-        {% endif %}
-
-        <h3>Available Programs</h3>
-        {% if student['available_programs']|length != 0: %}
-        <table class = "table">
-            <thead>
-                <tr>
-                    <th align = "left">Program Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for program in student['available_programs']: %}
+            <table class = "table">
+                <thead>
                     <tr>
+                        <th align = "left">Program Name</th>
+                        <th align = "left">Student Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in enrolled_programs: %}
+                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
 
                         <td>
                             {{program['program_name']}}
                         </td>
                         <td>
-                            <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{program['program_id']}}Status"> <span class="glyphicon glyphicon-edit"></span> Edit Program Status</button>
+                            <!-- enrolled_programs[] -->
+                            {{program['program_progress']}}
+                        </td>
+                        <td>
+                            <button type = "button" class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-info-sign"></span> View Assessments
+                            </button>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="12" class="hiddenRow">
-                            <div class="collapse" id="edit_{{program['program_id']}}Status">
+                            <div class="collapse" id="view_{{program['program_id']}}">
                                 <div class="panel panel-default">
-                                    <form id = "update_{{program['program_id']}}Status" action="/admin/students/student_details/update_program_status" method='POST'>
+                                    <div class="panel-body">
+                                        {% include 'admin_studentdetails_assessments.html' %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+            {% else %}
+                Student not enrolled in any programs yet.
+            {% endif %}
+
+            <h3>Available Programs</h3>
+            {% if student['available_programs']|length != 0: %}
+            <table class = "table">
+                <thead>
+                    <tr>
+                        <th align = "left">Program Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in student['available_programs']: %}
+                        <tr>
+
+                            <td>
+                                {{program['program_name']}}
+                            </td>
+                            <td>
+                                <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{program['program_id']}}Status"> <span class="glyphicon glyphicon-edit"></span> Edit Program Status</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="hiddenRow">
+                                <div class="collapse" id="edit_{{program['program_id']}}Status">
+                                    <div class="panel panel-default">
+                                        <form id = "update_{{program['program_id']}}Status" action="/admin/students/student_details/update_program_status" method='POST'>
+                                            <p>Please select program status for the student:</p>
+                                            <input type="hidden" name="student_id" value="{{student['user_id']}}">
+                                            <input type="hidden" name="student_email" value="{{student['user_email']}}">
+                                            <input type="hidden" name="program_id" value="{{program['program_id']}}">
+
+                                            <input type="radio" id="{{program['program_id']}}_enrolled" name="user_program_status" value="enrolled">
+                                            <label for="{{program['program_id']}}_enrolled">Enroll student</label> <br>
+
+                                            <input type="radio" id = "{{program['program_id']}}_available" name="user_program_status" value="available" checked>
+                                            <label for="{{program['program_id']}}_available">Make available (unlock)</label><br>
+
+                                            <input type="radio" id="{{program['program_id']}}_locked" name="user_program_status" value="locked">
+                                            <label for="{{program['program_id']}}_locked">Lock program</label><br>
+
+                                            <button type="submit" form="update_{{program['program_id']}}Status" value="Submit">Submit</button>
+                                        </form>
+
+                                    </div>
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+            {% else %}
+                No available programs yet.
+            {% endif %}
+
+        <!-- to unlock program for student_id -->
+        <h3>Locked Programs</h3>
+        {% if student['locked_programs']|length != 0: %}
+        <table class = "table">
+
+            <thead>
+                <tr>
+                    <th align = "left">Program Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for program in student['locked_programs']: %}
+                <tr>
+                    <td>
+                        {{program['program_name']}}
+                    </td>
+                    <td>
+                        <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{program['program_id']}}Status"><span class="glyphicon glyphicon-edit"></span>Edit Program Status</button>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="hiddenRow">
+                        <div class="collapse" id="edit_{{program['program_id']}}Status">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <form id = "update_{{program['program_id']}}Status" action="/admin/students/student_details/update_program_status" method='POST' >
                                         <p>Please select program status for the student:</p>
                                         <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                         <input type="hidden" name="student_email" value="{{student['user_email']}}">
@@ -117,93 +195,30 @@
                                         <input type="radio" id="{{program['program_id']}}_enrolled" name="user_program_status" value="enrolled">
                                         <label for="{{program['program_id']}}_enrolled">Enroll student</label> <br>
 
-                                        <input type="radio" id = "{{program['program_id']}}_available" name="user_program_status" value="available" checked>
+                                        <input type="radio" id = "{{program['program_id']}}_available" name="user_program_status" value="available">
                                         <label for="{{program['program_id']}}_available">Make available (unlock)</label><br>
 
-                                        <input type="radio" id="{{program['program_id']}}_locked" name="user_program_status" value="locked">
+                                        <input type="radio" id="{{program['program_id']}}_locked" name="user_program_status" value="locked" checked>
                                         <label for="{{program['program_id']}}_locked">Lock program</label><br>
 
                                         <button type="submit" form="update_{{program['program_id']}}Status" value="Submit">Submit</button>
                                     </form>
-
                                 </div>
                             </div>
-
-                        </td>
-
-                    </tr>
-
+                        </div>
+                    </td>
+                </tr>
                 {% endfor %}
-
 
             </tbody>
 
 
         </table>
 
-
         {% else %}
-            No available programs yet.
+            No locked programs yet.
         {% endif %}
-
-    <!-- to unlock program for student_id -->
-    <h3>Locked Programs</h3>
-    {% if student['locked_programs']|length != 0: %}
-    <table class = "table">
-
-        <thead>
-            <tr>
-                <th align = "left">Program Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for program in student['locked_programs']: %}
-            <tr>
-                <td>
-                    {{program['program_name']}}
-                </td>
-                <td>
-                    <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{program['program_id']}}Status"><span class="glyphicon glyphicon-edit"></span>Edit Program Status</button>
-
-                </td>
-            </tr>
-            <tr>
-                <td colspan="12" class="hiddenRow">
-                    <div class="collapse" id="edit_{{program['program_id']}}Status">
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <form id = "update_{{program['program_id']}}Status" action="/admin/students/student_details/update_program_status" method='POST' >
-                                    <p>Please select program status for the student:</p>
-                                    <input type="hidden" name="student_id" value="{{student['user_id']}}">
-                                    <input type="hidden" name="student_email" value="{{student['user_email']}}">
-                                    <input type="hidden" name="program_id" value="{{program['program_id']}}">
-
-                                    <input type="radio" id="{{program['program_id']}}_enrolled" name="user_program_status" value="enrolled">
-                                    <label for="{{program['program_id']}}_enrolled">Enroll student</label> <br>
-
-                                    <input type="radio" id = "{{program['program_id']}}_available" name="user_program_status" value="available">
-                                    <label for="{{program['program_id']}}_available">Make available (unlock)</label><br>
-
-                                    <input type="radio" id="{{program['program_id']}}_locked" name="user_program_status" value="locked" checked>
-                                    <label for="{{program['program_id']}}_locked">Lock program</label><br>
-
-                                    <button type="submit" form="update_{{program['program_id']}}Status" value="Submit">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-
-        </tbody>
-
-
-    </table>
-
-    {% else %}
-        No locked programs yet.
-    {% endif %}
+        </div>
 
 
 
