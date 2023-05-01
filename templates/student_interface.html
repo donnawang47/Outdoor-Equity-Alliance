@@ -6,9 +6,12 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+
+        <link rel="stylesheet" href = "{{ url_for('static', filename='css/bootstrap.min.css')}}">
+        <!-- <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"> -->
 
         <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
 
@@ -115,6 +118,7 @@
                     </div>
                 </div>
                 {% if loop.index < student['enrolled_programs']|length  %}
+
                 <div class="col-lg-4">
                     <div class="trainer-item">
                         <div class="down-content">
@@ -145,6 +149,7 @@
                 </div>
                 {%endif%}
             </div>
+            <br>
             {% endif %}
 
 
@@ -183,11 +188,10 @@
                                 <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index-1]['program_id']}}Title">{{student['available_programs'][loop.index-1]['program_name']}}</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
-                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index-1]['program_id']}}Title">{{student['available_programs'][loop.index-1]['program_name']}}</h5>
-
                                     </div>
                                     <div class="modal-body">
 
@@ -226,11 +230,10 @@
                                 <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index]['program_id']}}Title">{{student['available_programs'][loop.index]['program_name']}}</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
-                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index]['program_id']}}Title">{{student['available_programs'][loop.index]['program_name']}}</h5>
-
                                     </div>
                                     <div class="modal-body">
 
@@ -269,11 +272,10 @@
                                 <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index]['program_id']}}Title">{{student['available_programs'][loop.index]['program_name']}}</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
-                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index+1]['program_id']}}Title">{{student['available_programs'][loop.index+1]['program_name']}}</h5>
-
                                     </div>
                                     <div class="modal-body">
 
@@ -295,6 +297,7 @@
                 </div>
                 {%endif%}
             </div>
+            <br>
             {% endif %}
 
 
@@ -357,6 +360,7 @@
                 </div>
                 {%endif%}
             </div>
+            <br>
             {% endif %}
 
 
