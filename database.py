@@ -664,16 +664,18 @@ def get_student_info(user_email):
                 program_id = row[0]
                 user_program_status = row[1]
 
-                statement = "SELECT program_name FROM programs WHERE program_id = %s;"
+                statement = "SELECT program_name, program_description FROM programs WHERE program_id = %s;"
                 cursor.execute(statement, [program_id])
                 program_table = cursor.fetchall()
                 if len(program_table) == 0:
                     raise Exception("empty program in program_status when looking for student info")
                 program_name = program_table[0][0]
+                program_description = program_table[0][1]
 
                 program_info = {}
                 program_info['program_id'] = program_id
                 program_info['program_name'] = program_name
+                program_info['program_description'] = program_description
                 if user_program_status == 'available' :
                     available_programs.append(program_info)
                 elif user_program_status == 'locked':

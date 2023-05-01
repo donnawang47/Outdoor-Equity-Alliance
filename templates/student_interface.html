@@ -10,138 +10,385 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-        <style>
-            #welcome-message {
-                color: rgb(217, 245, 209);
-                font-weight: bolder;
-            }
+        <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
 
-            #title {
-                font-weight: bolder;
-            }
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.css')}}">
 
-            h3 {
-                font-weight: bolder;
-            }
-            .header {
-                background-color:rgb(102, 158, 102);
-                text-align: center;
-                color:rgb(13, 34, 20);
-                padding: 20px;
-            }
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-training-studio.css')}}">
 
-            .links {
-                text-align: center;
-            }
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-            #content {
-                margin: 2%;
-            }
-
-        </style>
     </head>
 
     <body>
 
-        <div class="container-fluid, header">
-            <center>
-                <h1 id="title">Outdoor Equity Alliance: Student Interface</h1>
-                <h2 id="welcome-message"> Welcome {{student['user_name']}}!</h2>
-            </center>
+    <!-- ***** Preloader Start ***** -->
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+        <span class="dot"></span>
+        <div class="dots">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
+        </div>
+    </div>
+    <!-- ***** Preloader End ***** -->
 
 
-        <hr>
-        <div id="content">
+    <!-- ***** Header Area Start ***** -->
+    <header class="header-area header-sticky background-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <!-- ***** Logo Start ***** -->
+                        <img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" />
+                        <!-- <a href="index.html" class="logo">Training<em> Studio</em></a> -->
 
-            <h3>Enrolled Programs</h3>
+                        <!-- ***** Logo End ***** -->
+                        <!-- ***** Menu Start ***** -->
+                        <ul class="nav">
+                            <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+                            <li><a href="https://outdoorequityalliance.org/about/" target="_blank">About</a></li>
+                            <li><a href="https://outdoorequityalliance.org/oea-news/" target="_blank">OEA News</a></li>
+                            <li><a href="https://outdoorequityalliance.org/support-oea/" target="_blank">Support OEA</a></li>
+                            <li><a href="https://outdoorequityalliance.org/contact-us/" target="_blank">Contact</a></li>
+                            <!-- <li class="main-button"><a href="#">Login</a></li> -->
+                            <!-- <li class="main-button"><a href="#">Login as Admin</a></li> -->
+                        </ul>
+                        <a class='menu-trigger'>
+                            <span>Menu</span>
+                        </a>
+                        <!-- ***** Menu End ***** -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ***** Header Area End ***** -->
+
+    <!-- <div class="container-fluid, header">
+        <center>
+            <h1 id="title">Outdoor Equity Alliance: Student Interface</h1>
+            <h2 id="welcome-message"> Welcome {{student['user_name']}}!</h2>
+        </center>
+    </div> -->
+
+
+    <!-- <hr> -->
+
+
+    <!-- <div class="main-banner" id="top"></div> -->
+
+
+    <div id="top">
+    <section class="section" id="trainers">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>Enrolled <em>Programs</em></h2>
+                        {% if student['enrolled_programs']|length == 0: %}
+                        <p> No enrolled programs yet. </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
             {% if student['enrolled_programs']|length != 0: %}
+            {% for program in student['enrolled_programs']: %}
 
-            <table class = "table">
-                <thead>
-                    <tr>
-                        <th align = "left">Program Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for program in student['enrolled_programs']: %}
-                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-                        <td>
-                            {{program['program_name']}}
-                        </td>
-                        <td>
-                            <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
-                        </td>
-                    </tr>
+            {% if (loop.index-1) % 3 == 0%}
 
-                    {% endfor %}
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                <a href="{{'/student/program?program_id=%s' %student['enrolled_programs'][loop.index-1]['program_id']}}">
+                                    {{student['enrolled_programs'][loop.index-1]['program_name']}}
+                                </a>
+                            </h4>
+                            <p>{{student['enrolled_programs'][loop.index-1]['program_description']}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% if loop.index < student['enrolled_programs']|length  %}
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                <a href="{{'/student/program?program_id=%s' %student['enrolled_programs'][loop.index]['program_id']}}">
+                                {{student['enrolled_programs'][loop.index]['program_name']}}
+                                </a>
+                            </h4>
 
-                </tbody>
+                            <p>{{student['enrolled_programs'][loop.index]['program_description']}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
-            </table>
-
-            {% else %}
-                No enrolled programs yet.
-            {% endif %}
-
-            <h3>Available Programs</h3>
-            {% if student['available_programs']|length != 0: %}
-
-            <table class = "table">
-                <thead>
-                    <tr>
-                        <th align = "left">Program Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for program in student['available_programs']: %}
-                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-                        <td>
-                            {{program['program_name']}}
-                        </td>
-                        <td>
-                            <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
-                        </td>
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            {% else %}
-                No available programs yet.
+                {% if loop.index + 1 < student['enrolled_programs']|length  %}
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                <a href="{{'/student/program?program_id=%s' %student['enrolled_programs'][loop.index + 1]['program_id']}}">
+                                {{student['enrolled_programs'][loop.index + 1]['program_name']}}
+                                </a>
+                            </h4>
+                            <p>{{student['enrolled_programs'][loop.index + 1]['program_description']}}</p>
+                        </div>
+                    </div>
+                </div>
+                {%endif%}
+            </div>
             {% endif %}
 
 
-            <h3>Locked Programs</h3>
-            {% if student['locked_programs']|length != 0: %}
-            <table class = "table">
-                <thead>
-                    <tr>
-                        <th align = "left">Program Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for program in student['locked_programs']: %}
-                    <tr data-toggle="collapse" data-target="#view_{{program['program_id']}}">
-                        <td>
-                            {{program['program_name']}}
-                        </td>
-                        <td>
-                            <a href="{{'/student/program?program_id=%s' %program['program_id']}}" role="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-info-sign"></span> View</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-                No locked programs yet.
+            {% endfor %}
             {% endif %}
-
         </div>
 
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>Available <em>Programs</em></h2>
+                        {% if student['available_programs']|length == 0: %}
+                        <p> No available programs yet. </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if student['available_programs']|length != 0: %}
+            {% for program in student['available_programs']: %}
+
+            {% if (loop.index-1) % 3 == 0%}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4><a data-toggle="modal" data-target="#enroll{{student['available_programs'][loop.index-1]['program_id']}}">{{student['available_programs'][loop.index-1]['program_name']}}</a></h4>
+
+                            <p>{{student['available_programs'][loop.index-1]['program_description']}}</p>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="enroll{{student['available_programs'][loop.index-1]['program_id']}}" tabindex="-1" role="dialog" aria-labelledby="enroll{{student['available_programs'][loop.index-1]['program_id']}}Title" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index-1]['program_id']}}Title">{{student['available_programs'][loop.index-1]['program_name']}}</h5>
+
+                                    </div>
+                                    <div class="modal-body">
+
+                                    <p>{{student['available_programs'][loop.index-1]['program_description']}}</p>
+                                    <p>To view the program, please enroll!</p>
+                                    <form action="/student/program/enroll_program" method = 'POST' class="enroll-button" onsubmit="return isConfirmed(this);">
+                                        <input type="hidden" name="student_id" value="{{student['user_id']}}">
+                                        <input type="hidden" name="program_id" value="{{student['available_programs'][loop.index-1]['program_id']}}">
+                                        <input class="enroll-button" type="submit" value="Enroll">
+                                    </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% if loop.index < student['available_programs']|length  %}
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                <a data-toggle="modal" data-target="#enroll{{student['available_programs'][loop.index]['program_id']}}" href="{{'/student/program?program_id=%s' %student['available_programs'][loop.index]['program_id']}}">
+                                {{student['available_programs'][loop.index]['program_name']}}
+                                </a>
+                            </h4>
+                            <p>{{student['available_programs'][loop.index]['program_description']}}</p>
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="enroll{{student['available_programs'][loop.index]['program_id']}}" tabindex="-1" role="dialog" aria-labelledby="enroll{{student['available_programs'][loop.index]['program_id']}}Title" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index]['program_id']}}Title">{{student['available_programs'][loop.index]['program_name']}}</h5>
+
+                                    </div>
+                                    <div class="modal-body">
+
+                                    <p>{{student['available_programs'][loop.index]['program_description']}}</p>
+                                    <p>To view the program, please enroll!</p>
+                                    <form action="/student/program/enroll_program" method = 'POST' class="enroll-button" onsubmit="return isConfirmed(this);">
+                                        <input type="hidden" name="student_id" value="{{student['user_id']}}">
+                                        <input type="hidden" name="program_id" value="{{student['available_programs'][loop.index]['program_id']}}">
+                                        <input class="enroll-button" type="submit" value="Enroll">
+                                    </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if loop.index + 1 < student['available_programs']|length  %}
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                <a data-toggle="modal" data-target="#enroll{{student['available_programs'][loop.index]['program_id']}}" href="{{'/student/program?program_id=%s' %student['available_programs'][loop.index]['program_id']}}">
+                                {{student['available_programs'][loop.index]['program_name']}}
+                                </a>
+                            </h4>
+                            <p>{{student['available_programs'][loop.index]['program_description']}}</p>
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="enroll{{student['available_programs'][loop.index+1]['program_id']}}" tabindex="-1" role="dialog" aria-labelledby="enroll{{student['available_programs'][loop.index+1]['program_id']}}Title" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index+1]['program_id']}}Title">{{student['available_programs'][loop.index+1]['program_name']}}</h5>
+
+                                    </div>
+                                    <div class="modal-body">
+
+                                    <p>{{student['available_programs'][loop.index+1]['program_description']}}</p>
+                                    <p>To view the program, please enroll!</p>
+                                    <form action="/student/program/enroll_program" method = 'POST' class="enroll-button" onsubmit="return isConfirmed(this);">
+                                        <input type="hidden" name="student_id" value="{{student['user_id']}}">
+                                        <input type="hidden" name="program_id" value="{{student['available_programs'][loop.index+1]['program_id']}}">
+                                        <input class="enroll-button" type="submit" value="Enroll">
+                                    </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {%endif%}
+            </div>
+            {% endif %}
+
+
+            {% endfor %}
+            {% endif %}
+        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>Locked <em>Programs</em></h2>
+                        {% if student['locked_programs']|length == 0: %}
+                        <p> No locked programs yet. </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if student['locked_programs']|length != 0: %}
+            {% for program in student['locked_programs']: %}
+
+            {% if (loop.index-1) % 3 == 0%}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+
+                                {{student['locked_programs'][loop.index-1]['program_name']}}   <i class="material-icons">&#xe899;</i>
+                            </h4>
+                            <p>{{student['locked_programs'][loop.index-1]['program_description']}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% if loop.index < student['locked_programs']|length  %}
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                {{student['locked_programs'][loop.index]['program_name']}}  <i class="material-icons">&#xe899;</i>
+                            </h4>
+                            <p>{{student['locked_programs'][loop.index]['program_description']}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if loop.index + 1 < student['locked_programs']|length  %}
+                <div class="col-lg-4">
+                    <div class="trainer-item">
+                        <div class="down-content">
+                            <h4>
+                                {{student['locked_programs'][loop.index + 1]['program_name']}}  <i class="material-icons">&#xe899;</i>
+                            </h4>
+                            <p>{{student['locked_programs'][loop.index + 1]['program_description']}}</p>
+                        </div>
+                    </div>
+                </div>
+                {%endif%}
+            </div>
+            {% endif %}
+
+
+            {% endfor %}
+            {% endif %}
+        </div>
+
+
+
+    </section>
+    </div>
+    <!-- ***** Testimonials Ends ***** -->
+
+
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='js/jquery-2.1.0.min.js')}}"></script>
+
+    <!-- Bootstrap -->
+    <script src="{{ url_for('static', filename='js/popper.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+
+    <!-- Plugins -->
+    <script src="{{ url_for('static', filename='js/scrollreveal.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/waypoints.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.counterup.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/imgfix.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/mixitup.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/accordions.js')}}"></script>
+
+    <!-- Global Init -->
+    <script src="{{ url_for('static', filename='js/custom.js')}}"></script>
 
     </body>
 </html>
