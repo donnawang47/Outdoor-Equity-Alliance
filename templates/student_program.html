@@ -41,11 +41,11 @@
             <div class="col-12">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" />
+                    <a href="https://outdoorequityalliance.org" target="_blank"><img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" /></a>
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li class="scroll-to-section"><a class="active">Home</a></li>
+                        <li class="scroll-to-section"><a href="\student" >Home</a></li>
                         <li><a href="https://outdoorequityalliance.org/about/" target="_blank">About</a></li>
                         <li><a href="https://outdoorequityalliance.org/oea-news/" target="_blank">OEA News</a></li>
                         <li><a href="https://outdoorequityalliance.org/support-oea/" target="_blank">Support OEA</a></li>
@@ -99,7 +99,9 @@
                   <article id="tabs-{{module['module_index']}}">
 
                     <h4>{{module['module_name']}}</h4>
-                    <iframe src="https://bootstrapmade.com/" width="800"></iframe>
+                    <a href="{{module['content_link']}}" target="_blank">View Externally</a><br>
+                    <br>
+                    <iframe src="{{module['content_link']}}" width="800" height="500"></iframe>
 
                   </article>
                   {% endif %}

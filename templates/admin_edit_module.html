@@ -130,13 +130,23 @@
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
+                        {% if module['content_type'] == "assessment" %}
                         <div class="radio">
-                            <label><input type="radio" name="new_content_type" value = "text" checked>Available to <em>text</em></label>
+                            <label><input type="radio" name="new_content_type" value = "text">Set as <em>non-assessment</em></label>
                           </div>
                           <div class="radio">
-                            <label><input type="radio" name="new_content_type" value = "assessment">Available to <em>assessment</em></label>
+                            <label><input type="radio" name="new_content_type" value = "assessment" checked>Set as <em>assessment</em></label>
                           </div>
-                        <input type="submit" value="Save">
+                          {% else %}
+                          <div class="radio">
+                            <label><input type="radio" name="new_content_type" value = "text" checked>Set as <em>non-assessment</em></label>
+                          </div>
+                          <div class="radio">
+                            <label><input type="radio" name="new_content_type" value = "assessment">Set as <em>assessment</em></label>
+                          </div>
+
+                        {% endif %}
+                          <input type="submit" value="Save">
                     </form>
                 </div>
 

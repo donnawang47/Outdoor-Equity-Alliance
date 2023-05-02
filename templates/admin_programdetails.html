@@ -19,6 +19,17 @@
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
 
+        <!-- bootstrap styling -->
+        <link rel="stylesheet" href = "{{ url_for('static', filename='css/bootstrap.min.css')}}">
+
+        <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.css')}}">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-training-studio.css')}}">
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
         <style>
             .hiddenRow {
                 padding: 0 !important;
@@ -30,10 +41,10 @@
                 padding-bottom: 2%
             }
 
-            h1 {
-                color: darkgreen;
+            h2 em {
                 text-align: center;
-                font-weight: bolder;
+                font-style: normal;
+                color: #50a006;;
             }
 
             #save-changes-button {
@@ -54,24 +65,62 @@
     </head>
 
     <body>
-        <!-- back to prev page -->
-        <div class="container-fluid, header">
-            <div id="back-button"><a class="btn btn-danger" href="/admin/programs" role="button"> Back to programs list</a> </div>
-            <h1> Admin Interface: Program Details </h1>
-        </div>
+
+         <!-- ***** Header Area Start ***** -->
+         <header class="header-area header-sticky background-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <nav class="main-nav">
+                            <!-- ***** Logo Start ***** -->
+                            <a href="https://outdoorequityalliance.org" target="_blank"><img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" /></a>
+                            <!-- ***** Logo End ***** -->
+                            <!-- ***** Menu Start ***** -->
+                            <ul class="nav">
+                                <li class="scroll-to-section"><a href="\admin">Home</a></li>
+                                <li><a href="https://outdoorequityalliance.org/about/" target="_blank">About</a></li>
+                                <li><a href="https://outdoorequityalliance.org/oea-news/" target="_blank">OEA News</a></li>
+                                <li><a href="https://outdoorequityalliance.org/support-oea/" target="_blank">Support OEA</a></li>
+                                <li><a href="https://outdoorequityalliance.org/contact-us/" target="_blank">Contact</a></li>
+                                <li class="view-button"><a href="/student" target="_blank">View as Student</a></li>
+                            </ul>
+                            <a class='menu-trigger'>
+                                <span>Menu</span>
+                            </a>
+                            <!-- ***** Menu End ***** -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+    <!-- ***** Header Area End ***** -->
 
         <div id="content">
-            <h2> Program Information </h2>
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2> Admin Interface: <em>Program Details </em> </h2>
+                    </div>
+                </div>
+            </div>
+
+        <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#add_module">
+            <span class="glyphicon glyphicon-plus"></span> Add Module
+        </button>
+
+        <br> <br>
 
             {% include 'admin_edit_program.html' %}
 
             <hr>
             <!------------------------------------------------------>
-            <h2> Program Modules </h2>
+            <h3> Program Modules </h3>
+            <br>
 
             <!-- change module sequence -->
 
-            <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#change_module_idx">
+            <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#change_module_idx">
                 <span class="glyphicon glyphicon-edit"></span> Edit Module Sequence
             </button>
 
@@ -93,11 +142,13 @@
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
                             <div class="modal-body container-fluid">
                                 <form role="form" method="POST" action="/admin/programs/edit/module_seq">
+                                    <label for="changeModuleSequence"> Change
+                                        Module Sequence: </label>
                                     <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
 
                                     <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
@@ -177,7 +228,7 @@
                         </td>
 
                         <td>
-                        <button type = "button" class="btn btn-info btn-sm">
+                        <button type = "button" class="btn btn-outline-dark btn-sm">
                             <span class="glyphicon glyphicon-info-sign"></span> View Info
                         </button>
                         </td>
@@ -189,7 +240,7 @@
                             onsubmit="return isConfirmed(this);">
                             <input type = "hidden" name="module_id" value = "{{module['module_id']}}">
                             <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
-                            <input type="submit" value="Delete">
+                            <input class="btn btn-outline-dark btn-sm" type="submit" role="button" value="Delete">
                             </form>
 
                         </td>
@@ -232,51 +283,71 @@
         <!-- delete program button here -->
 
 
+        <!-- jQuery -->
+        <script src="{{ url_for('static', filename='js/jquery-2.1.0.min.js')}}"></script>
 
+        <!-- Bootstrap -->
+        <script src="{{ url_for('static', filename='js/popper.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+
+        <!-- Plugins -->
+        <script src="{{ url_for('static', filename='js/scrollreveal.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/waypoints.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.counterup.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/imgfix.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/mixitup.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/accordions.js')}}"></script>
+
+        <!-- Global Init -->
+        <script src="{{ url_for('static', filename='js/custom.js')}}"></script>
+
+
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <script>
+            // ref: https://www.aspsnippets.com/Articles/Sort-Table-rows-with-jQuery-using-Drag-and-Drop-method.aspx
+            $("#module_idx_table").sortable({
+                items: 'tr',
+                cursor: 'pointer',
+                axis: 'y',
+                dropOnEmpty: false,
+                start: function(e, ui) {
+                    ui.item.addClass("selected");
+                    console.log("selected");
+                },
+
+                stop: function(e, ui) {
+                    ui.item.removeClass("selected");
+                    $(this).find("tr").each(function (index) {
+                        if (index > 0) {
+                            $(this).find("td").eq(0).html(index);
+                            $(this).find("input").val(index);
+                        }
+
+                    });
+                }
+
+            });
+
+            function isConfirmed (form) {
+                if(confirm('Are you sure you want to delete?')) {
+                    return true;
+                }
+                else {
+                    // alert('Cancelled deletion.');
+                    return false;
+                }
+            }
+
+            // $("form.deleteButton").click(function(event){
+            // event.stopPropagation();
+            // if(confirm("Do you want to delete?")) {
+            //     this.click;
+            // }
+            // event.preventDefault();
+            // });
+
+        </script>
     </body>
-    <script>
-        // ref: https://www.aspsnippets.com/Articles/Sort-Table-rows-with-jQuery-using-Drag-and-Drop-method.aspx
-        $("#module_idx_table").sortable({
-            items: 'tr',
-            cursor: 'pointer',
-            axis: 'y',
-            dropOnEmpty: false,
-            start: function(e, ui) {
-                ui.item.addClass("selected");
-                console.log("selected");
-            },
-
-            stop: function(e, ui) {
-                ui.item.removeClass("selected");
-                $(this).find("tr").each(function (index) {
-                    if (index > 0) {
-                        $(this).find("td").eq(0).html(index);
-                        $(this).find("input").val(index);
-                    }
-
-                });
-            }
-
-        });
-
-        function isConfirmed (form) {
-            if(confirm('Are you sure you want to delete?')) {
-                return true;
-            }
-            else {
-                // alert('Cancelled deletion.');
-                return false;
-            }
-        }
-
-        // $("form.deleteButton").click(function(event){
-        // event.stopPropagation();
-        // if(confirm("Do you want to delete?")) {
-        //     this.click;
-        // }
-        // event.preventDefault();
-        // });
-
-    </script>
 
 </html>

@@ -1,10 +1,10 @@
 <!-------------------------------------------------------->
 <strong>Program Name: </strong>
 {{program['program_name']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_name">
+<button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#change_pgm_name">
     <span class="glyphicon glyphicon-pencil"></span> Edit
 </button>
-<br>
+<br> <br>
 
 <!-- modal for changing pgm name -->
 <!-- Trigger the modal with a button -->
@@ -52,10 +52,10 @@
 
 <strong>Program Description: </strong>
 {{program['description']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_desc">
+<button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#change_pgm_desc">
     <span class="glyphicon glyphicon-pencil"></span> Edit
 </button>
-<br>
+<br> <br>
 
 <!-- modal for changing pgm desc -->
 <!-- Trigger the modal with a button -->
@@ -97,7 +97,7 @@
 <!-------------radio button for program availability------------------>
 <strong>Program Availability: </strong>
 {{program['program_availability']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_pgm_avail">
+<button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#change_pgm_avail">
     <span class="glyphicon glyphicon-pencil"></span> Edit
 </button>
 <br>
@@ -115,17 +115,25 @@
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/availability'}}" method='POST'>
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
-                        <strong>Current Description:</strong>
-                        {{program['program_availability']}}
+                        <strong>Current Availability:</strong> {{program['program_availability']}}
                         <br>
                         <strong>Update Availability: </strong>
 
+                        {% if program['program_availability'] == 'all' %}
                         <div class="radio">
                             <label><input type="radio" name="new_program_availability" value = "all" checked>Available to <em>all</em></label>
                           </div>
                           <div class="radio">
                             <label><input type="radio" name="new_program_availability" value = "none">Available to <em>none</em></label>
                           </div>
+                        {% else %}
+                        <div class="radio">
+                            <label><input type="radio" name="new_program_availability" value = "all">Available to <em>all</em></label>
+                          </div>
+                          <div class="radio">
+                            <label><input type="radio" name="new_program_availability" value = "none" checked>Available to <em>none</em></label>
+                        </div>
+                        {% endif %}
 
                         <input type="submit" value="Save">
                     </form>

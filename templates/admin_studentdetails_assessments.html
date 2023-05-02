@@ -1,5 +1,5 @@
 {% if program['program_assessments']|length != 0: %}
-<table class = "table">
+<table class = "table table-bordered" style="font-size: 14px;">
     <thead>
         <tr>
             <th align = "left">Assessment Name</th>
@@ -16,16 +16,16 @@
             <td>
                 {{assessment['user_assessment_status']}}
             </td>
-            <td> <button type = "button" class="btn btn-basic btn-sm" data-toggle="collapse" data-target="#edit_{{assessment['module_id']}}Status"> <span class="glyphicon glyphicon-edit"></span> Edit Module Progress </button>
+            <td> <button type = "button" class="btn btn-outline-secondary btn-sm" data-toggle="collapse" data-target="#edit_{{assessment['module_id']}}Status"> Edit Progress </button>
             </td>
         </tr>
         <tr>
             <td colspan="12" class="hiddenRow">
                 <div class="collapse" id="edit_{{assessment['module_id']}}Status">
                     <div class="panel panel-default">
-                        <div class="panel-body">
+                        <div class="panel-body" style="padding: 20px 0px 20px 20px;">
                             <form id = "update_{{assessment['module_id']}}Status" action="/admin/students/student_details/update_module_status" method='POST' >
-                                <p>Please select program status for the student:</p>
+                                <p>Please select assessment status for the student:</p>
                                 <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                 <input type="hidden" name="student_email" value="{{student['user_email']}}">
                                 <input type="hidden" name="assessment_id" value="{{assessment['module_id']}}">
@@ -43,7 +43,7 @@
                                 {% endif %}
 
 
-                                <button type="submit" form="update_{{assessment['module_id']}}Status" value="Submit">Submit</button>
+                                <button type="submit" class="btn btn-outline-secondary btn-sm" form="update_{{assessment['module_id']}}Status" value="Submit">Submit</button>
                             </form>
 
                         </div>

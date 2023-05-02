@@ -1,9 +1,3 @@
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#add_module">
-    <span class="glyphicon glyphicon-plus"></span> Add Module
-</button>
-<br>
-
-
 <!-- modal for changing module name -->
 <!-- Trigger the modal with a button -->
 <div class="container">
@@ -20,7 +14,7 @@
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/add_module'}}" method='POST'>
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
-                        <table >
+                        <!-- <table >
                             <tr>
                                 <td align= "right"> Module Name : </td>
                                 <td align="left">
@@ -28,13 +22,9 @@
                                     name = "module_name"> <br>
                                 </td>
                             </tr>
-                            <tr>
-                                <td align= "right"> Content Type : </td>
-                                <td align="left">
-                                    <input type = "text"
-                                    name = "content_type"> <br>
-                                </td>
-                            </tr>
+
+                            <br>
+
                             <tr>
                                 <td align= "right"> Content Link : </td>
                                 <td align="left">
@@ -46,8 +36,25 @@
                                 <td align = "right"></td>
                                 <td align = "left"><input type="submit"
                                     value="Submit"> </td>
-                            </tr>
-                        </table>
+                            </tr> -->
+
+                        Module Name: <input type = "text"
+                                name = "module_name"> <br> <br>
+
+                        Content Link: <input type = "text"
+                                name = "content_link"> <br> <br>
+
+                        <p> Content Type: <p>
+                            <div class="radio">
+                                <label><input type="radio" name="content_type" value = "text" checked>Available to <em>text</em></label>
+                                </div>
+                                <div class="radio">
+                                <label><input type="radio" name="content_type" value = "assessment">Available to <em>assessment</em></label>
+                                </div>
+                            <br>
+                        <!-- </table> -->
+
+                        <input type="submit" value="Submit">
                     </form>
                 </div>
 

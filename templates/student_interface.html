@@ -46,9 +46,7 @@
                 <div class="col-12">
                     <nav class="main-nav">
                         <!-- ***** Logo Start ***** -->
-                        <img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" />
-                        <!-- <a href="index.html" class="logo">Training<em> Studio</em></a> -->
-
+                        <a href="https://outdoorequityalliance.org" target="_blank"><img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" /></a>
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
@@ -57,8 +55,7 @@
                             <li><a href="https://outdoorequityalliance.org/oea-news/" target="_blank">OEA News</a></li>
                             <li><a href="https://outdoorequityalliance.org/support-oea/" target="_blank">Support OEA</a></li>
                             <li><a href="https://outdoorequityalliance.org/contact-us/" target="_blank">Contact</a></li>
-                            <!-- <li class="main-button"><a href="#">Login</a></li> -->
-                            <!-- <li class="main-button"><a href="#">Login as Admin</a></li> -->
+
                         </ul>
                         <a class='menu-trigger'>
                             <span>Menu</span>
@@ -89,8 +86,15 @@
     <section class="section" id="trainers">
         <div class="container">
             <div class="row">
+                    <div style="margin-top:140px; text-align:center;">
+                        <h2><em></em> Welcome {{student['user_name']}}</h2>
+                    </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
                 <div class="col-lg-6 offset-lg-3">
-                    <div class="section-heading">
+                    <div class="section-heading" style="margin-top:80px;">
                         <h2>Enrolled <em>Programs</em></h2>
                         {% if student['enrolled_programs']|length == 0: %}
                         <p> No enrolled programs yet. </p>

@@ -83,9 +83,8 @@ def insert_student(data):
             return (True, "successfully added a new student")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -124,9 +123,8 @@ def insert_admin(data):
             return (True, "successfully added a new admin")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -150,9 +148,8 @@ def delete_user(user_id):
             return(True, "successfully deleted user")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -218,9 +215,8 @@ def insert_program(data):
             return (True, program_id)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -247,10 +243,8 @@ def is_program_name_duplicate(new_name):
             return False
 
     except Exception as error:
-        err_msg = "A server error occurred because of duplicate program name. "
-        err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -291,9 +285,8 @@ def delete_program(program_id):
             return (True, "deleted program successfully")
 
     except Exception as error:
-        err_msg = "A server error occurred while deleting program. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -352,9 +345,8 @@ def insert_module(data):
             return (True, module_id)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -410,9 +402,8 @@ def delete_module(module_id):
 
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -432,7 +423,7 @@ def update_program_name(program_id, new_program_name):
 
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -450,9 +441,8 @@ def update_program_description(program_id, new_program_description):
             return (True, "program description updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -469,9 +459,8 @@ def update_program_availability(program_id, new_program_availability):
             return (True, "program availability updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -490,9 +479,8 @@ def update_module_name(module_id, new_module_name):
             return (True, "module name successfully updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -500,18 +488,34 @@ def update_module_content_type(module_id, new_content_type):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            if new_content_type != 'assessment' and new_content_type != 'text':
+                raise Exception('module content type must be assessment or text')
             cursor.execute('BEGIN')
 
             statement = "UPDATE modules SET content_type= %s WHERE module_id= %s;"
             cursor.execute(statement, [new_content_type, module_id])
 
+            #update user assessment status
+            if new_content_type == 'assessment':
+                statement = "SELECT user_id FROM users WHERE user_status='student';"
+                cursor.execute(statement)
+                table = cursor.fetchall()
+                for row in table:
+                    statement = "INSERT INTO assessment_status (user_id, module_id, user_assessment_status) VALUES (%s, %s, %s); "
+                    # default of 0 = incomplete
+                    params = [row[0], module_id, 0]
+                    cursor.execute(statement, params)
+            else:
+                statement = "DELETE FROM assessment_status WHERE module_id=%s;"
+                cursor.execute(statement, [module_id])
+
+
             cursor.execute('COMMIT')
             return (True, "module content type updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -528,9 +532,8 @@ def update_module_content_link(module_id, new_content_link):
             return (True, "module content link updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -550,9 +553,8 @@ def update_module_index(module_id, new_module_index):
             return (True, "successfully changed module index")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -569,9 +571,8 @@ def update_program_status(student_id, program_id, new_program_status):
             return (True, "assessment status updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -588,9 +589,8 @@ def update_assessment_status(student_id, module_id, new_assessment_status):
             return (True, "assessment status updated")
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -609,9 +609,8 @@ def is_admin_authorized(username):
 
             return (True, len(table)!=0)
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -627,9 +626,8 @@ def is_student_authorized(username):
 
             return (True, len(table)!=0)
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -691,9 +689,8 @@ def get_student_info(user_email):
             return (True, student_info)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -721,9 +718,8 @@ def get_all_admins():
             return (True, admins)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -748,9 +744,8 @@ def get_all_students():
             return (True, students)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -778,9 +773,8 @@ def get_all_programs():
             return (True, programs)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -828,9 +822,8 @@ def get_program_info(program_id):
             return (True, program_info)
 
     except Exception as error:
-        err_msg = "A server error occurred while getting programs list. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -857,9 +850,8 @@ def get_module_info(module_id):
             return (True, module_info)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -876,9 +868,8 @@ def get_student_program_status(student_id, program_id):
             return (True, table[0][0])
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -913,7 +904,7 @@ def get_student_enrolled_program_info(student_id):
                 enrolled_program['program_progress'] = program_progress
 
 
-                statement = "SELECT modules.module_id, module_name, user_assessment_status FROM modules, assessment_status WHERE user_id=%s AND modules.program_id=%s AND modules.module_id=assessment_status.module_id;"
+                statement = "SELECT modules.module_id, module_name, user_assessment_status, modules.module_index FROM modules, assessment_status WHERE user_id=%s AND modules.program_id=%s AND modules.module_id=assessment_status.module_id;"
 
                 cursor.execute(statement, [student_id, enrolled_program['program_id']])
                 module_table = cursor.fetchall()
@@ -924,17 +915,19 @@ def get_student_enrolled_program_info(student_id):
                     program_assessment['module_id'] = module_row[0]
                     program_assessment['module_name'] = module_row[1]
                     program_assessment['user_assessment_status'] = module_row[2]
+                    program_assessment['module_index'] = module_row[3]
                     program_assessments.append(program_assessment)
+                program_assessments = sorted(program_assessments, key=lambda x:x['module_index'])
                 enrolled_program['program_assessments'] = program_assessments
+
 
                 enrolled_programs.append(enrolled_program)
 
             return (True, enrolled_programs)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 #
@@ -957,9 +950,8 @@ def get_locked_index(user_id, program_id):
             return (True, module_index)
 
     except Exception as error:
-        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -984,10 +976,8 @@ def existing_program_id(givenid):
             return False
 
     except Exception as error:
-        err_msg = "A server error occurred while veriying if program id exists. "
-        err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -1047,10 +1037,8 @@ def get_program_details(program_id):
             return (True, data)
 
     except Exception as error:
-        err_msg = "A server error occurred. "
-        err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, err_msg)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -1071,9 +1059,9 @@ def get_student_program_progress(student_id, program_id):
             return (True, program_progress)
 
     except Exception as error:
-        err_msg = "A server error occurred while veriying if program id exists. Please contact the system administrator."
+
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
@@ -1098,10 +1086,8 @@ def is_module_name_duplicate(new_name):
             return False
 
     except Exception as error:
-        err_msg = "A server error occurred. "
-        err_msg += "Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, error)
+        return (False, str(error))
     finally:
         _put_connection(connection)
 
