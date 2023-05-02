@@ -6,6 +6,7 @@
 
 <!-- modal for changing module name -->
 <!-- Trigger the modal with a button -->
+
 <div class="container">
     <!-- Modal -->
     <div class="modal fade" id="create_program" role="dialog">
@@ -21,15 +22,19 @@
                     <form action = "/admin/programs/create" method = "POST">
 
                         <!-- program name -->
-                        Program Name: <input type = "text" name = "program_name"> <br>
+                        Program Name: <input type = "text" name = "program_name"> <br> <br>
 
-                        Program Description: <input type = "text" name = "program_description"> <br>
+                        Program Description: <input type = "text" name = "program_description"> <br> <br>
 
-                        <!-- indicate availability of program -->
-                        <!-- should use check boxes -->
-                        Program Availability: <input type = "text" name = "program_availability"> <br>
+                        <p> Update Availability: </p>
 
-                        <!-- submit form -->
+                        <div class="radio">
+                            <label><input type="radio" name="new_program_availability" value = "all" checked>Available to <em>all</em></label>
+                          </div>
+                          <div class="radio">
+                            <label><input type="radio" name="new_program_availability" value = "none">Available to <em>none</em></label>
+                          </div>
+
                         <input type="submit" value="Submit">
 
                     </form>
@@ -43,3 +48,4 @@
 
     </div>
 </div>
+

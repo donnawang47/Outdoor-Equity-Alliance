@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Outdoor Equity Alliance</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href = "{{ url_for('static', filename='css/bootstrap.min.css')}}">
+        <!-- <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"> -->
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.css')}}">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-training-studio.css')}}">
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    </head>
+
+    <body>
+
+    <!-- ***** Preloader Start ***** -->
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+          <span class="dot"></span>
+          <div class="dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+    </div>
+    <!-- ***** Preloader End ***** -->
+
+
+    <!-- ***** Header Area Start ***** -->
+    <header class="header-area header-sticky background-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <img src="https://outdoorequityalliance.org/wp-content/uploads/2022/08/OEA-logo-transp-512p.png" height="75" class="logo" alt="Outdoor Equity Alliance logo" data-height-percentage="10" />
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav">
+                        <li class="scroll-to-section"><a class="active">Home</a></li>
+                        <li><a href="https://outdoorequityalliance.org/about/" target="_blank">About</a></li>
+                        <li><a href="https://outdoorequityalliance.org/oea-news/" target="_blank">OEA News</a></li>
+                        <li><a href="https://outdoorequityalliance.org/support-oea/" target="_blank">Support OEA</a></li>
+                        <li><a href="https://outdoorequityalliance.org/contact-us/" target="_blank">Contact</a></li>
+                    </ul>
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ***** Header Area End ***** -->
+
+    <!-- ***** Our Classes Start ***** -->
+    <section class="section" id="our-classes">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>{{program['program_name']}}</h2>
+                        <br>
+                        <p>{{program['program_description']}}</p>
+                    </div>
+                </div>
+            </div>
+            {% if program['modules']|length == 0 %}
+                <p>No modules within program </p>
+            {% else %}
+            <div class="row" id="tabs">
+              <div class="col-lg-4">
+                <ul>
+
+                  {%for module in program['modules'] %}
+                  {% if module['module_index'] > locked_index %}
+                  <li> <a> {{module['module_name']}} <i class="material-icons">&#xe899;</i> </a></li>
+                    {% else %}
+                    <li><a href="#tabs-{{module['module_index']}}">{{module['module_name']}}</a></li>
+                    {% endif %}
+                  {%endfor%}
+
+                </ul>
+              </div>
+              <div class="col-lg-8">
+                <section class='tabs-content'>
+                    {%for module in program['modules'] %}
+                    {% if module['module_index'] <= locked_index  %}
+                  <article id="tabs-{{module['module_index']}}">
+
+                    <h4>{{module['module_name']}}</h4>
+                    <iframe src="https://bootstrapmade.com/" width="800"></iframe>
+
+                  </article>
+                  {% endif %}
+                  {% endfor %}
+                </section>
+              </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    <!-- ***** Our Classes End ***** -->
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='js/jquery-2.1.0.min.js')}}"></script>
+
+    <!-- Bootstrap -->
+    <script src="{{ url_for('static', filename='js/popper.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+
+    <!-- Plugins -->
+    <script src="{{ url_for('static', filename='js/scrollreveal.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/waypoints.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.counterup.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/imgfix.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/mixitup.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/accordions.js')}}"></script>
+
+    <!-- Global Init -->
+    <script src="{{ url_for('static', filename='js/custom.js')}}"></script>
+
+
+    </body>
+
+</html>
+
+
+

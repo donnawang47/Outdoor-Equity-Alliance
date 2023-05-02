@@ -92,13 +92,13 @@ def student_interface():
 
 @app.route('/student/program', methods=['GET'])
 def student_program():
-    print("student program")
+    # print("student program")
     username = auth.authenticate()
     authorize_student(username)
 
     program_id = flask.request.args.get('program_id')
 
-    print(program_id)
+    # print(program_id)
 
     status, student_info = database.get_student_info(username)
     if not status: return error_response("student info")
@@ -113,7 +113,7 @@ def student_program():
         status, locked_index = database.get_locked_index(student_info['user_id'], program_id)
         if not status: return error_response("enrolled program locked index")
         print("locked_index",locked_index)
-        html_code = flask.render_template('student_enrolled_program.html',
+        html_code = flask.render_template('student_program.html',
         program = program_info, student = student_info, locked_index = locked_index, username=username)
     elif student_program_status == 'available':
         html_code = flask.render_template('student_available_program.html',
@@ -367,7 +367,7 @@ def admin_create_program():
     program_data = {}
     program_data["program_name"] = flask.request.form['program_name']
     program_data["program_description"] = flask.request.form['program_description']
-    program_data["program_availability"] = flask.request.form['program_availability']
+    program_data["program_availability"] = flask.request.form['new_program_availability']
 
     status, message = database.insert_program(program_data)
 

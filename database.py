@@ -800,7 +800,7 @@ def get_program_info(program_id):
             program_info = {}
             program_info['program_id'] = table[0][0]
             program_info['program_name'] = table[0][1]
-            program_info['description'] = table[0][2]
+            program_info['program_description'] = table[0][2]
             program_info['program_availability'] = table[0][3]
 
             # get program modules
@@ -907,6 +907,8 @@ def get_student_enrolled_program_info(student_id):
                 assessment_completion = status_table[0][0]
                 assessment_total = status_table[0][1]
                 program_progress = str(assessment_completion) + "/" + str(assessment_total)
+                if assessment_completion is None:
+                    program_progress = "N/A"
                 print("program_progress", program_progress)
                 enrolled_program['program_progress'] = program_progress
 
@@ -1106,7 +1108,7 @@ def is_module_name_duplicate(new_name):
 
 
 def main():
-    print(get_student_info('oeadevuser@gmail.com'))
+    print(get_student_enrolled_program_info(2))
 
     # print(get_locked_index('p1',2))
     # update_program_status(2, 'p1', 'enrolled')
