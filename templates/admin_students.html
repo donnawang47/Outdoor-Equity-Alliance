@@ -161,7 +161,7 @@
                         {{'/admin/students/student_details?student_email=%s' % student['user_email']}} " class="btn btn-outline-dark" role="button"> <span class="glyphicon glyphicon-pencil"></span> View Student </a>
                     </td>
 
-                    <td align = right>
+                    <td>
                         <form action="/admin/students/delete" method = 'POST' onsubmit="return isConfirmed(this);">
                             <input type="hidden" name="student_id" value="{{student['user_id']}}">
                         <input type="submit" class="btn btn-outline-dark" value="Delete">

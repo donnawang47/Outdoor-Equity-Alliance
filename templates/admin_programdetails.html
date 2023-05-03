@@ -35,29 +35,14 @@
                 padding: 0 !important;
             }
 
-            .header {
-                background-color:darkseagreen;
-                color:rgb(13, 34, 20);
-                padding-bottom: 2%
-            }
-
             h2 em {
                 text-align: center;
                 font-style: normal;
                 color: #50a006;;
             }
 
-            #save-changes-button {
-                padding-left: 2%
-            }
-
             #content {
                 margin: 2%;
-            }
-
-            #back-button {
-                padding-left: 2%;
-                padding-top: 2%;
             }
 
         </style>
@@ -96,10 +81,19 @@
 
     <!-- ***** Header Area End ***** -->
 
+    <br>
+    <br>
+    <br>
+
         <div id="content">
+
+            <br>
+            <a class="btn btn-outline-dark" href="/admin/programs">Back to programs list</a>
+
+
             <div class="row">
                 <div class="col-lg-6 offset-lg-3">
-                    <div class="section-heading">
+                    <div class="section-heading" style="margin-top:80px;">
                         <h2> Admin Interface: <em>Program Details </em> </h2>
                     </div>
                 </div>
@@ -144,12 +138,12 @@
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title">Drag and Drop to Change Module Sequence</h4>
+                                <h4 class="modal-title">Edit Module Sequence</h4>
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
                             <div class="modal-body container-fluid">
                                 <form role="form" method="POST" action="/admin/programs/edit/module_seq">
-                                    <label for="changeModuleSequence"> Change Module Sequence: </label>
+                                    <label for="changeModuleSequence"> Drop and drop the modules to change the sequence: </label>
                                     <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
 
                                     <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
@@ -178,15 +172,10 @@
                                         {% endif %}
                                         </tbody>
                                     </table>
-                                    <div id="save-changes-button" class="row">
-                                        <button type="submit" class="btn btn-default">Save Changes</button>
-                                    </div>
+
+                                    <input type="submit" class="btn btn-outline-secondary" value="Save Changes">
 
                                 </form>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -199,7 +188,7 @@
             <!-- display list of program modules -->
             <!-- <div class = "container"> -->
             {% if moduleslist|length != 0: %}
-                <table class = "table">
+                <table class = "table" style="">
                     <thead>
                         <tr>
                             <th align = "left">Index</th>
@@ -251,7 +240,7 @@
                         <td colspan="12" class="hiddenRow">
                             <div class="collapse" id="view_{{module['module_id']}}">
                                 <div class="panel panel-default">
-                                    <div class="panel-body">
+                                    <div class="panel-body" style="padding: 25px 50px; font-size:14px;">
                                         {% include 'admin_edit_module.html' %}
                                     </div>
                                 </div>

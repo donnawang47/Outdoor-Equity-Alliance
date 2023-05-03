@@ -1,29 +1,24 @@
 <!-------------------------------------------------------->
-<strong>Program Name: </strong>
-{{program['program_name']}}
-<button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#change_pgm_name">
-    <span class="glyphicon glyphicon-pencil"></span> Edit
+<strong>Program Name </strong>
+<button type="button" class="btn btn-light" data-toggle="modal" data-target="#edit_program_name" style="font-size:14px; padding:2px 2px;">
+    <i class="material-icons" style="font-size:20px;">&#xe254;</i>
 </button>
+<br>
+
+{{program['program_name']}}
 <br> <br>
 
-<!-- modal for changing pgm name -->
-<!-- Trigger the modal with a button -->
 <div class="container">
-    <!-- Modal -->
-    <div class="modal fade" id="change_pgm_name" role="dialog">
+    <div class="modal fade" id="edit_program_name" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-
-            <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-
-                    <h4 class="modal-title">Change Program Name</h4>
-                    <!-- ** X BUTTON FOR CLOSING DIALOG ** -->
+                    <h4 class="modal-title">Edit Program Name</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/name'}}" method='POST'>
-                        <strong>Current Name:</strong>
+                        <strong>Current Program Name:</strong>
                         <br>
                         {{program['program_name']}}
                         <br>
@@ -31,7 +26,7 @@
 
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
-                        <label for="contentLinkInput" class = "form-label"><strong>New Program Name: </strong></label>
+                        <label for="newProgramNameInput" class = "form-label"><strong>New Program Name: </strong></label>
 
                         <input type="text" class="form-control" id="newProgramNameInput" name="new_program_name">
 
@@ -49,33 +44,30 @@
 
 <!--------------------------------------------------------->
 
-<strong>Program Description: </strong>
-{{program['program_description']}}
-<button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#change_pgm_desc">
-    <span class="glyphicon glyphicon-pencil"></span> Edit
+<strong>Program Description </strong>
+<button type="button" class="btn btn-light" data-toggle="modal" data-target="#edit_program_description" style="font-size:14px; padding:2px 2px;">
+    <i class="material-icons" style="font-size:20px;">&#xe254;</i>
 </button>
+<br>
+
+{{program['program_description']}}
 <br> <br>
 
-<!-- modal for changing pgm desc -->
-<!-- Trigger the modal with a button -->
-<div class="container">
-    <!-- Modal -->
-    <div class="modal fade" id="change_pgm_desc" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
 
-            <!-- Modal content-->
+<div class="container">
+    <div class="modal fade" id="edit_program_description" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
 
-                    <h4 class="modal-title">Change Program Description</h4>
-                    <!-- ** X BUTTON FOR CLOSING DIALOG ** -->
+                    <h4 class="modal-title">Edit Program Description</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
 
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/description'}}" method='POST'>
 
-                        <strong>Current Description:</strong>
+                        <strong>Current Program Description:</strong>
                         <br>
                         {{program['program_description']}}
                         <br>
@@ -83,7 +75,7 @@
 
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
-                        <label for="contentLinkInput" class="form-label"> <strong>New Description: </strong></label>
+                        <label for="contentLinkInput" class="form-label"> <strong>New Program Description: </strong></label>
 
                         <input type="text" class="form-control" id="newProgramDescInput" name="new_program_description">
 
@@ -93,10 +85,6 @@
                         <input type="submit" class="btn btn-outline-secondary" value="Save">
                     </form>
                 </div>
-
-                <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div> -->
             </div>
         </div>
 
@@ -104,29 +92,32 @@
 </div>
 
 <!-------------radio button for program availability------------------>
-<strong>Program Availability: </strong>
-{{program['program_availability']}}
-<button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#change_pgm_avail">
-    <span class="glyphicon glyphicon-pencil"></span> Edit
+<strong>Program Availability </strong>
+<button type="button" class="btn btn-light" data-toggle="modal" data-target="#edit_program_availability" style="font-size:14px; padding:2px 2px;">
+    <i class="material-icons" style="font-size:20px;">&#xe254;</i>
 </button>
+
+<br>
+{{program['program_availability']}}
 <br> <br>
+
+
 <div class="container">
     <!-- Modal -->
-    <div class="modal fade" id="change_pgm_avail" role="dialog">
+    <div class="modal fade" id="edit_program_availability" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg">
 
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
 
-                    <h4 class="modal-title">Change Program Availability</h4>
-                    <!-- ** X BUTTON FOR CLOSING DIALOG ** -->
+                    <h4 class="modal-title">Edit Program Availability</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
 
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="{{'/admin/programs/edit/availability'}}" method='POST'>
-                        <strong>Current Availability:</strong>
+                        <strong>Current Program Availability:</strong>
                         <br>
                         {{program['program_availability']}}
                         <br>
@@ -134,21 +125,21 @@
 
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
-                        <label for="contentLinkInput" class="form-label"><strong> Update Availability: </strong> </label>
+                        <label for="contentLinkInput" class="form-label"><strong> New Program Availability: </strong> </label>
 
                         {% if program['program_availability'] == 'all' %}
                         <div class="radio">
-                            <label> <input type="radio" name="new_program_availability" value = "all" checked>Available to <em>all</em></label>
+                            <label> <input type="radio" name="new_program_availability" value = "all" checked> Available to <em>all</em></label>
                           </div>
                           <div class="radio">
-                            <label><input type="radio" name="new_program_availability" value = "none">Available to <em>none</em></label>
+                            <label><input type="radio" name="new_program_availability" value = "none"> Available to <em>none</em></label>
                           </div>
                         {% else %}
                         <div class="radio">
-                            <label><input type="radio" name="new_program_availability" value = "all">Available to <em>all</em></label>
+                            <label><input type="radio" name="new_program_availability" value = "all"> Available to <em>all</em></label>
                           </div>
                           <div class="radio">
-                            <label><input type="radio" name="new_program_availability" value = "none" checked>Available to <em>none</em></label>
+                            <label><input type="radio" name="new_program_availability" value = "none" checked> Available to <em>none</em></label>
                         </div>
                         {% endif %}
 

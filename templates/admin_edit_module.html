@@ -1,11 +1,11 @@
 <!-- edit module name -->
-<strong>Module Id: </strong> {{module['module_id']}} <br>
 
-<strong>Module Name: </strong> {{module['module_name']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_name">
-    <span class="glyphicon glyphicon-pencil"></span>
-</button>
-<br>
+<strong>Module Name: </strong>
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_name" style="font-size:14px; padding:2px 2px;">
+    <i class="material-icons" style="font-size:20px;">&#xe254;</i>
+</button><br>
+{{module['module_name']}}
+<br><hr>
 
 <!-- modal for changing module name -->
 <!-- Trigger the modal with a button -->
@@ -17,31 +17,29 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title">Edit Module Name</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Change Module Name</h4>
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/name" method='POST'>
-                        <input type="hidden" name="module_id" value="{{module['module_id']}}">
-                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
-                        <strong>Current Name:</strong>
+
+                        <strong>Current Module Name:</strong>
+                        <br>
                         {{module['module_name']}}
                         <br>
-                        <table>
-                            <tr>
-                                <td align= "right"> <strong>New Name: </strong></td>
-                                <td align="right"> <input type="text"
-                                    name="new_module_name"></td>
-                                <td align="left">
-                                    <input type="submit" value="Save">
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
+                        <br>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="hidden" name="module_id" value="{{module['module_id']}}">
+                        <input type="hidden" name="program_id" value="{{program['program_id']}}">
+
+                        <label for="newModuleNameInput" class = "form-label"><strong>New Module Name: </strong></label>
+
+                        <input type="text" class="form-control" id="newModuleNameInput" name="new_module_name">
+
+                        <br>
+                        <input type="submit" class="btn btn-outline-secondary" value="Save">
+
+                    </form>
                 </div>
             </div>
         </div>
@@ -49,15 +47,15 @@
     </div>
 </div>
 
-<strong>Module Index: </strong> {{module['module_index']}} <br>
-<!-- <strong>Content Type: </strong> {{module['content_type']}} <br> -->
 
 <!-- edit module link -->
-<strong>Content Link: </strong> {{module['content_link']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_content_link">
-    <span class="glyphicon glyphicon-pencil"></span>
+<strong>Content Link: </strong>
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_content_link" style="font-size:14px; padding:2px 2px;">
+    <i class="material-icons" style="font-size:20px;">&#xe254;</i>
 </button>
 <br>
+{{module['content_link']}}
+<br><hr>
 
 <!-- modal for changing module link -->
 <!-- Trigger the modal with a button -->
@@ -69,32 +67,30 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title">Edit Content Link</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Change Content Link</h4>
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/link" method='POST'>
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
-                        <strong>Current Link:</strong>
+                        <strong>Current Content Link:</strong>
+                        <br>
                         {{module['content_link']}}
                         <br>
-                        <table>
-                            <tr>
-                                <td align= "right"> <strong>New Link: </strong></td>
-                                <td align="right"> <input type="text"
-                                    name="new_content_link"></td>
-                                <td align="left">
-                                    <input type="submit" value="Save">
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
+                        <br>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <label for="contentLinkInput" class = "form-label"><strong>New Content Link: </strong></label>
+
+                        <input type="text" class="form-control" id="contentLinkInput" name="new_program_name">
+
+                        <br>
+                        <input type="submit" class="btn btn-outline-secondary" value="Save">
+
+
+
+                    </form>
                 </div>
             </div>
         </div>
@@ -104,10 +100,16 @@
 
 
 <!-- BUTTON: edit module content type -->
-<strong>Content Type: </strong> {{module['content_type']}}
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_content_type">
-    <span class="glyphicon glyphicon-pencil"></span>
+<strong>Content Type: </strong>
+<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#change_{{module['module_id']}}_content_type" style="font-size:14px; padding:2px 2px;">
+    <i class="material-icons" style="font-size:20px;">&#xe254;</i>
 </button>
+<br>
+{% if module['content_type'] == "text" %}
+non-assessment
+{% else %}
+{{module['content_type']}}
+{% endif %}
 <br>
 
 <!-- modal for changing module content_type -->
@@ -120,38 +122,45 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title">Edit Content Type</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Change Content Type</h4>
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/content_type" method='POST'>
-                       <label><strong>Current Content Type:</strong> {{module['content_type']}} <br></label>
-
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
+                        <strong>Current Content Type:</strong>
+                        <br>
+                        {% if module['content_type'] == "text" %}
+                        non-assessment
+                        {% else %}
+                        {{module['content_type']}}
+                        {% endif %}
+                        <br>
+                        <br>
+
+                        <strong>New Content Type: </strong><br>
+
                         {% if module['content_type'] == "assessment" %}
                         <div class="radio">
-                            <label><input type="radio" name="new_content_type" value = "text">Set as <em>non-assessment</em></label>
+                            <label><input type="radio" name="new_content_type" value = "text"> Set as <em>non-assessment</em></label>
                           </div>
                           <div class="radio">
-                            <label><input type="radio" name="new_content_type" value = "assessment" checked>Set as <em>assessment</em></label>
+                            <label><input type="radio" name="new_content_type" value = "assessment" checked> Set as <em>assessment</em></label>
                           </div>
                           {% else %}
                           <div class="radio">
-                            <label><input type="radio" name="new_content_type" value = "text" checked>Set as <em>non-assessment</em></label>
+                            <label><input type="radio" name="new_content_type" value = "text" checked> Set as <em>non-assessment</em></label>
                           </div>
                           <div class="radio">
-                            <label><input type="radio" name="new_content_type" value = "assessment">Set as <em>assessment</em></label>
+                            <label><input type="radio" name="new_content_type" value = "assessment"> Set as <em>assessment</em></label>
                           </div>
 
                         {% endif %}
-                          <input type="submit" value="Save">
+                        <br>
+                        <input type="submit" class="btn btn-outline-secondary" value="Save">
                     </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

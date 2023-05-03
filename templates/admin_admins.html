@@ -79,13 +79,12 @@
 
     <!-- ***** Header Area End ***** -->
 
-        <br>
 
         <div id="content">
             <div class="row">
                 <div class="col-lg-6 offset-lg-3">
                     <div class="section-heading">
-                        <h2> List of<em> Administrators </em> </h2>
+                        <h2> Admin Interface: <em> Admins List</em> </h2>
                     </div>
                 </div>
             </div>
@@ -112,35 +111,15 @@
                                 <div class="modal-body container-fluid">
                                     <form action="{{'/admin/admins/add'}}" method='POST'>
 
-                                        <div class="form-group row">
-                                            <label for="adminNameInput" class = "col-sm-3 col-form-label col-form-label-sm">Program Name:</label>
-                                            <div class = "col-sm-9">
-                                                <input type="text" class="form-control" id="adminNameInput" name="admin_name">
-                                            </div>
-                                        </div>
+                                        <label for="adminNameInput" class = "form-label">Admin Name:</label>
+                                        <input type="text" class="form-control" id="adminNameInput" name="admin_name">
 
-                                            <!-- <tr>
-                                                <td align= "right"> Admin Name : </td>
-                                                <td align="left">
-                                                    <input type = "text"
-                                                    name = "admin_name"> <br>
-                                                </td>
-                                            </tr> -->
+                                        <br>
 
-                                        <div class="form-group row">
-                                            <label for="adminEmailInput" class = "col-sm-3 col-form-label col-form-label-sm">Admin Email:</label>
-                                            <div class = "col-sm-9">
-                                                <input type="text" class="form-control" id="adminEmailInput" name="admin_email">
-                                            </div>
-                                        </div>
+                                        <label for="adminEmailInput" class = "form-label">Admin Email:</label>
+                                        <input type="text" class="form-control" id="adminEmailInput" name="admin_email">
 
-                                            <!-- <tr>
-                                                <td align= "right"> Admin Email: </td>
-                                                <td align="left">
-                                                    <input type = "text"
-                                                    name = "admin_email"> <br>
-                                                </td>
-                                            </tr> -->
+                                        <br>
 
                                         <input type="submit"  class="btn btn-outline-secondary" value="Submit">
                                     </form>
@@ -164,10 +143,10 @@
                         <tr>
                             <td align = "left"> {{admin['user_name']}}</td>
                             <td align = "left"> {{admin['user_email']}}</td>
-                            <td align = right>
+                            <td>
                                 <form action="/admin/admins/delete" method = 'POST' onsubmit="return isConfirmed(this);">
                                     <input type="hidden" name="user_id" value="{{admin['user_id']}}">
-                                    <input type="submit" value="Delete">
+                                    <input type="submit" class="btn btn-outline-dark" value="Delete">
 
                                 </form>
                             </td>
