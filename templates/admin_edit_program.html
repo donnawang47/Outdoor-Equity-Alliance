@@ -75,12 +75,11 @@
 
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
-                        <label for="contentLinkInput" class="form-label"> <strong>New Program Description: </strong></label>
+                        <label for="newProgramDescInput" class="form-label"> <strong>New Program Description: </strong></label>
 
-                        <input type="text" class="form-control" id="newProgramDescInput" name="new_program_description">
+                        <textarea class="form-control" id="newProgramDescInput" name="new_program_description" rows="3"></textarea>
 
                         <br>
-                        <!-- <textarea class="form-control" rows="5" name="new_program_description"></textarea> -->
 
                         <input type="submit" class="btn btn-outline-secondary" value="Save">
                     </form>
@@ -125,7 +124,7 @@
 
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
-                        <label for="contentLinkInput" class="form-label"><strong> New Program Availability: </strong> </label>
+                        <label for="newProgramAvailInput" class="form-label"><strong> New Program Availability: </strong> </label>
 
                         {% if program['program_availability'] == 'all' %}
                         <div class="radio">
