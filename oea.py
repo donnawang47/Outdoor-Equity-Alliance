@@ -225,7 +225,7 @@ def update_module_status():
     assessment_id = flask.request.form['assessment_id']
     assessment_status = flask.request.form['user_assessment_status']
 
-    status, msg = database.update_assessment_status(student_id, assessment_id, assessment_status)
+    status, message = database.update_assessment_status(student_id, assessment_id, assessment_status)
 
     if status:
         return flask.redirect(flask.url_for('admin_student_details', student_email=student_email))
@@ -241,7 +241,7 @@ def admin_admins():
     status, admins = database.get_all_admins()
 
     if status:
-        html_code = flask.render_template('admin_admins.html', admins=admins)
+        html_code = flask.render_template('admin_admins.html', admins=admins, username=username)
         response = flask.make_response(html_code)
         return response
     else:
@@ -339,7 +339,7 @@ def admin_edit_program_name():
     if status:
         return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
     else:
-        return erorr_response(message)
+        return error_response(message)
 
 
 @app.route('/admin/programs/edit/description', methods=['POST'])

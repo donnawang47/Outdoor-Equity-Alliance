@@ -28,11 +28,11 @@ def insert_student(data):
             cursor.execute('BEGIN')
 
             #check for duplicates via user_email
-            statement = "SELECT FROM users WHERE user_email = %s AND user_status='student';"
+            statement = "SELECT FROM users WHERE user_email = %s;"
             cursor.execute(statement, [data['student_email']])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("student already in database")
+                raise Exception("email already in database")
 
             #create user_id
             statement = "SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1;"
@@ -97,11 +97,11 @@ def insert_admin(data):
             cursor.execute('BEGIN')
 
             #check for duplicates via user_email
-            statement = "SELECT FROM users WHERE user_email = %s AND user_status='admin';"
+            statement = "SELECT FROM users WHERE user_email = %s;"
             cursor.execute(statement, [data['admin_email']])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("admin already in database")
+                raise Exception("email already in database")
 
             #generate user_id
             statement = "SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1;"

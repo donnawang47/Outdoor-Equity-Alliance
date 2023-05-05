@@ -85,9 +85,10 @@ def callback():
 
 def logout():
     flask.session.clear()
-    html_code = flask.render_template('loggedout.html')
-    response = flask.make_response(html_code)
-    return response
+    # html_code = flask.render_template('loggedout.html')
+    # response = flask.make_response(html_code)
+    # return response
+    return flask.redirect(flask.url_for('index'))
 
 def authenticate():
     if 'email' not in flask.session:
