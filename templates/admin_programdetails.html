@@ -81,9 +81,9 @@
 
     <!-- ***** Header Area End ***** -->
 
-    <br>
-    <br>
-    <br>
+        <br>
+        <br>
+        <br>
 
         <div id="content">
 
@@ -262,7 +262,75 @@
             <!-- <button type="button" class="btn btn-basic btn-sm" data-toggle="modal" data-target="#add_module">
                 <span class="glyphicon glyphicon-edit"></span> Add Module
             </button> -->
-            {% include 'admin_create_module.html' %}
+
+
+            <!-- modal for adding module -->
+            <!-- Trigger the modal with a button -->
+            <div class="container">
+                <!-- Modal -->
+                <div class="modal fade" id="add_module" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h4 class="modal-title">Insert Module </h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+
+                            <div class="modal-body container-fluid">
+                                <form action="/admin/programs/edit/add_module" method='POST'>
+                                    <input type="hidden" name="program_id" value="{{program['program_id']}}">
+
+                                    <div class = "form-group row">
+                                        <label for="moduleNameInput" class = "col-sm-2 col-form-label col-form-label-sm">Module Name:</label>
+                                        <div class = "col-sm-10">
+                                            <input type="text" class="form-control" id="moduleNameInput" name="module_name">
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group row">
+                                        <label for="contentLinkInput" class = "col-sm-2 col-form-label col-form-label-sm">Content Link:</label>
+                                        <div class = "col-sm-10">
+                                            <input type="text" class="form-control" id="contentLinkInput" name="content_link">
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="form-group row">
+                                        <legend class="col-sm-2 col-form-label col-form-label-sm">Content Type: </legend>
+                                        <div class = "col-sm-10">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="content_type" id="contentTypeText" value = "text" checked>
+                                                <label class="form-check-label" for="contentTypeText">Non-assessment</label>
+
+                                            </div>
+
+                                            <div class="form-check">
+
+                                                <input class="form-check-input" type="radio" name="content_type" id="contentTypeAssessment" value = "none" >
+                                                <label class="form-check-label" for="contentTypeAssessment">Assessment</label>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <input type="submit" class="btn btn-outline-secondary" value="Submit">
+                                </form>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
 
 
         </div>

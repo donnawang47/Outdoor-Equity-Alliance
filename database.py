@@ -25,6 +25,11 @@ def insert_student(data):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            #check for missing arguments
+            for key, value in data.items():
+                if value is None or value == '':
+                    raise Exception("missing " + str(key))
+
             cursor.execute('BEGIN')
 
             #check for duplicates via user_email
@@ -94,6 +99,11 @@ def insert_admin(data):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            #check for missing arguments
+            for key, value in data.items():
+                if value is None or value == '':
+                    raise Exception("missing " + str(key))
+
             cursor.execute('BEGIN')
 
             #check for duplicates via user_email
@@ -160,6 +170,11 @@ def insert_program(data):
     try:
         with connection.cursor() as cursor:
 
+            #check for missing arguments
+            for key, value in data.items():
+                if value is None or value == '':
+                    raise Exception("missing " + str(key))
+
             cursor.execute('BEGIN')
 
             if data['program_availability'] != 'all' and data['program_availability'] != 'none':
@@ -220,33 +235,6 @@ def insert_program(data):
     finally:
         _put_connection(connection)
 
-# compares passed program name to all program names in database to
-# check if there are duplicates
-def is_program_name_duplicate(new_name):
-    connection = _get_connection()
-    try:
-        # with psycopg2.connect(DATABASE_URL) as connection:
-        with connection.cursor() as cursor:
-            print('PROGRAM NAME = ', new_name)
-            statement = "SELECT program_name FROM programs"
-            cursor.execute(statement)
-
-            names = cursor.fetchall()
-
-            print('names = ', names)
-
-            for name in names:
-                print('name = ', name[0])
-                if new_name == name[0]:
-                    return True
-
-            return False
-
-    except Exception as error:
-        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
-    finally:
-        _put_connection(connection)
 
 def delete_program(program_id):
     connection = _get_connection()
@@ -295,6 +283,11 @@ def insert_module(data):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            #check for missing arguments
+            for key, value in data.items():
+                if value is None or value == '':
+                    raise Exception("missing " + str(key))
 
             cursor.execute('BEGIN')
 
@@ -413,6 +406,21 @@ def update_program_name(program_id, new_program_name):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            #check for missing arguments
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+            if new_program_name is None or new_program_name =='':
+                raise Exception("missing program name")
+
+
+            #! check for duplicates via program name
+            statement = "SELECT FROM programs WHERE program_name = %s;"
+            cursor.execute(statement, [new_program_name])
+            table = cursor.fetchall()
+            if len(table) != 0:
+                raise Exception("program name conflict, update aborted")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE programs SET program_name=%s WHERE program_id = %s;"
@@ -432,6 +440,12 @@ def update_program_description(program_id, new_program_description):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            #check for missing arguments
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+            if new_program_description is None or new_program_description =='':
+                raise Exception("missing program description")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE programs SET program_description=%s WHERE program_id=%s;"
@@ -450,6 +464,12 @@ def update_program_availability(program_id, new_program_availability):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            #check for missing arguments
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+            if new_program_availability is None or new_program_availability =='':
+                raise Exception("missing program availability")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE programs SET program_availability=%s WHERE program_id=%s;"
@@ -465,10 +485,26 @@ def update_program_availability(program_id, new_program_availability):
         _put_connection(connection)
 
 
-def update_module_name(module_id, new_module_name):
+def update_module_name(program_id, module_id, new_module_name):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            #check for missing arguments
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+            if module_id is None or module_id == '':
+                raise Exception("missing module id")
+            if new_module_name is None or new_module_name =='':
+                raise Exception("missing module name")
+
+            # check for duplicates for module name
+            statement = "SELECT FROM modules WHERE module_name = %s AND modules.program_id = %s;"
+            cursor.execute(statement, [new_module_name, program_id])
+            table = cursor.fetchall()
+            if len(table) != 0:
+                raise Exception("module name conflict, update aborted")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE modules SET module_name=%s WHERE module_id= %s;"
@@ -488,6 +524,12 @@ def update_module_content_type(module_id, new_content_type):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            if module_id is None or module_id == '':
+                raise Exception("missing module id")
+            if new_content_type is None or new_content_type =='':
+                raise Exception("missing content type")
+
             if new_content_type != 'assessment' and new_content_type != 'text':
                 raise Exception('module content type must be assessment or text')
             cursor.execute('BEGIN')
@@ -523,6 +565,11 @@ def update_module_content_link(module_id, new_content_link):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            if module_id is None or module_id == '':
+                raise Exception("missing module id")
+            if new_content_link is None or new_content_link =='':
+                raise Exception("missing content link")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE modules SET content_link= %s WHERE module_id= %s;"
@@ -544,6 +591,12 @@ def update_module_index(module_id, new_module_index):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            if module_id is None or module_id == '':
+                raise Exception("missing module id")
+            if new_module_index is None or new_module_index =='':
+                raise Exception("missing module index")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE modules SET module_index= %s WHERE module_id= %s;"
@@ -562,6 +615,14 @@ def update_program_status(student_id, program_id, new_program_status):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            if student_id is None or student_id == '':
+                raise Exception("missing student id")
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+            if new_program_status is None or new_program_status =='':
+                raise Exception("missing program status")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE program_status SET user_program_status = %s WHERE user_id=%s AND program_id=%s;"
@@ -580,6 +641,13 @@ def update_assessment_status(student_id, module_id, new_assessment_status):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            if student_id is None or student_id == '':
+                raise Exception("missing student id")
+            if module_id is None or module_id == '':
+                raise Exception("missing module id")
+            if new_assessment_status is None or new_assessment_status =='':
+                raise Exception("missing assessment status")
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE assessment_status SET user_assessment_status = %s WHERE user_id=%s AND module_id=%s;"
@@ -635,6 +703,9 @@ def get_student_info(user_email):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            if user_email is None or user_email == '':
+                raise Exception("missing user email")
+
             statement = "SELECT * FROM users WHERE user_status = 'student' AND user_email=%s;"
             cursor.execute(statement, [user_email])
             table = cursor.fetchall()
@@ -783,6 +854,9 @@ def get_program_info(program_id):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+
             print(' program id in get program info =', program_id)
             statement = "SELECT * FROM programs WHERE program_id=%s;"
             cursor.execute(statement, [program_id])
@@ -832,6 +906,9 @@ def get_module_info(module_id):
     try:
         with connection.cursor() as cursor:
 
+            if module_id is None or module_id == '':
+                raise Exception("missing module id")
+
             statement = "SELECT * FROM modules WHERE module_id=%s;"
             cursor.execute(statement, [module_id])
             table = cursor.fetchall()
@@ -860,6 +937,11 @@ def get_student_program_status(student_id, program_id):
     try:
         with connection.cursor() as cursor:
 
+            if student_id is None or student_id == '':
+                raise Exception("missing student id")
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+
             statement = "SELECT user_program_status FROM program_status WHERE user_id=%s AND program_id=%s;"
             cursor.execute(statement, [student_id, program_id])
             table = cursor.fetchall()
@@ -877,6 +959,9 @@ def get_student_enrolled_program_info(student_id):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            if student_id is None or student_id == '':
+                raise Exception("missing student id")
 
             statement = "SELECT programs.program_id, program_name FROM programs, program_status WHERE user_id=%s AND programs.program_id=program_status.program_id AND user_program_status='enrolled';"
             cursor.execute(statement, [student_id])
@@ -936,6 +1021,11 @@ def get_locked_index(user_id, program_id):
     try:
         with connection.cursor() as cursor:
 
+            if user_id is None or user_id == '':
+                raise Exception("missing user id")
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+
             statement = "SELECT MIN(module_index) FROM modules, assessment_status WHERE user_assessment_status='0' AND content_type='assessment' AND assessment_status.user_id=%s AND modules.program_id=%s AND assessment_status.module_id=modules.module_id;"
             cursor.execute(statement, [user_id, program_id])
             table = cursor.fetchall()
@@ -956,99 +1046,17 @@ def get_locked_index(user_id, program_id):
         _put_connection(connection)
 
 
-def existing_program_id(givenid):
-    connection = _get_connection()
-    try:
-        # with psycopg2.connect(DATABASE_URL) as connection:
-        with connection.cursor() as cursor:
-            statement = "SELECT program_id FROM programs"
-            cursor.execute(statement)
-
-            ids = cursor.fetchall()
-
-            # print('ids of programs =', ids)
-
-            for id in ids:
-                # print('id =', id[0])
-                if givenid == id[0]:
-                    return True
-
-            return False
-
-    except Exception as error:
-        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
-    finally:
-        _put_connection(connection)
-
-
-def get_program_details(program_id):
-    connection = _get_connection()
-    try:
-        # with CONN as connection:
-        with connection.cursor() as cursor:
-            print("In access_database.py: get_program_details")
-            # print("in get pgm modules", program_id)
-            statement = "SELECT * FROM programs WHERE "
-            statement += "program_id=%s"
-            # statement += "ORDER BY program_id ASC, module_id ASC;"
-
-            cursor.execute(statement, [program_id])
-
-            table = cursor.fetchall()
-            #print("table:", table)
-            # for row in table:
-            #     print(row)
-            data = {}
-            data['program_id'] = table[0][0]
-            data['program_name'] = table[0][1]
-            data['description'] = table[0][2]
-            data['program_availability'] = table[0][3]
-            # print('Program info', data)
-
-            # get program modules
-            statement = "SELECT * FROM programs, modules WHERE "
-            statement += "programs.program_id=modules.program_id "
-            statement += "AND modules.program_id LIKE %s "
-            # statement += "ORDER BY program_id ASC, module_id ASC;"
-
-            cursor.execute(statement, [program_id])
-            table = cursor.fetchall()
-            # print("Modules of program", table)
-
-            # # list of dictionaries of modules within program
-            modules = []
-            for row in table:
-                modules_row = {}
-                modules_row['module_id'] = row[4]
-                # row[5] is program_id
-                modules_row['module_name'] = row[6]
-                modules_row['content_type'] = row[7]
-                modules_row['content_link'] = row[8]
-                modules_row['module_index'] = row[9]
-                modules.append(modules_row)
-
-                #sort modules via index
-            modules = sorted(modules, key=lambda x:x['module_index'])
-            data['modules'] = modules
-            # print('modules', modules)
-            # print("data", data)
-            # print("success access_database.py: get_program_modules")
-            return (True, data)
-
-    except Exception as error:
-        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
-    finally:
-        _put_connection(connection)
-
-
 
 def get_student_program_progress(student_id, program_id):
 
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+            if student_id is None or student_id == '':
+                raise Exception("missing student id")
+            if program_id is None or program_id == '':
+                raise Exception("missing program id")
+
             statement = "SELECT SUM(user_assessment_status), COUNT(user_assessment_status) FROM modules, assessment_status WHERE user_id=%s AND program_id=%s AND modules.module_id=assessment_status.module_id;"
             cursor.execute(statement, [student_id, program_id])
 
@@ -1060,32 +1068,6 @@ def get_student_program_progress(student_id, program_id):
 
     except Exception as error:
 
-        print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
-    finally:
-        _put_connection(connection)
-
-# compares passed program name to all program names in database to
-# check if there are duplicates
-def is_module_name_duplicate(new_name):
-    connection = _get_connection()
-    try:
-        # with psycopg2.connect(DATABASE_URL) as connection:
-        with connection.cursor() as cursor:
-            print('module name = ', new_name)
-            statement = "SELECT module_name FROM modules"
-            cursor.execute(statement)
-
-            names = cursor.fetchall()
-
-            for name in names:
-                print('name = ', name)
-                if new_name == name[0]:
-                    return True
-
-            return False
-
-    except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, str(error))
     finally:

@@ -425,7 +425,7 @@ def admin_edit_module_name():
     program_id = flask.request.form['program_id']
     new_module_name = flask.request.form['new_module_name']
 
-    status, message = database.update_module_name(module_id, new_module_name)
+    status, message = database.update_module_name(program_id, module_id, new_module_name)
 
     if status :
         return flask.redirect(flask.url_for('admin_edit_program', program_id=program_id))
