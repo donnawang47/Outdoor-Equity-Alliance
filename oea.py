@@ -39,6 +39,9 @@ def index():
 
 
 def authorize_admin(username):
+    assert username != None, 'Username should not be None.'
+    assert username != '', 'Username should not be empty.'
+
     status, authorized = database.is_admin_authorized(username)
     if status:
         if not authorized:
@@ -51,6 +54,9 @@ def authorize_admin(username):
 
 
 def authorize_student(username):
+    assert username != None, 'Username should not be None.'
+    assert username != '', 'Username should not be empty.'
+
     status, authorized = database.is_student_authorized(username)
     if status:
         if not authorized:
