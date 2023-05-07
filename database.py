@@ -289,6 +289,9 @@ def insert_module(data):
                 if value is None or value == '':
                     raise Exception("missing " + str(key))
 
+            if data['content_type'] != 'assessment' and data['content_type'] != 'text':
+                raise Exception('module content type must be assessment or text')
+
             cursor.execute('BEGIN')
 
             # check for duplicates for module name
