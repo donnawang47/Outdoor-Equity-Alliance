@@ -180,7 +180,7 @@ def insert_program(data):
             if data['program_availability'] != 'all' and data['program_availability'] != 'none':
                 raise Exception('program availability must be all or none')
 
-            #! check for duplicates via program name
+            # check for duplicates via program name
             statement = "SELECT FROM programs WHERE program_name = %s;"
             cursor.execute(statement, [data['program_name']])
             table = cursor.fetchall()
@@ -289,8 +289,8 @@ def insert_module(data):
                 if value is None or value == '':
                     raise Exception("missing " + str(key))
 
-            if data['content_type'] != 'assessment' and data['content_type'] != 'text':
-                raise Exception('module content type must be assessment or text')
+            if data['content_type'] != 'assessment' and data['content_type'] != 'non-assessment':
+                raise Exception('module content type must be assessment or non-assessment')
 
             cursor.execute('BEGIN')
 
