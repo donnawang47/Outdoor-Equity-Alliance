@@ -142,6 +142,10 @@ def delete_user(user_id):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            assert user_id != None, 'User id should not be None.'
+            assert user_id != '', 'User id should not be empty.'
+
             cursor.execute('BEGIN')
 
             statement = "DELETE FROM users WHERE user_id=%s;"
@@ -164,7 +168,7 @@ def delete_user(user_id):
         _put_connection(connection)
 
 def insert_program(data):
-    #data is a dict containing 3 values: name , desc, avail
+    # data is a dict containing 3 values: name , desc, avail
 
     connection = _get_connection()
     try:
@@ -175,10 +179,10 @@ def insert_program(data):
                 if value is None or value == '':
                     raise Exception("missing " + str(key))
 
-            cursor.execute('BEGIN')
-
             if data['program_availability'] != 'all' and data['program_availability'] != 'none':
                 raise Exception('program availability must be all or none')
+
+            cursor.execute('BEGIN')
 
             # check for duplicates via program name
             statement = "SELECT FROM programs WHERE program_name = %s;"
@@ -240,6 +244,10 @@ def delete_program(program_id):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            assert program_id != None, 'Program id should not be None.'
+            assert program_id != '', 'Program id should not be empty.'
+
             cursor.execute('BEGIN')
 
             # remove program from programs table
@@ -353,6 +361,10 @@ def delete_module(module_id):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            assert module_id != None, 'Module id should not be None.'
+            assert module_id != '', 'Module id should not be empty.'
+
             cursor.execute('BEGIN')
 
             # get module index and program id
@@ -416,6 +428,7 @@ def update_program_name(program_id, new_program_name):
             if new_program_name is None or new_program_name =='':
                 raise Exception("missing program name")
 
+            cursor.execute('BEGIN')
 
             #! check for duplicates via program name
             statement = "SELECT FROM programs WHERE program_name = %s;"
@@ -423,8 +436,6 @@ def update_program_name(program_id, new_program_name):
             table = cursor.fetchall()
             if len(table) != 0:
                 raise Exception("program name conflict, update aborted")
-
-            cursor.execute('BEGIN')
 
             statement = "UPDATE programs SET program_name=%s WHERE program_id = %s;"
             cursor.execute(statement, [new_program_name, program_id])
@@ -501,14 +512,14 @@ def update_module_name(program_id, module_id, new_module_name):
             if new_module_name is None or new_module_name =='':
                 raise Exception("missing module name")
 
+            cursor.execute('BEGIN')
+
             # check for duplicates for module name
             statement = "SELECT FROM modules WHERE module_name = %s AND modules.program_id = %s;"
             cursor.execute(statement, [new_module_name, program_id])
             table = cursor.fetchall()
             if len(table) != 0:
                 raise Exception("module name conflict, update aborted")
-
-            cursor.execute('BEGIN')
 
             statement = "UPDATE modules SET module_name=%s WHERE module_id= %s;"
 
@@ -535,6 +546,7 @@ def update_module_content_type(module_id, new_content_type):
 
             if new_content_type != 'assessment' and new_content_type != 'text':
                 raise Exception('module content type must be assessment or text')
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE modules SET content_type= %s WHERE module_id= %s;"
@@ -673,12 +685,20 @@ def is_admin_authorized(username):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            assert username != None, 'Username should not be None.'
+            assert username != '', 'Username should not be empty.'
+
+            cursor.execute('BEGIN')
+
             #print("database: is_admin_authorized", username)
             statement = "SELECT * FROM users where user_status = 'admin' AND user_email=%s;"
             cursor.execute(statement, [username])
             table = cursor.fetchall()
 
+            cursor.execute('COMMIT')
             return (True, len(table)!=0)
+
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, str(error))
@@ -690,12 +710,20 @@ def is_student_authorized(username):
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            assert username != None, 'Username should not be None.'
+            assert username != '', 'Username should not be empty.'
+
+            cursor.execute('BEGIN')
+
             #print("database: is_student_authorized", username)
             statement = "SELECT * FROM users where user_status = 'student' AND user_email=%s;"
             cursor.execute(statement, [username])
             table = cursor.fetchall()
 
+            cursor.execute('COMMIT')
             return (True, len(table)!=0)
+
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
         return (False, str(error))
@@ -708,6 +736,8 @@ def get_student_info(user_email):
         with connection.cursor() as cursor:
             if user_email is None or user_email == '':
                 raise Exception("missing user email")
+
+            cursor.execute('BEGIN')
 
             statement = "SELECT * FROM users WHERE user_status = 'student' AND user_email=%s;"
             cursor.execute(statement, [user_email])
@@ -759,6 +789,7 @@ def get_student_info(user_email):
             student_info['locked_programs'] = locked_programs
             student_info['enrolled_programs'] = enrolled_programs
 
+            cursor.execute('COMMIT')
             return (True, student_info)
 
     except Exception as error:
@@ -772,6 +803,9 @@ def get_all_admins():
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            cursor.execute('BEGIN')
+
             #print("access_database.py: get_all_students:")
             statement = "SELECT * FROM users WHERE user_status='admin';"
 
@@ -788,6 +822,7 @@ def get_all_admins():
                 admins.append(admin_row)
 
             #print("success access_database.py: get_all_admins")
+            cursor.execute('COMMIT')
             return (True, admins)
 
     except Exception as error:
@@ -800,6 +835,9 @@ def get_all_students():
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            cursor.execute('BEGIN')
+
             #print("access_database.py: get_all_students:")
             statement = "SELECT * FROM users WHERE user_status='student';"
 
@@ -814,6 +852,8 @@ def get_all_students():
                 student_row['user_name'] = row[1]
                 student_row['user_email'] = row[2]
                 students.append(student_row)
+
+            cursor.execute('COMMIT')
             return (True, students)
 
     except Exception as error:
@@ -827,6 +867,9 @@ def get_all_programs():
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
+
+            cursor.execute('BEGIN')
+
             #print("access_database.py: get_programslist")
             statement = "SELECT * FROM programs;"
             cursor.execute(statement)
@@ -843,6 +886,7 @@ def get_all_programs():
                 programs.append(program_row)
 
             #print("success access_database.py: get_programslist")
+            cursor.execute('COMMIT')
             return (True, programs)
 
     except Exception as error:
@@ -858,6 +902,8 @@ def get_program_info(program_id):
         with connection.cursor() as cursor:
             if program_id is None or program_id == '':
                 raise Exception("missing program id")
+
+            cursor.execute('BEGIN')
 
             print(' program id in get program info =', program_id)
             statement = "SELECT * FROM programs WHERE program_id=%s;"
@@ -894,6 +940,7 @@ def get_program_info(program_id):
             modules = sorted(modules, key=lambda x:x['module_index'])
             program_info['modules'] = modules
 
+            cursor.execute('COMMIT')
             # print("success access_database.py: get_program_modules")
             return (True, program_info)
 
@@ -911,6 +958,8 @@ def get_module_info(module_id):
             if module_id is None or module_id == '':
                 raise Exception("missing module id")
 
+            cursor.execute('BEGIN')
+
             statement = "SELECT * FROM modules WHERE module_id=%s;"
             cursor.execute(statement, [module_id])
             table = cursor.fetchall()
@@ -926,6 +975,7 @@ def get_module_info(module_id):
             module_info['content_link'] = table[0][4]
             module_info['module_index'] = table[0][5]
 
+            cursor.execute('COMMIT')
             return (True, module_info)
 
     except Exception as error:
@@ -944,11 +994,15 @@ def get_student_program_status(student_id, program_id):
             if program_id is None or program_id == '':
                 raise Exception("missing program id")
 
+            cursor.execute('BEGIN')
+
             statement = "SELECT user_program_status FROM program_status WHERE user_id=%s AND program_id=%s;"
             cursor.execute(statement, [student_id, program_id])
             table = cursor.fetchall()
             if len(table) == 0:
                 raise Exception("user program status not in database")
+
+            cursor.execute('COMMIT')
             return (True, table[0][0])
 
     except Exception as error:
@@ -964,6 +1018,8 @@ def get_student_enrolled_program_info(student_id):
 
             if student_id is None or student_id == '':
                 raise Exception("missing student id")
+
+            cursor.execute('BEGIN')
 
             statement = "SELECT programs.program_id, program_name FROM programs, program_status WHERE user_id=%s AND programs.program_id=program_status.program_id AND user_program_status='enrolled';"
             cursor.execute(statement, [student_id])
@@ -1010,6 +1066,7 @@ def get_student_enrolled_program_info(student_id):
 
                 enrolled_programs.append(enrolled_program)
 
+            cursor.execute('COMMIT')
             return (True, enrolled_programs)
 
     except Exception as error:
@@ -1028,6 +1085,8 @@ def get_locked_index(user_id, program_id):
             if program_id is None or program_id == '':
                 raise Exception("missing program id")
 
+            cursor.execute('BEGIN')
+
             statement = "SELECT MIN(module_index) FROM modules, assessment_status WHERE user_assessment_status='0' AND content_type='assessment' AND assessment_status.user_id=%s AND modules.program_id=%s AND assessment_status.module_id=modules.module_id;"
             cursor.execute(statement, [user_id, program_id])
             table = cursor.fetchall()
@@ -1039,6 +1098,7 @@ def get_locked_index(user_id, program_id):
 
             print("locked_index", module_index)
 
+            cursor.execute('COMMIT')
             return (True, module_index)
 
     except Exception as error:
@@ -1059,6 +1119,8 @@ def get_student_program_progress(student_id, program_id):
             if program_id is None or program_id == '':
                 raise Exception("missing program id")
 
+            cursor.execute('BEGIN')
+
             statement = "SELECT SUM(user_assessment_status), COUNT(user_assessment_status) FROM modules, assessment_status WHERE user_id=%s AND program_id=%s AND modules.module_id=assessment_status.module_id;"
             cursor.execute(statement, [student_id, program_id])
 
@@ -1066,6 +1128,8 @@ def get_student_program_progress(student_id, program_id):
             assessment_completion = table[0][0]
             assessment_total = table[0][1]
             program_progress = str(assessment_completion) + "/" + str(assessment_total)
+
+            cursor.execute('COMMIT')
             return (True, program_progress)
 
     except Exception as error:
