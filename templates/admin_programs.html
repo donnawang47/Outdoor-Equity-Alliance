@@ -112,6 +112,8 @@
                             </div>
                             <div class="modal-body container-fluid">
                                 <form action = "/admin/programs/create" method = "POST">
+                                    <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
+
                                     <div class="form-group row">
                                         <label for="programNameInput" class = "col-sm-3 col-form-label col-form-label-sm">Program Name:</label>
                                         <div class = "col-sm-9">
@@ -166,7 +168,6 @@
             </div>
 
             <!-- display list of existing programs -->
-            <!-- <form action="/admin/edit/program/name" method = 'POST'> -->
             <table class = "table">
                 <!-- row 1, containing names of each column -->
                 <thead>
@@ -185,42 +186,25 @@
                 {% if programslist|length != 0: %}
                     {% for program in programslist: %}
                         <tr>
-                            <!-- col 1 is row["ClsId"] -->
-                            <!-- <form action="/admin/edit/program/name" method="POST"> -->
 
-                            <!-- </form> -->
                             <td align = 'left'>
                                 {{program['program_name']}}
-                                <!-- <a href="
-                                {{'/admin/programs/modules?program_id=%s&program_name=%s' %(program['program_id'],
-                                program['program_name'])}} "
-                                >
-                                {{program['program_name']}}
-                                </a> -->
                             </td>
-                            <!-- <td align = 'left'>
-                                {{program['description']}}
-                            </td> -->
+
                             <td align = 'left'>
                                 {{program['program_availability']}}
                             </td>
-
-                            <!-- <td align="right">
-                            <a href="{{'/admin/programs/edit/name?program_id=%s&program_name=%s' %(program['program_id'], program['program_name'])}}" class="btn btn-secondary" role="button"> Edit </a>
-                            </td> -->
 
                             <td align="right">
                                 <a href="{{'/admin/programs/edit?program_id=%s' %program['program_id']}}" class="btn btn-outline-dark" role="button"> <span class="glyphicon glyphicon-pencil"></span> Edit </a>
                             </td>
 
-                            <!-- "glyphicon glyphicon-pencil" -->
 
                             <td align = right>
-                                <form action="{{'/admin/programs/delete'}}" method = 'POST' onsubmit="return isConfirmed(this);"> <input class="btn btn-outline-dark" type="submit" value="Delete">
+                                <form action="{{'/admin/programs/delete'}}" method = 'POST' onsubmit="return isConfirmed(this);">
+                                    <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
+                                    <input class="btn btn-outline-dark" type="submit" value="Delete">
                                     <input type="hidden" name="program_id" value="{{program['program_id']}}">
-                                <!-- <button class="pure-button pure-button-primary deny" type="submit" formaction="config" formmethod="get"> Cancel</button>
-                                <button class="pure-button button-warning confirm" type="submit"
-                                formaction="config" formmethod="post"> Confirm </button> -->
                                 </form>
                             </td>
                         </tr>

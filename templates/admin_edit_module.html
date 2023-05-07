@@ -22,6 +22,7 @@
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/name" method='POST'>
+                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
 
                         <strong>Current Module Name:</strong>
                         <br>
@@ -72,6 +73,8 @@
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/link" method='POST'>
+                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
+
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
@@ -127,6 +130,7 @@ non-assessment
                 </div>
                 <div class="modal-body container-fluid">
                     <form action="/admin/programs/modules/edit/content_type" method='POST'>
+                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                         <input type="hidden" name="module_id" value="{{module['module_id']}}">
                         <input type="hidden" name="program_id" value="{{program['program_id']}}">
 

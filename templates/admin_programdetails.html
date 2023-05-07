@@ -143,6 +143,8 @@
                             </div>
                             <div class="modal-body container-fluid">
                                 <form role="form" method="POST" action="/admin/programs/edit/module_seq">
+                                    <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
+
                                     <label for="changeModuleSequence"> Drop and drop the modules to change the sequence: </label>
                                     <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
 
@@ -203,13 +205,10 @@
                     <!-- https://codepen.io/n3k1t/pen/OJMGgyq-->
                     <!-- https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_panels_group&stacked=h -->
                     <tr data-toggle="collapse" data-target="#view_{{module['module_id']}}" >
-                        <!-- col 1 is row["ClsId"] -->
-                        <!-- <form action="/admin/edit/program/name" method="POST"> -->
+
                         <td align = 'left'>
                             {{module['module_index']}}
                         </td>
-
-                        <!-- </form> -->
                         <td align = 'left'>
                             {{module['module_name']}}
                         </td>
@@ -225,14 +224,13 @@
                             action="{{'/admin/programs/modules/delete'}}"
                             method = 'POST'
                             onsubmit="return isConfirmed(this);">
-                            <input type = "hidden" name="module_id" value = "{{module['module_id']}}">
-                            <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
-                            <input class="btn btn-outline-dark btn-sm" type="submit" role="button" value="Delete">
+                                <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
+                                <input type = "hidden" name="module_id" value = "{{module['module_id']}}">
+                                <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
+                                <input class="btn btn-outline-dark btn-sm" type="submit" role="button" value="Delete">
                             </form>
 
                         </td>
-
-                        <!-- <td><button class="btn btn-basic" type="button"  data-toggle="collapse" data-target="#view_{{module['module_id']}}" >expand</button></td> -->
 
                     </tr>
                     <tr>
@@ -281,6 +279,7 @@
 
                             <div class="modal-body container-fluid">
                                 <form action="/admin/programs/edit/add_module" method='POST'>
+                                    <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                     <input type="hidden" name="program_id" value="{{program['program_id']}}">
 
                                     <div class = "form-group row">

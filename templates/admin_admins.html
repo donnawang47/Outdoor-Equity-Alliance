@@ -110,6 +110,7 @@
                                 </div>
                                 <div class="modal-body container-fluid">
                                     <form action="{{'/admin/admins/add'}}" method='POST'>
+                                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
 
                                         <label for="adminNameInput" class = "form-label">Admin Name:</label>
                                         <input type="text" class="form-control" id="adminNameInput" name="admin_name">
@@ -146,6 +147,7 @@
                             <td>
                                 {% if admin['user_email'] != username %}
                                 <form action="/admin/admins/delete" method = 'POST' onsubmit="return isConfirmed(this);">
+                                    <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                     <input type="hidden" name="user_id" value="{{admin['user_id']}}">
                                     <input type="submit" class="btn btn-outline-dark" value="Delete">
                                 </form>

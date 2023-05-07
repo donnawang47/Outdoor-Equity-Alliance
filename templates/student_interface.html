@@ -202,6 +202,7 @@
                                     <p>{{student['available_programs'][loop.index-1]['program_description']}}</p>
                                     <p>To view the program, please enroll!</p>
                                     <form action="/student/program/enroll_program" method = 'POST' class="enroll-button" onsubmit="return isConfirmed(this);">
+                                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                         <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                         <input type="hidden" name="program_id" value="{{student['available_programs'][loop.index-1]['program_id']}}">
                                         <input class="enroll-button" type="submit" value="Enroll">
@@ -244,6 +245,7 @@
                                     <p>{{student['available_programs'][loop.index]['program_description']}}</p>
                                     <p>To view the program, please enroll!</p>
                                     <form action="/student/program/enroll_program" method = 'POST' class="enroll-button" onsubmit="return isConfirmed(this);">
+                                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                         <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                         <input type="hidden" name="program_id" value="{{student['available_programs'][loop.index]['program_id']}}">
                                         <input class="enroll-button" type="submit" value="Enroll">
@@ -286,6 +288,7 @@
                                     <p>{{student['available_programs'][loop.index+1]['program_description']}}</p>
                                     <p>To view the program, please enroll!</p>
                                     <form action="/student/program/enroll_program" method = 'POST' class="enroll-button" onsubmit="return isConfirmed(this);">
+                                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                         <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                         <input type="hidden" name="program_id" value="{{student['available_programs'][loop.index+1]['program_id']}}">
                                         <input class="enroll-button" type="submit" value="Enroll">

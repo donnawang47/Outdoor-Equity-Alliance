@@ -211,6 +211,7 @@
                                     <div class="panel panel-default">
                                         <div class="panel-body" style="padding: 25px 0px 25px 50px; font-size:14px;">
                                         <form id = "update_{{program['program_id']}}Status" action="/admin/students/student_details/update_program_status" method='POST'>
+                                            <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                             <p>Please select program status for the student:</p>
                                             <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                             <input type="hidden" name="student_email" value="{{student['user_email']}}">
@@ -285,6 +286,7 @@
                             <div class="panel panel-default">
                                 <div class="panel-body" style="padding: 25px 0px 25px 50px; font-size:14px;">
                                     <form id = "update_{{program['program_id']}}Status" action="/admin/students/student_details/update_program_status" method='POST' >
+                                        <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                         <p>Please select program status for the student:</p>
                                         <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                         <input type="hidden" name="student_email" value="{{student['user_email']}}">

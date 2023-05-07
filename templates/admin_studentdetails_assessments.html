@@ -25,6 +25,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body" style="padding: 20px 0px 20px 20px;">
                             <form id = "update_{{assessment['module_id']}}Status" action="/admin/students/student_details/update_module_status" method='POST' >
+                                <input type = "hidden" name="csrf_token" value="{{csrf_token()}}">
                                 <p>Please select assessment status for the student:</p>
                                 <input type="hidden" name="student_id" value="{{student['user_id']}}">
                                 <input type="hidden" name="student_email" value="{{student['user_email']}}">
