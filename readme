@@ -47,7 +47,7 @@ Liz's commands:
 - C:\Users\lizga\.virtualenvs\cos333\Scripts\activate.bat
 
 
-$env:APP_SECRET_KEY="xxx"
+$env:APP_SECRET_KEY="16396a574437f7345e19b943"
 
 $env:GOOGLE_CLIENT_ID="658586292195-ct24h8p12spju4ib474k96g2g2pcalpi.apps.googleusercontent.com"
 

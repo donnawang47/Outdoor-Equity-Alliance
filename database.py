@@ -21,7 +21,7 @@ def _put_connection(conn):
 
 
 def insert_student(data):
-    #data is a dict which contains two key-values pairs, with keys student_name and student_email
+    # data is a dict which contains two key-values pairs, with keys student_name and student_email
     connection = _get_connection()
     try:
         with connection.cursor() as cursor:
@@ -297,8 +297,11 @@ def insert_module(data):
                 if value is None or value == '':
                     raise Exception("missing " + str(key))
 
-            if data['content_type'] != 'assessment' and data['content_type'] != 'non-assessment':
-                raise Exception('module content type must be assessment or non-assessment')
+            print('content type = ', data['content_type'])
+
+            if data['content_type'] != 'assessment' and data['content_type'] != 'text':
+                raise Exception('module content type must be assessment or text')
+
 
             cursor.execute('BEGIN')
 
@@ -644,7 +647,7 @@ def update_program_status(student_id, program_id, new_program_status):
             cursor.execute(statement, [new_program_status, student_id, program_id])
 
             cursor.execute('COMMIT')
-            return (True, "assessment status updated")
+            return (True, "program status updated")
 
     except Exception as error:
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
