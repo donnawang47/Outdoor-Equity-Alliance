@@ -266,7 +266,7 @@
                     <div class="trainer-item">
                         <div class="down-content">
                             <h4>
-                                <a data-toggle="modal" data-target="#enroll{{student['available_programs'][loop.index]['program_id']}}" href="{{'/student/program?program_id=%s' %student['available_programs'][loop.index]['program_id']}}">
+                                <a data-toggle="modal" data-target="#enroll{{student['available_programs'][loop.index+1]['program_id']}}" href="{{'/student/program?program_id=%s' %student['available_programs'][loop.index]['program_id']}}">
                                 {{student['available_programs'][loop.index + 1]['program_name']}}
                                 </a>
                             </h4>
@@ -278,7 +278,7 @@
                                 <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index]['program_id']}}Title">{{student['available_programs'][loop.index]['program_name']}}</h5>
+                                    <h5 class="modal-title" id="enroll{{student['available_programs'][loop.index]['program_id']}}Title">{{student['available_programs'][loop.index + 1]['program_name']}}</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
