@@ -106,7 +106,7 @@
             {% for program in student['enrolled_programs']: %}
 
             {% if (loop.index-1) % 3 == 0%}
-
+            <!-- start new row -->
             <div class="row">
                 <div class="col-lg-4">
                     <div class="trainer-item">
@@ -125,6 +125,7 @@
                 <div class="col-lg-4">
                     <div class="trainer-item">
                         <div class="down-content">
+                            loop.index: {{loop.index}}
                             <h4>
                                 <a href="{{'/student/program?program_id=%s' %student['enrolled_programs'][loop.index]['program_id']}}">
                                 {{student['enrolled_programs'][loop.index]['program_name']}}
@@ -264,10 +265,10 @@
                         <div class="down-content">
                             <h4>
                                 <a data-toggle="modal" data-target="#enroll{{student['available_programs'][loop.index]['program_id']}}" href="{{'/student/program?program_id=%s' %student['available_programs'][loop.index]['program_id']}}">
-                                {{student['available_programs'][loop.index]['program_name']}}
+                                {{student['available_programs'][loop.index + 1]['program_name']}}
                                 </a>
                             </h4>
-                            <p>{{student['available_programs'][loop.index]['program_description']}}</p>
+                            <p>{{student['available_programs'][loop.index + 1]['program_description']}}</p>
 
 
                             <!-- Modal -->

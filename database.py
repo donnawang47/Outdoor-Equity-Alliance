@@ -755,7 +755,6 @@ def get_student_info(user_email):
             student_info['available_programs'] = available_programs
             student_info['locked_programs'] = locked_programs
             student_info['enrolled_programs'] = enrolled_programs
-            print("enrolled programs", available_programs)
 
             return (True, student_info)
 

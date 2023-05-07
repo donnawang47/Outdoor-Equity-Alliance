@@ -146,7 +146,6 @@
                                     <label for="changeModuleSequence"> Drop and drop the modules to change the sequence: </label>
                                     <input type = "hidden" name="program_id" value = "{{program['program_id']}}">
 
-                                    <!-- <input type = "hidden" name="num_modules" val = "{{moduleslist|length}}"> -->
                                     <table id="module_idx_table" class = "table table-hover">
                                         <thead>
                                             <tr>
@@ -188,7 +187,7 @@
             <!-- display list of program modules -->
             <!-- <div class = "container"> -->
             {% if moduleslist|length != 0: %}
-                <table class = "table" style="">
+                <table class = "table">
                     <thead>
                         <tr>
                             <th align = "left">Index</th>
