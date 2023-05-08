@@ -487,6 +487,9 @@ def update_program_availability(program_id, new_program_availability):
             if new_program_availability is None or new_program_availability =='':
                 raise Exception("missing program availability")
 
+            if new_program_availability!= 'all' and new_program_availability != 'none':
+                raise Exception('program availability must be all or none')
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE programs SET program_availability=%s WHERE program_id=%s;"
@@ -641,6 +644,9 @@ def update_program_status(student_id, program_id, new_program_status):
             if new_program_status is None or new_program_status =='':
                 raise Exception("missing program status")
 
+            if new_program_status != 'enrolled' and new_program_status != 'available' and new_program_status != 'locked':
+                raise Exception('program status must be enrolled, available, or locked')
+
             cursor.execute('BEGIN')
 
             statement = "UPDATE program_status SET user_program_status = %s WHERE user_id=%s AND program_id=%s;"
@@ -665,6 +671,10 @@ def update_assessment_status(student_id, module_id, new_assessment_status):
                 raise Exception("missing module id")
             if new_assessment_status is None or new_assessment_status =='':
                 raise Exception("missing assessment status")
+
+            print(new_assessment_status)
+            if new_assessment_status != '0' and new_assessment_status != '1':
+                raise Exception('assessment status must be complete (1) or incomplete (0)')
 
             cursor.execute('BEGIN')
 

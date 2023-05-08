@@ -15,7 +15,6 @@ CREATE TABLE program_status (user_id INTEGER, program_id TEXT, user_program_stat
 CREATE TABLE assessment_status (user_id INTEGER, module_id TEXT, user_assessment_status INTEGER);
 
 INSERT INTO users (user_id, user_name, user_email, user_status) VALUES (1, 'oeadevuser', 'oeadevuser@gmail.com', 'admin');
-INSERT INTO users (user_id, user_name, user_email, user_status) VALUES (2, 'oeadevuser-student', 'oeadevuser@gmail.com', 'student');
 
 INSERT INTO programs (program_id, program_name, program_description, program_availability) VALUES ('p1', 'Tree Ambassador 101', 'Description', 'all');
 INSERT INTO program_status (user_id, program_id, user_program_status) VALUES (2, 'p1', 'available');
