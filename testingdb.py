@@ -1,4 +1,4 @@
-import database.py
+import database
 
 # statement testing for database.py
 def main():
@@ -32,13 +32,13 @@ def main():
     admin_data = {}
     admin_data['admin_email'] = 'Liz-Admin-Testing@gmail.com'
     admin_data['admin_name'] = 'Liz1-Admin-testing'
-    database.insert_student(admin_data)
+    database.insert_admin(admin_data)
 
     # exception email already in database
     admin_data = {}
     admin_data['admin_email'] = 'Liz-Admin-Testing@gmail.com'
     admin_data['admin_name'] = 'Liz2-Admin-testing'
-    database.insert_student(admin_data)
+    database.insert_admin(admin_data)
 
 # -------------------------------------------------------------------#
     print('Deleting user!') # can delete student or admin
@@ -47,7 +47,12 @@ def main():
     user_id = None
     database.delete_user(user_id)
 
-    database.delete_user(6) # deleting Catherine
+    # user id should not be empty
+    user_id = ""
+    database.delete_user(user_id)
+
+    user_id = 6
+    database.delete_user(user_id) # deleting Catherine
 
 # -------------------------------------------------------------------#
     print("Insert program1!")
@@ -75,8 +80,22 @@ def main():
     module_content_type = "assessment"
     module_content_link = 'statement testing link'
 
+    # missing module name
     module_data = {
-        'program_id': 'p25', # insert module into created program
+        'program_id': 'p26', # insert module into created program
+        'content_type': module_content_type,
+        'content_link': module_content_link,
+    }
+
+    database.insert_module(module_data)
+
+
+    module_name = 'Liz statement testing'
+    module_content_type = "assessment"
+    module_content_link = 'statement testing link'
+
+    module_data = {
+        'program_id': 'p26', # insert module into created program
         'module_name': module_name,
         'content_type': module_content_type,
         'content_link': module_content_link,
@@ -93,11 +112,13 @@ def main():
     id = None
     database.delete_module(id)
 
+    #invalid module id
     id = ''
     database.delete_module(id)
 
-    # should delete program successfully
-    database.delete_module('p24')
+    # should delete module successfully
+    id = 'm33'
+    database.delete_module(id)
 # -------------------------------------------------------------------#
 
     print('Delete program1') # deletes program and associated module
@@ -110,7 +131,8 @@ def main():
     database.delete_program(id)
 
     # should delete program successfully
-    database.delete_program('p23')
+    id  = 'p18'
+    database.delete_program(id)
 
 # -------------------------------------------------------------------#
 
@@ -137,7 +159,7 @@ def main():
     # missing program id error
     program_id = ''
     new_program_desc = 'hello!'
-    database.update_program_description(program_id, new_program_name)
+    database.update_program_description(program_id, new_program_desc)
 
     # missing program desc error
     program_id = 'p24'
@@ -184,16 +206,22 @@ def main():
     new_module_name = 'statement testing'
     database.update_module_name(program_id, module_id, new_module_name)
 
-    # missing new module name
-    program_id = 'p24'
+    # should work
+    program_id = 'p17'
     module_id = 'm26'
     new_module_name = 'statement testing'
     database.update_module_name(program_id, module_id, new_module_name)
 
-    # should work
-    program_id = 'p24'
+    # missing module name
+    program_id = 'p17'
     module_id = 'm26'
-    new_module_name = 'statement testing'
+    new_module_name = ''
+    database.update_module_name(program_id, module_id, new_module_name)
+
+    # repeated name conflict
+    program_id = 'p17'
+    module_id = 'm26'
+    new_module_name = 'statement testing2'
     database.update_module_name(program_id, module_id, new_module_name)
 
 # -------------------------------------------------------------------#
@@ -267,19 +295,19 @@ def main():
 
 
     # invalid program_id
-    student_id = 6 # Catherine
+    student_id = 1
     program_id = None
     new_program_status = 'none'
     database.update_program_status(student_id, program_id, new_program_status)
 
     # missing new program status
-    student_id = 6
+    student_id = 1
     program_id = 'p17'
     new_program_status = ''
     database.update_program_status(student_id, program_id, new_program_status)
 
     # should work
-    student_id = 6
+    student_id = 1
     program_id = 'p17'
     new_program_status = 'all'
     database.update_program_status(student_id, program_id, new_program_status)
@@ -291,70 +319,150 @@ def main():
     # invalid student id
     student_id = None
     module_id = 'm26'
-    new_assessment_status = 'assessment'
+    new_assessment_status = 0
     database.update_assessment_status(student_id, module_id, new_assessment_status)
 
     # invalid module id
-    student_id = 6
+    student_id = 1
     module_id = ''
-    new_assessment_status = 'assessment'
+    new_assessment_status = 0
     database.update_assessment_status(student_id, module_id, new_assessment_status)
 
     # missing new assessment status
-    student_id = 6
+    student_id = 1
     module_id = 'm26'
     new_assessment_status = ''
     database.update_assessment_status(student_id, module_id, new_assessment_status)
 
     # should work
-    student_id = 6
+    student_id = 1
     module_id = 'm26'
-    new_assessment_status = 'asssessment'
+    new_assessment_status = 1
     database.update_assessment_status(student_id, module_id, new_assessment_status)
 
 # -------------------------------------------------------------------#
     print('Is admin authorized')
+    username = None
+    database.is_admin_authorized(username)
+
+    username = ""
+    database.is_admin_authorized(username)
+
+    username = 'liz'
+    database.is_admin_authorized(username)
 
 
 # -------------------------------------------------------------------#
     print('Is student authorized')
+    username = ""
+    database.is_admin_authorized(username)
+
+    username = None
+    database.is_admin_authorized(username)
+
+    username = 'test liz'
+    database.is_admin_authorized(username)
+
 
 # -------------------------------------------------------------------#
     print('Get student info')
+    email = ""
+    database.get_student_info(email)
+
+    email = "lg6248@princeton.edu"
+    database.get_student_info(email)
+
 
 # -------------------------------------------------------------------#
     print('get all admins')
+    print('all admin = ', database.get_all_admins())
 
 
 # -------------------------------------------------------------------#
     print('get all students')
+    print('all students = ', database.get_all_students())
+
 
 # -------------------------------------------------------------------#
     print('get all programs')
+    print('all programs = ', database.get_all_programs())
 
 # -------------------------------------------------------------------#
     print('get program info')
+    program_id = ""
+    database.get_program_info(program_id)
+
+    program_id = 'p1'
+    database.get_program_info(program_id)
 
 
 # -------------------------------------------------------------------#
     print('get module info')
+    module_id = ""
+    database.get_module_info(module_id)
+
+    module_id = "m1"
+    database.get_module_info(module_id)
 
 
 # -------------------------------------------------------------------#
     print('get student program status')
+    student_id = ""
+    program_id = 'p14'
+    database.get_student_program_status(student_id, program_id)
+
+    student_id = 1
+    program_id = ''
+    database.get_student_program_status(student_id, program_id)
+
+    # program user status not in database
+    student_id = 1
+    program_id = 'p14'
+    database.get_student_program_status(student_id, program_id)
+
+    # program user status not in database
+    student_id = 10
+    program_id = 'p14' # tree embasssador 1 program with assessment
+    database.get_student_program_status(student_id, program_id)
 
 # -------------------------------------------------------------------#
     print('get student enrolled program info')
+    student_id = ""
+    database.get_student_enrolled_program_info(student_id)
+
+
+    student_id = 1
+    database.get_student_enrolled_program_info(student_id)
 
 # -------------------------------------------------------------------#
     print('get locked index')
+    user_id = ""
+    program_id = 'p14'
+    database.get_locked_index(user_id, program_id)
+
+    user_id = 1
+    program_id = 'p14'
+    database.get_locked_index(user_id, program_id)
+
+    user_id = 1
+    program_id = 'p14'
+    database.get_locked_index(user_id, program_id)
 
 # -------------------------------------------------------------------#
     print('get student program progress')
+    student_id = None
+    program_id = 'p14'
+    database.get_student_program_progress(student_id, program_id)
 
+    student_id = 1
+    program_id = ""
+    database.get_student_program_progress(student_id, program_id)
+
+    student_id = 1
+    program_id = 'p14'
+    database.get_student_program_progress(student_id, program_id)
 
 # -------------------------------------------------------------------#
-
 
 if __name__ == '__main__':
     main()
