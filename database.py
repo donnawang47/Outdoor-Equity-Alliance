@@ -28,7 +28,7 @@ def insert_student(data):
             #check for missing arguments
             for key, value in data.items():
                 if value is None or value == '':
-                    raise Exception("missing " + str(key))
+                    return(False, "missing " + str(key) + ". Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -37,7 +37,7 @@ def insert_student(data):
             cursor.execute(statement, [data['student_email']])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("email already in database")
+                return(False, "Email already in database. Please try again with a proper input.")
 
             #create user_id
             statement = "SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1;"
@@ -88,8 +88,9 @@ def insert_student(data):
             return (True, "successfully added a new student")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -102,7 +103,7 @@ def insert_admin(data):
             #check for missing arguments
             for key, value in data.items():
                 if value is None or value == '':
-                    raise Exception("missing " + str(key))
+                    return(False, "Missing " + str(key) + ". Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -111,7 +112,7 @@ def insert_admin(data):
             cursor.execute(statement, [data['admin_email']])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("email already in database")
+                return(False, "Email already in database. Please try again with a proper input.")
 
             #generate user_id
             statement = "SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1;"
@@ -133,8 +134,9 @@ def insert_admin(data):
             return (True, "successfully added a new admin")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -143,8 +145,8 @@ def delete_user(user_id):
     try:
         with connection.cursor() as cursor:
 
-            assert user_id != None, 'User id should not be None.'
-            assert user_id != '', 'User id should not be empty.'
+            assert user_id != None, 'User id should not be None. Please try again with a proper input or return.'
+            assert user_id != '', 'User id should not be empty. Please try again with a proper input or return.'
 
             cursor.execute('BEGIN')
 
@@ -162,8 +164,9 @@ def delete_user(user_id):
             return(True, "successfully deleted user")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -177,10 +180,10 @@ def insert_program(data):
             #check for missing arguments
             for key, value in data.items():
                 if value is None or value == '':
-                    raise Exception("missing " + str(key))
+                    return(False, "missing " + str(key) + ". Please try again with a proper input.")
 
             if data['program_availability'] != 'all' and data['program_availability'] != 'none':
-                raise Exception('program availability must be all or none')
+                return(False, 'Program availability must be all or none. Please try again with a proper input.')
 
             cursor.execute('BEGIN')
 
@@ -189,7 +192,7 @@ def insert_program(data):
             cursor.execute(statement, [data['program_name']])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("program name conflict, insertion aborted")
+                return(False, "Duplicate program name. Insertion aborted. Please try again with a proper input.")
 
             # generate program_id
             statement = """SELECT substring(program_id FROM '\d+')
@@ -234,8 +237,9 @@ def insert_program(data):
             return (True, program_id)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -245,8 +249,8 @@ def delete_program(program_id):
     try:
         with connection.cursor() as cursor:
 
-            assert program_id != None, 'Program id should not be None.'
-            assert program_id != '', 'Program id should not be empty.'
+            assert program_id != None, 'Program id should not be None. Please try again with a proper input or return.'
+            assert program_id != '', 'Program id should not be empty. Please try again with a proper input or return.'
 
             cursor.execute('BEGIN')
 
@@ -281,8 +285,9 @@ def delete_program(program_id):
             return (True, "deleted program successfully")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -295,12 +300,12 @@ def insert_module(data):
             #check for missing arguments
             for key, value in data.items():
                 if value is None or value == '':
-                    raise Exception("missing " + str(key))
+                    return(False, "missing " + str(key) + ". Please try again with a proper input.")
 
             print('content type = ', data['content_type'])
 
             if data['content_type'] != 'assessment' and data['content_type'] != 'text':
-                raise Exception('module content type must be assessment or text')
+                return(False, 'Module content type must be assessment or text. Please try again with a proper input.')
 
 
             cursor.execute('BEGIN')
@@ -310,7 +315,7 @@ def insert_module(data):
             cursor.execute(statement, [data['module_name'], data['program_id']])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("module name conflict, insertion aborted")
+                return(False, "Duplicate module name conflict. Insertion aborted. Please try again with a proper input.")
 
 
             # generate module id
@@ -352,8 +357,9 @@ def insert_module(data):
             return (True, module_id)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -365,8 +371,8 @@ def delete_module(module_id):
     try:
         with connection.cursor() as cursor:
 
-            assert module_id != None, 'Module id should not be None.'
-            assert module_id != '', 'Module id should not be empty.'
+            assert module_id != None, 'Module id should not be None. Please try again with a proper input or return.'
+            assert module_id != '', 'Module id should not be empty. Please try again with a proper input or return.'
 
             cursor.execute('BEGIN')
 
@@ -376,7 +382,7 @@ def delete_module(module_id):
             table = cursor.fetchall()
 
             if len(table) == 0:
-                raise Exception("no module of that module id in database, aborted")
+                return(False, "Nonexisting module id. Please try again with a proper input.")
             module_index = table[0][0]
             program_id = table[0][1]
             content_type = table[0][2]
@@ -413,8 +419,9 @@ def delete_module(module_id):
 
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -427,9 +434,9 @@ def update_program_name(program_id, new_program_name):
 
             #check for missing arguments
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input.")
             if new_program_name is None or new_program_name =='':
-                raise Exception("missing program name")
+                return(False, "Missing program name. Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -438,7 +445,7 @@ def update_program_name(program_id, new_program_name):
             cursor.execute(statement, [new_program_name])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("program name conflict, update aborted")
+                return(False, "Duplicate program name. Update aborted. Please try again with a proper input.")
 
             statement = "UPDATE programs SET program_name=%s WHERE program_id = %s;"
             cursor.execute(statement, [new_program_name, program_id])
@@ -447,8 +454,9 @@ def update_program_name(program_id, new_program_name):
             return (True, "program name updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -459,9 +467,9 @@ def update_program_description(program_id, new_program_description):
         with connection.cursor() as cursor:
             #check for missing arguments
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id, Please try again with a proper input.")
             if new_program_description is None or new_program_description =='':
-                raise Exception("missing program description")
+                return(False, "Missing program description. Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -472,8 +480,9 @@ def update_program_description(program_id, new_program_description):
             return (True, "program description updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -483,12 +492,12 @@ def update_program_availability(program_id, new_program_availability):
         with connection.cursor() as cursor:
             #check for missing arguments
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input.")
             if new_program_availability is None or new_program_availability =='':
-                raise Exception("missing program availability")
+                return(False, "Missing program availability. Please try again with a proper input.")
 
             if new_program_availability!= 'all' and new_program_availability != 'none':
-                raise Exception('program availability must be all or none')
+                return(False, 'Program availability must be all or none. Please try again with a proper input.')
 
             cursor.execute('BEGIN')
 
@@ -499,8 +508,9 @@ def update_program_availability(program_id, new_program_availability):
             return (True, "program availability updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -512,11 +522,11 @@ def update_module_name(program_id, module_id, new_module_name):
 
             #check for missing arguments
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input.")
             if module_id is None or module_id == '':
-                raise Exception("missing module id")
+                return(False, "Missing module id. Please try again with a proper input.")
             if new_module_name is None or new_module_name =='':
-                raise Exception("missing module name")
+                return(False, "Missing module name. Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -525,7 +535,7 @@ def update_module_name(program_id, module_id, new_module_name):
             cursor.execute(statement, [new_module_name, program_id])
             table = cursor.fetchall()
             if len(table) != 0:
-                raise Exception("module name conflict, update aborted")
+                return(False, "Duplicate program name. Update aborted. Please try again with a proper input.")
 
             statement = "UPDATE modules SET module_name=%s WHERE module_id= %s;"
 
@@ -535,8 +545,9 @@ def update_module_name(program_id, module_id, new_module_name):
             return (True, "module name successfully updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -546,12 +557,12 @@ def update_module_content_type(module_id, new_content_type):
         with connection.cursor() as cursor:
 
             if module_id is None or module_id == '':
-                raise Exception("missing module id")
+                return(False, "Missing module id. Please try again with a proper input.")
             if new_content_type is None or new_content_type =='':
-                raise Exception("missing content type")
+                return(False, "Missing content type. Please try again with a proper input.")
 
             if new_content_type != 'assessment' and new_content_type != 'text':
-                raise Exception('module content type must be assessment or text')
+                return(False, 'Module content type must be assessment or text. Please try again with a proper input.')
 
             cursor.execute('BEGIN')
 
@@ -577,8 +588,9 @@ def update_module_content_type(module_id, new_content_type):
             return (True, "module content type updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -587,9 +599,9 @@ def update_module_content_link(module_id, new_content_link):
     try:
         with connection.cursor() as cursor:
             if module_id is None or module_id == '':
-                raise Exception("missing module id")
+                return(False, "Missing module id. Please try again with a proper input.")
             if new_content_link is None or new_content_link =='':
-                raise Exception("missing content link")
+                return(False, "Missing content link. Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -600,8 +612,9 @@ def update_module_content_link(module_id, new_content_link):
             return (True, "module content link updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -614,9 +627,9 @@ def update_module_index(module_id, new_module_index):
         with connection.cursor() as cursor:
 
             if module_id is None or module_id == '':
-                raise Exception("missing module id")
+                return(False, "Missing module id. Please try again with a proper input.")
             if new_module_index is None or new_module_index =='':
-                raise Exception("missing module index")
+                return(False, "Missing module index. Please try again with a proper input.")
 
             cursor.execute('BEGIN')
 
@@ -627,8 +640,9 @@ def update_module_index(module_id, new_module_index):
             return (True, "successfully changed module index")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -638,14 +652,14 @@ def update_program_status(student_id, program_id, new_program_status):
         with connection.cursor() as cursor:
 
             if student_id is None or student_id == '':
-                raise Exception("missing student id")
+                return(False, "Missing student id. Please try again with a proper input.")
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input.")
             if new_program_status is None or new_program_status =='':
-                raise Exception("missing program status")
+                return(False, "Missing program status. Please try again with a proper input.")
 
             if new_program_status != 'enrolled' and new_program_status != 'available' and new_program_status != 'locked':
-                raise Exception('program status must be enrolled, available, or locked')
+                return(False, 'Program status must be enrolled, available, or locked. Please try again with a proper input.')
 
             cursor.execute('BEGIN')
 
@@ -656,8 +670,9 @@ def update_program_status(student_id, program_id, new_program_status):
             return (True, "program status updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -666,15 +681,15 @@ def update_assessment_status(student_id, module_id, new_assessment_status):
     try:
         with connection.cursor() as cursor:
             if student_id is None or student_id == '':
-                raise Exception("missing student id")
+                return(False, "Missing student id. Please try again with a proper input.")
             if module_id is None or module_id == '':
-                raise Exception("missing module id")
+                return(False, "Missing module id. Please try again with a proper input.")
             if new_assessment_status is None or new_assessment_status =='':
-                raise Exception("missing assessment status")
+                return(False, "Missing assessment status. Please try again with a proper input.")
 
             print(new_assessment_status)
             if new_assessment_status != '0' and new_assessment_status != '1':
-                raise Exception('assessment status must be complete (1) or incomplete (0)')
+                return(False, 'Assessment status must be complete (1) or incomplete (0). Please try again with a proper input.')
 
             cursor.execute('BEGIN')
 
@@ -685,8 +700,9 @@ def update_assessment_status(student_id, module_id, new_assessment_status):
             return (True, "assessment status updated")
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -699,8 +715,8 @@ def is_admin_authorized(username):
     try:
         with connection.cursor() as cursor:
 
-            assert username != None, 'Username should not be None.'
-            assert username != '', 'Username should not be empty.'
+            assert username != None, 'Username should not be None. Please try again with a proper input or return.'
+            assert username != '', 'Username should not be empty. Please try again with a proper input or return.'
 
             cursor.execute('BEGIN')
 
@@ -713,8 +729,9 @@ def is_admin_authorized(username):
             return (True, len(table)!=0)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -724,8 +741,8 @@ def is_student_authorized(username):
     try:
         with connection.cursor() as cursor:
 
-            assert username != None, 'Username should not be None.'
-            assert username != '', 'Username should not be empty.'
+            assert username != None, 'Username should not be None. Please try again with a proper input or return.'
+            assert username != '', 'Username should not be empty. Please try again with a proper input or return.'
 
             cursor.execute('BEGIN')
 
@@ -738,8 +755,9 @@ def is_student_authorized(username):
             return (True, len(table)!=0)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -748,7 +766,7 @@ def get_student_info(user_email):
     try:
         with connection.cursor() as cursor:
             if user_email is None or user_email == '':
-                raise Exception("missing user email")
+                return(False, "Missing user email. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -757,7 +775,7 @@ def get_student_info(user_email):
             table = cursor.fetchall()
 
             if len(table) == 0:
-                raise Exception("student not in database")
+                return(False, "Student not in database. Please try again with a proper input or return.")
 
             student = table[0]
 
@@ -783,7 +801,7 @@ def get_student_info(user_email):
                 cursor.execute(statement, [program_id])
                 program_table = cursor.fetchall()
                 if len(program_table) == 0:
-                    raise Exception("empty program in program_status when looking for student info")
+                    return(False, "Empty program in program_status when looking for student info. Please contact system administrator.")
                 program_name = program_table[0][0]
                 program_description = program_table[0][1]
 
@@ -806,8 +824,9 @@ def get_student_info(user_email):
             return (True, student_info)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -839,8 +858,9 @@ def get_all_admins():
             return (True, admins)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -870,8 +890,9 @@ def get_all_students():
             return (True, students)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -903,8 +924,9 @@ def get_all_programs():
             return (True, programs)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -914,7 +936,7 @@ def get_program_info(program_id):
     try:
         with connection.cursor() as cursor:
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -924,7 +946,7 @@ def get_program_info(program_id):
             table = cursor.fetchall()
 
             if len(table) == 0:
-                raise Exception("no such program exists in database")
+                return(False, "No such program exists in database. Please try again with a proper input or return.")
 
             program_info = {}
             program_info['program_id'] = table[0][0]
@@ -958,8 +980,9 @@ def get_program_info(program_id):
             return (True, program_info)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -969,7 +992,7 @@ def get_module_info(module_id):
         with connection.cursor() as cursor:
 
             if module_id is None or module_id == '':
-                raise Exception("missing module id")
+                return(False, "Missing module id. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -978,7 +1001,7 @@ def get_module_info(module_id):
             table = cursor.fetchall()
 
             if len(table) == 0:
-                raise Exception("no such module id in modules table")
+                return(False, "No such module id in modules table. Please try again with a proper input or return.")
 
             module_info = {}
             module_info['module_id'] = table[0][0]
@@ -992,8 +1015,9 @@ def get_module_info(module_id):
             return (True, module_info)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -1003,9 +1027,9 @@ def get_student_program_status(student_id, program_id):
         with connection.cursor() as cursor:
 
             if student_id is None or student_id == '':
-                raise Exception("missing student id")
+                return(False, "Missing student id. Please try again with a proper input or return.")
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -1013,14 +1037,15 @@ def get_student_program_status(student_id, program_id):
             cursor.execute(statement, [student_id, program_id])
             table = cursor.fetchall()
             if len(table) == 0:
-                raise Exception("user program status not in database")
+                return(False, "User program status not in database. Please contact system administrator.")
 
             cursor.execute('COMMIT')
             return (True, table[0][0])
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -1030,7 +1055,7 @@ def get_student_enrolled_program_info(student_id):
         with connection.cursor() as cursor:
 
             if student_id is None or student_id == '':
-                raise Exception("missing student id")
+                return(False, "Missing student id. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -1083,8 +1108,9 @@ def get_student_enrolled_program_info(student_id):
             return (True, enrolled_programs)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 #
@@ -1094,9 +1120,9 @@ def get_locked_index(user_id, program_id):
         with connection.cursor() as cursor:
 
             if user_id is None or user_id == '':
-                raise Exception("missing user id")
+                return(False, "Missing user id. Please try again with a proper input or return.")
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -1115,8 +1141,9 @@ def get_locked_index(user_id, program_id):
             return (True, module_index)
 
     except Exception as error:
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 
@@ -1128,9 +1155,9 @@ def get_student_program_progress(student_id, program_id):
     try:
         with connection.cursor() as cursor:
             if student_id is None or student_id == '':
-                raise Exception("missing student id")
+                return(False, "Missing student id. Please try again with a proper input or return.")
             if program_id is None or program_id == '':
-                raise Exception("missing program id")
+                return(False, "Missing program id. Please try again with a proper input or return.")
 
             cursor.execute('BEGIN')
 
@@ -1146,9 +1173,9 @@ def get_student_program_progress(student_id, program_id):
             return (True, program_progress)
 
     except Exception as error:
-
+        err_msg = "A server error occurred. Please contact the system administrator."
         print(sys.argv[0] + ': ' + str(error), file=sys.stderr)
-        return (False, str(error))
+        return (False, err_msg)
     finally:
         _put_connection(connection)
 

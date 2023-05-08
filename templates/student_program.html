@@ -63,19 +63,31 @@
 </header>
 
 <!-- ***** Header Area End ***** -->
+    <br>
+    <br>
+    <br>
+    <br>
+
 
     <!-- ***** Our Classes Start ***** -->
     <section class="section" id="our-classes">
+      <div style = "margin: 2%">
+        <a class="btn btn-outline-dark" href="/student">Back to programs list</a>
+      </div>
+
+
         <div class="container">
+
             <div class="row">
                 <div class="col-lg-6 offset-lg-3">
-                    <div class="section-heading">
+                    <div class="section-heading" style="margin-top:80px;">
                         <h2>{{program['program_name']}}</h2>
                         <br>
                         <p>{{program['program_description']}}</p>
                     </div>
                 </div>
             </div>
+
             {% if program['modules']|length == 0 %}
                 <p>No modules within program </p>
             {% else %}
