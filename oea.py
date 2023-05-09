@@ -48,7 +48,7 @@ def authorize_admin(username):
             response = flask.make_response('You are not authorized to use this application.')
             flask.abort(response)
     else:
-        err_msg = 'An error occured with the server. Please try contacting server administrator.'+ str(authorized)
+        err_msg = 'An error occured with the server. Please try contacting server administrator.'
         response = flask.make_response(err_msg)
         flask.abort(response)
 
@@ -63,7 +63,7 @@ def authorize_student(username):
             response = flask.make_response('You are not authorized to use this application.')
             flask.abort(response)
     else:
-        err_msg = 'An error occured with the server. Please try contacting server administrator.'+ str(authorized)
+        err_msg = 'An error occured with the server. Please try contacting server administrator.'
         response = flask.make_response(err_msg)
         flask.abort(response)
 
