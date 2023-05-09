@@ -142,6 +142,7 @@
                 </div>
             </div>
 
+    {% if students|length != 0: %}
             <!-- list of students -->
             <table class = "table">
                 <!-- row 1, containing names of each column -->
@@ -151,7 +152,6 @@
                     <th></th>
                     <th></th>
                 </tr>
-
                 {% for student in students: %}
                 <tr>
 
@@ -172,10 +172,10 @@
                     </td>
                 </tr>
                 {% endfor %}
-
-
-
             </table>
+            {% else %}
+                No students yet.
+        {% endif %}
 
 
         </div>
