@@ -5,10 +5,6 @@ import flask_talisman
 import flask_wtf.csrf
 import auth
 
-# export APP_SECRET_KEY=16396a574437f7345e19b943
-# export GOOGLE_CLIENT_ID=658586292195-ct24h8p12spju4ib474k96g2g2pcalpi.apps.googleusercontent.com
-# export GOOGLE_CLIENT_SECRET=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
-
 app = flask.Flask(__name__, template_folder="./templates")
 
 app.secret_key = os.environ['APP_SECRET_KEY']

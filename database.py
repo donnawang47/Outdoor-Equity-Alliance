@@ -6,8 +6,6 @@ import os
 _database_url = os.getenv('DATABASE_URL')
 
 _connection_pool = queue.Queue()
-# conn = psycopg2.connect("dbname=oea user=rmd password=xxx")
-# $env:DATABASE_URL="postgres://oea_user:KTYMB7UGGi1I8wXjXAFr3vvqNbl5lN4X@dpg-cgp3bg0u9tun42rpj98g-a.oregon-postgres.render.com/oea"
 
 def _get_connection():
     try:

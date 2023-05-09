@@ -1,3 +1,4 @@
+/* source: https://themewagon.github.io/training-studio/ */
 (function ($) {
 
 	"use strict";
