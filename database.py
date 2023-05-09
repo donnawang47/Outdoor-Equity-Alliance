@@ -816,6 +816,11 @@ def get_student_info(user_email):
                 elif user_program_status == 'enrolled':
                     enrolled_programs.append(program_info)
 
+            #sort programs via program_name
+            available_programs = sorted(available_programs, key=lambda x:x['program_name'])
+            locked_programs = sorted(locked_programs, key=lambda x:x['program_name'])
+            enrolled_programs = sorted(enrolled_programs, key=lambda x:x['program_name'])
+
             student_info['available_programs'] = available_programs
             student_info['locked_programs'] = locked_programs
             student_info['enrolled_programs'] = enrolled_programs
@@ -838,7 +843,6 @@ def get_all_admins():
 
             cursor.execute('BEGIN')
 
-            #print("access_database.py: get_all_students:")
             statement = "SELECT * FROM users WHERE user_status='admin';"
 
             cursor.execute(statement)
@@ -853,7 +857,9 @@ def get_all_admins():
                 admin_row['user_email'] = row[2]
                 admins.append(admin_row)
 
-            #print("success access_database.py: get_all_admins")
+            #sort admins via user_name
+            admins = sorted(admins, key=lambda x:x['user_name'])
+
             cursor.execute('COMMIT')
             return (True, admins)
 
@@ -871,7 +877,6 @@ def get_all_students():
 
             cursor.execute('BEGIN')
 
-            #print("access_database.py: get_all_students:")
             statement = "SELECT * FROM users WHERE user_status='student';"
 
             cursor.execute(statement)
@@ -885,6 +890,9 @@ def get_all_students():
                 student_row['user_name'] = row[1]
                 student_row['user_email'] = row[2]
                 students.append(student_row)
+
+            #sort students via user_name
+            students = sorted(students, key=lambda x:x['user_name'])
 
             cursor.execute('COMMIT')
             return (True, students)
@@ -919,7 +927,10 @@ def get_all_programs():
                 program_row['program_availability'] = row[3]
                 programs.append(program_row)
 
-            #print("success access_database.py: get_programslist")
+
+            #sort programs via program_name
+            programs = sorted(programs, key=lambda x:x['program_name'])
+
             cursor.execute('COMMIT')
             return (True, programs)
 
